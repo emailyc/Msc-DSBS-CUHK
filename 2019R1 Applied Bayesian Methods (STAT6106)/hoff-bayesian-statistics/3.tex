@@ -1,0 +1,1653 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Chapter 3: One-parameter models},
+            pdfauthor={Jesse Mu},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Chapter 3: One-parameter models}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Jesse Mu}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{September 17, 2016}
+
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{the-binomial-model}{%
+\section{The Binomial model}\label{the-binomial-model}}
+
+1998 General Social Survey: Females over age 65, \(1 = \text{happy}\),
+\(0 = \text{unhappy}\). \(n = 129\). So let the survey be 129
+exchangeable random variables \(Y_1, \dots, Y_{129}\).
+
+Under our model, conditioned on some \(\theta\), \(Y_i\) are i.i.d.
+binary random variables with probability \(\theta\). So the joint
+probability is
+
+\begin{align}
+p(y_1, \dots, y_{129} \mid \theta) = \theta^{\sum_{i} y_i} (1 - \theta)^{129 -
+\sum_i y_i}
+\end{align}
+
+Now we need to specify our prior distribution
+
+\hypertarget{uniform-prior}{%
+\subsection{Uniform prior}\label{uniform-prior}}
+
+Imagine our prior is \(\theta \sim \text{Uniform}(0, 1)\). What this
+means is \(P(a \leq \theta \leq b) = P(a + c \leq \theta \leq b + c)\)
+for all compatible \(a, b, c\). In other words, the probability of theta
+falling in an interval of a given width is constant, regardless of where
+the interval is.
+
+Then, notice
+
+\begin{align}
+p(\theta \mid y_1, \dots, y_{129}) &= \frac{p(y_1, \dots, y_{129} \mid \theta) p(\theta)}{p(y_1, \dots, y_{129})} \\
+&= \frac{p(y_1, \dots, y_{129} \mid \theta)}{p(y_1, \dots, y_{129})} & (\text{since $p(\theta)$ is constant for all $\theta$}) \\
+&\propto p(y_1, \dots, y_{129} \mid \theta)
+\end{align}
+
+so \(p(\theta \mid Y)\) and \(p(y \mid \theta)\) have the same shape
+(see MLE discussion in Chapter 1).
+
+\hypertarget{data-and-posterior-distribution}{%
+\subsection{Data and posterior
+distribution}\label{data-and-posterior-distribution}}
+
+Say the observed proportion is 118 happy out of 129 (91\%). Our sampling
+model for some fixed \(\theta\) is
+
+\begin{align}
+p(y \mid \theta) = \theta^{118} (1 - \theta)^{11}
+\end{align}
+
+linking this back to Bayes' rule above, we have the posterior
+probability
+
+\begin{align}
+p(\theta \mid y) = \frac{\theta^{118} (1 - \theta)^{11}}{p(y)}
+\end{align}
+
+We will often (WHEN would we not normalize?) want to be more precise
+than this and know about the scale of the posterior probability, not
+just the shape. This requires calculating
+\(p(y) = p(y_1, \dots, y_{129})\):
+
+\begin{align}
+1 &= \int_0^1 p(\theta \mid y) \; d\theta & (\text{Law of total probability}) \\
+&= \int_0^1 \theta^{111} (1 - \theta)^{11} / p(y) \; d\theta \\
+&= \frac{1}{p(y)} \int_0^1 \theta^{118} (1 - \theta)^{11} \; d\theta & (\text{Note
+$p(y)$ is constant for fixed $y$})\\
+&= \frac{1}{p(y)} \frac{\Gamma(119) \Gamma(12)}{\Gamma(131)} & (\text{From calculus})\\
+\end{align}
+
+so
+\(p(y) = \frac{\Gamma(119) \Gamma(12)}{\Gamma(131)} \approx 2.89 \times 10^{-18}\).
+Since our \(y_i\) are exchangeable, this holds true for any sequences of
+\(y_i\) with 118 ones and 11 zeros.
+
+So, finally, the posterior probability is
+
+\begin{align}
+p(\theta \mid y) &= \frac{\Gamma(131)}{\Gamma(119) \Gamma(12)} \theta^{118} (1 -
+\theta)^11 \\
+&= \frac{\Gamma(131)}{\Gamma(119) \Gamma(12)} \theta^{119 - 1} (1 - \theta)^{12 - 1} & (\text{Beta parameterization})\\
+\end{align}
+
+which happens to be a \emph{beta distribution} with parameters
+\(a = 119\) and \(b = 12\).
+
+If \(Y \sim \text{Beta}(a, b)\), then
+
+\begin{itemize}
+\tightlist
+\item
+  PDF:
+  \(p(y) = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} y^{a - 1} (1 - y)^{b - 1}\)
+\item
+  \(\mathbb{E}(Y) = \frac{a}{a + b}\)
+\item
+  \(\text{Mode}(Y) = \frac{a - 1}{a + b - 2}\)
+\item
+  \(\text{Var}(Y) = \frac{ab}{(a + b)^2 (a + b + 1)}\)
+\end{itemize}
+
+In our case, our posterior looks like:
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-2-1} \end{center}
+
+\hypertarget{inference-for-exchangeable-binary-data-i.e.more-generally}{%
+\subsection{Inference for exchangeable binary data (i.e.~more
+generally)}\label{inference-for-exchangeable-binary-data-i.e.more-generally}}
+
+Recall for our binary data \(Y_1, \dots, Y_n\) that
+
+\begin{align}
+p(\theta \mid y) &= \frac{p(y \mid \theta) p(\theta)}{p(y)} \\
+&= \frac{\theta^{\sum y_i} (1 - \theta)^{n - \sum y_i} p(\theta)}{p(y)} & \text{(Since i.i.d.)} \\
+\end{align}
+
+Importantly, the quantity \(\sum_{i = 1}^n Y_i\) is the only statistic
+that is needed to calculate posterior probabilities of \(\theta\). So it
+is a \emph{sufficient statistic} for making inference about \(\theta\).
+The statistic \(Y = \sum Y_i\) has a binomial distribution with
+parameters \((n, \theta)\). Then,
+
+\begin{align}
+p(y \mid \theta) &= {n \choose y} \theta^y (1 - \theta)^{n - y}
+\end{align}
+
+\begin{quote}
+Note: I skip the general derivation of posterior probabilities for
+uniform prior here, since a uniform prior is also a
+\(\text{Beta}(a, b)\).
+\end{quote}
+
+Now let's calculate the posterior probability \(p(\theta \mid y)\) when
+\(p(\theta)\) is \emph{not} uniform; in particular, when our prior on
+\(\theta\) is a Beta distribution (\(\theta \sim \text{Beta}(a, b)\)):
+
+\begin{align}
+p(\theta \mid y) &= \frac{p(\theta) p(y \mid \theta)}{p(y)} & \\
+&= \frac{1}{p(y)} \times \underbrace{\frac{\Gamma(a + b)}{\Gamma(a)
+\Gamma(b)}\theta^{a - 1}(1 - \theta)^{b - 1}}_{\text{PDF of $\text{Beta}(a,
+b)$}} \times \underbrace{{n \choose y} \theta^y (1 - \theta)^{n -
+y}}_{\text{$p(y \mid \theta)$ above}} & \\
+&= c \times \theta^{a + y - 1} (1 - \theta)^{b + n - y - 1} & \text{(Combine $\theta$s)} \
+\end{align}
+
+where \(c = f(n, y, a, b)\) is just compressing the other stuff in the
+equation into a constant, since it doesn't depend on \(\theta\). Now,
+notice that the term with \(\Gamma\)s in the above equation is the PDF
+of \(\theta \sim \text{Beta}(a, b)\), which can also be expressed with a
+constant \(c = f(a, b)\):
+\(p(\theta) = c \theta^{a - 1}(1 - \theta)^{b - 1}\). Notice that this
+looks just like the equation above: thus, \(p(\theta)\) and
+\(p(\theta \mid y)\) are both proportional to
+\(\theta^{a - 1} (1 - \theta)^{b - 1}\) by some constant \(c\).
+
+Now, since we know that as probability distributions,
+\(\int p(\theta) = \int p(\theta \mid y) \; d\theta = 1\), we also know
+that the functions share the same \emph{scale}, which means that
+\(p(\theta \mid y)\) is actually a Beta PDF!
+
+\[
+(\theta \mid y) \sim \text{Beta}(a + y, b + n - y).
+\]
+
+We therefore call Beta distributions \textbf{conjugate} priors for
+Binomial distributions.
+
+\hypertarget{conjugacy}{%
+\subsubsection{Conjugacy}\label{conjugacy}}
+
+\begin{quote}
+\textbf{Conjugacy}. A class \(\mathcal{P}\) of prior distributions for
+\(\theta\) are \emph{conjugate priors} of a sampling model
+\(p(y \mid \theta)\) if \[ p(\theta) \in
+\mathcal{P} \implies p(\theta \mid y) \in \mathcal{P}.\]
+\end{quote}
+
+Conjugate priors are very convenient and making certain calculations
+easy, since there is some convenient closed form solution for the
+distribution of a model posterior given a model prior and observed data.
+
+Now, if you remember from Chatper 1, since the expectation of a Beta
+distribution is \(\frac{a}{a + b}\),
+
+\begin{align}
+\mathbb{E}(\theta \mid y) &= \frac{a + y}{a + b + n} \\
+&= \frac{a + b}{a + b + n} \frac{a}{a + b} + \frac{n}{a + b + n}\frac{y}{n} \\
+\end{align}
+
+Where \(\theta_0 = \frac{a}{a + b}\) can be seen as our ``prior
+expectation'', \(\frac{y}{n}\) is the sample mean, and \(w = a + b\) can
+be seen as the strength of belief in our prior. I leave the equation
+expressed above with the \(a\)s and \(b\)s expanded because another
+intuitive way of thinking about the problem is by thinking of \(a\) as
+the ``prior number of 1s'', \(b\) as the ``prior number of 0s'', and
+\(a + b\) as the ``prior sample size''. If you play around with the
+equation above, seeing how the values change with various \(a\) and
+\(b\) prior choices, you'll notice it has several nice properties that
+intuitively balance the expectation and strength of our prior with the
+amount of data we receive.
+
+\hypertarget{prediction}{%
+\subsubsection{Prediction}\label{prediction}}
+
+Assume we've already seen data \(y_1, \dots y_n\) and we want to predict
+value of the next observation \(\tilde{Y}\). Intuitively we should
+predict \(\tilde{Y} = 1\) with probability equal to the expectation of
+\(\theta\) given our data (according to the Bayesian framework). These
+calculations confirm this:
+
+\begin{align}
+p(\tilde{Y} = 1 \mid y) &= \int p(\tilde{Y} = 1, \theta \mid y) \; d\theta & \text{(LTP)} \\
+&= \int p(\tilde{Y} = 1 \mid \theta, y) p(\theta \mid y) \; d\theta & \text{(Chain rule)} \\
+&= \int \theta p(\theta \mid y) \; d\theta & \text{(Since $\tilde{Y}$ is binary)} \\
+&= \mathbb{E}(\theta \mid y).
+\end{align}
+
+Note that in this case the posterior predictive distribution is very
+easy to predict and is (as it can only possibly be) a Bernoulli
+distribution with a certain probability \(p\). When posterior
+distributions become more complicated, however, (e.g.~Poisson model),
+their posterior predictive distributions may require more complex
+calculations and may result in a different family of distributions.
+Still later, we will show how to simulate posterior predictive
+distributions with Monte Carlo sampling.
+
+Also note that using the expectation instead of the mode is nice, for
+examples where we have a uniform \(\text{Beta}(1, 1)\) prior and we
+observe \(Y = 0\). Then,
+
+\begin{align}
+\mathbb{E}(\theta \mid Y = 0) &= \frac{2}{2 + n}\frac{1}{2} + \frac{n}{2 +
+n}\frac{y}{n} = \frac{1}{2 + n}\\
+\theta_{MAP} &= \frac{y}{n} = 0 \\
+\end{align}
+
+And clearly the expectation is more sensible as a predictor of future
+\(\tilde{Y}\). But \(\theta_{MAP}\) is not as unreasonable when there is
+a non-uniform prior\ldots{}
+
+\hypertarget{confidence-regions}{%
+\subsection{Confidence regions}\label{confidence-regions}}
+
+See
+\href{http://stats.stackexchange.com/questions/2272/whats-the-difference-between-a-confidence-interval-and-a-credible-interval}{this
+StackExchange question} for a really interesting discussiona bout the
+difference between Bayesian and frequentist confidence intervals.
+
+Bayesian confidence interval is an interval \([l(y), u(y)]\) with the
+following property:
+
+\begin{align}
+P(l(y) < \theta < u(y) \mid Y = y) = .95
+\end{align}
+
+Intuitively, a Bayesian confidence interval quantifies our uncertainty
+about the true value of the parameter we are estimating.
+
+Frequentist confidence interval is an interval \([l(Y), u(Y)]\) with the
+following property:
+
+\begin{align}
+P(l(Y) < \theta < u(Y) \mid theta) = .95
+\end{align}
+
+Intuitively, a Frequentist confidence interval quantifies our
+uncertainty about the measurement we have made of the parameter with a
+\emph{fixed} true value.
+
+Which interval is better is of course debated heavily.
+
+To construct Bayesian confidence intervals, an easy way of doing so is
+to select quantiles of the posterior probability distribution such that
+the area in the interval under the curve is \(1 - \alpha\), where
+\(\alpha\) is the desired confidence level:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Uninformative prior, observe 10 variables with 2 1s}
+\NormalTok{a =}\StringTok{ }\DecValTok{1}
+\NormalTok{b =}\StringTok{ }\DecValTok{1}
+\NormalTok{n =}\StringTok{ }\DecValTok{10}
+\NormalTok{y =}\StringTok{ }\DecValTok{2}
+
+\NormalTok{quantiles =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{q =} \KeywordTok{qbeta}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.025}\NormalTok{, }\FloatTok{0.975}\NormalTok{), a }\OperatorTok{+}\StringTok{ }\NormalTok{y, b }\OperatorTok{+}\StringTok{ }\NormalTok{n }\OperatorTok{-}\StringTok{ }\NormalTok{y))}
+
+\NormalTok{df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}
+  \DataTypeTok{theta =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.001}\NormalTok{),}
+  \DataTypeTok{p =} \KeywordTok{dbeta}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.001}\NormalTok{), a }\OperatorTok{+}\StringTok{ }\NormalTok{y, b }\OperatorTok{+}\StringTok{ }\NormalTok{n }\OperatorTok{-}\StringTok{ }\NormalTok{y)}
+\NormalTok{)}
+
+\KeywordTok{ggplot}\NormalTok{(df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ theta, }\DataTypeTok{y =}\NormalTok{ p)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ quantiles, }\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ q))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-3-1} \end{center}
+
+However, since some of the values for theta \emph{outside} of the
+interval have higher density than values of theta \emph{inside} the
+interval, another option is to force ``symmetry'' of heights by
+searching for the \textbf{highest posterior density} region, which can
+be intuitively found by drawing a horizontal line down the density until
+the region contained by the line is \(1 - \alpha\)\% of the entire
+curve. It's not entirely clear to me how to calculate these
+analytically; computationally, using a discretized density, you can use
+a ``trial and error'' approach or a neat procedure detailed in Exercise
+4.7 (c).
+
+\hypertarget{the-poisson-model}{%
+\section{The Poisson model}\label{the-poisson-model}}
+
+This is for measurements that have values that are whole numbers, rather
+than just 1 or 0 (example: number of children).
+
+Recall the PDF of a Poisson distribution - if
+\(Y \sim \text{Poisson}(\theta)\) then
+
+\begin{itemize}
+\tightlist
+\item
+  \(p(Y = y \mid \theta) = \theta^y e^{-\theta} / y!\)
+\item
+  \(\mathbb{E}(Y) = \text{Var}(Y) = \theta\)
+\end{itemize}
+
+\hypertarget{posterior-inference}{%
+\subsection{Posterior inference}\label{posterior-inference}}
+
+Just like how \(Y = \sum Y_i\) is a sufficient statistic for \(n\)
+independent Bernoulli trials, there exists a sufficient statistic for a
+sample of \(n\) i.i.d. Poisson variables. Notice
+
+\begin{align}
+P(Y_1 = y_1, \dots, Y_n = y_n \mid \theta) &=
+\prod_i p(y_i \mid \theta) \\
+&= \prod_i \frac{\theta^{y_i} e^{-\theta}}{y_i !} \\
+&= \theta^{\sum_i y_i} e^{-n \theta} \prod_i \frac{1}{y_i !} & \\
+\end{align}
+
+When we compare two values of \(\theta\),
+
+\begin{align}
+\frac{p(\theta_a \mid y_1, \dots, y_n)}{p(\theta_b \mid y_1, \dots, y_n)} &= \dots
+\end{align}
+
+notice that the \(\prod_i 1 / y_i !\) term is the same in that ratio,
+and thus cancels out. Then the \(\theta_{a, b}^{\sum_i y_i}\) terms are
+the only terms remaining in the fraction, and thus \(\sum_i y_i\) is a
+sufficient statistic. This sufficient statistic is a little more
+interesting than the Bernoulli case - consider that it doesn't matter
+what the individual values of \(y_i\) are (if one is very large, one is
+very small, or they all look the same) - inference on \(\theta\) is
+possible with just the aggregate sum.
+
+\hypertarget{conjugate-prior}{%
+\subsubsection{Conjugate prior}\label{conjugate-prior}}
+
+Using Bayes' rule and the sampling model above, we have
+
+\begin{align}
+p(\theta \mid y) &= \frac{p(\theta)p(y \mid \theta)}{p(y)} \\
+&\propto p(\theta) p(y \mid \theta) \\
+&\propto p(\theta) \times \theta^{\sum y_i} e^{-n\theta} \\
+\end{align}
+
+We are looking for some distribution of \(p(\theta)\) that makes the
+posterior as calculated using the above the same distribution as
+\(p(\theta)\) itself. That family of distributions is the Gamma family.
+If \(\theta \sim \text{Gamma}(a, b)\), then
+
+\begin{itemize}
+\tightlist
+\item
+  \(p(\theta) = \frac{b^a}{\Gamma(a)}\theta^{a - 1} e^{-b \theta}\)
+\item
+  \(\mathbb{E}(\theta) = a/b\)
+\item
+  \(\text{Var}(\theta) = a/b^2\)
+\end{itemize}
+
+To prove conjugacy, we have
+
+\begin{align}
+p(\theta \mid y) &= \frac{p(\theta) p(y \mid \theta)}{p(y)} \\
+&= \underbrace{\left( \frac{b^a}{\Gamma(a)} \theta^{a - 1} e^{-b \theta}
+\right)}_{p(\theta)} \underbrace{\left( \theta^{\sum y_i} e^{-n \theta} \prod_i
+\frac{1}{y_i !} \right)}_{p(y \mid \theta)} \left( \frac{1}{p(y)} \right) \\
+&= c \times \left( \theta^{a - 1 + \sum y_i} e^{-(b + n) \theta} \right)
+\end{align}
+
+Where \(c = f(y, a, b)\) is throwing all of the stuff that doesn't
+depend on \(\theta\) into some normalizing constant such that
+\(\int p(\theta \mid y) \; d\theta = 1\). Like the Binomial model, we
+recognize from the proportionality to \(\theta^{a - 1} e^{-b \theta}\)
+that the posterior distribution of \(\theta\) is Gamma distributed.
+Specifically
+
+\begin{align}
+\theta \mid y_1, \dots, y_n \sim \text{Gamma}(a + \sum_i y_i, b + n)
+\end{align}
+
+and the expectation is
+
+\begin{align}
+\mathbb{E}(\theta \mid y_1, \dots, y_n) &= \frac{a + \sum y_i}{b + n} \\
+&= \frac{b}{b + n} \frac{a}{b} + \frac{n}{b + n}\frac{\sum y_i}{n} \\
+\end{align}
+
+\hypertarget{posterior-predictive-distribution}{%
+\subsubsection{Posterior predictive
+distribution}\label{posterior-predictive-distribution}}
+
+\begin{align}
+p(\tilde{y} \mid y_1, \dots, y_n) &= \int_0^{\infty} p(\tilde{y} \mid \theta, y_1, \dots, y_n) p(\theta \mid y_1, \dots, y_n) \; d\theta & \text{Marginalization} \\
+&= \int_0^{\infty} p(\tilde{y} \mid \theta) p(\theta \mid y_1, \dots, y_n) \; d\theta & \text{Since $\tilde{y}$ and $y_i$s c.i. given $\theta$} \\
+&= \int_0^{\infty} \left[ \frac{\theta^{\tilde{y}} e^{-\theta}}{\tilde{y}!} \right] \times \left[ \frac{(b + n)^{a + \sum y_i}}{\Gamma(a + \sum y_i)} \theta^{a + \sum y_i - 1} e^{-(b + n)\theta} \right] \; d\theta \\
+&= \int_0^{\infty} \left[ \frac{\theta^{\tilde{y} + a + \sum y_i - 1} e^{-(b + n + 1)\theta}}{\tilde{y}!} \right] \times \left[ \frac{(b + n)^{a + \sum y_i}}{\Gamma(a + \sum y_i)} \right] \; d\theta & \text{Combine $\theta$s, $e$s} \\
+&= \frac{(b + n)^{a + \sum y_i}}{\Gamma(\tilde{y} + 1) \Gamma(a + \sum y_i)} \int_0^{\infty} \theta^{\tilde{y} + a + \sum y_i - 1} e^{-(b + n + 1)\theta} \; d\theta \\
+\end{align}
+
+Notice that the integrand is proportional to a Gamma density:
+
+\begin{align}
+& \int_0^{\infty} \frac{b^a}{\Gamma(a)} \theta^{a - 1} e^{-b \theta} \; d\theta = 1\\
+\implies& \int_0^{\infty} \theta^{a - 1} e^{-b\theta} \; d\theta = \frac{\Gamma(a)}{b^a} \\
+\end{align}
+
+So
+
+\begin{align}
+p(\tilde{y} \mid y_1, \dots, y_n) &= \dots \\
+&= \left( \frac{(b + n)^{a + \sum y_i}}{\Gamma(\tilde{y} + 1) \Gamma(a + \sum y_i)} \right) \left( \frac{\Gamma(\tilde{y} + a + \sum y_i)}{(b + n + 1)^{\tilde{y} + a + \sum y_i}} \right) \\
+&= \left( \frac{\Gamma(\tilde{y} + a + \sum y_i)}{\Gamma(\tilde{y} + 1) \Gamma(a + \sum y_i)} \right) \left( \frac{(b + n)^{a + \sum y_i}}{(b + n + 1)^{\tilde{y} + a + \sum y_i}} \right) & \text{Swapping numerators} \\
+&= \left( \frac{\Gamma(\tilde{y} + a + \sum y_i)}{\Gamma(\tilde{y} + 1) \Gamma(a + \sum y_i)} \right) \left( \frac{b + n}{b + n + 1} \right)^{a + \sum y_i} \left( \frac{1}{b + n + 1} \right)^{\tilde{y}} \\
+&= \text{dnbinom}(\tilde{y}, a + \sum y_i, b + n) \\
+\end{align}
+
+The negative binomial distribution here, whose parameters look just like
+the Gamma posterior on theta, can be thought of as a predictive Poisson
+distribution with increased variance owing to the increased uncertainty
+on the value of \(\theta\). Notice
+
+\begin{align}
+\mathbb{E}(\tilde{Y} \mid y_1, \dots, y_n) &= \frac{a + \sum y_i}{b + n} = \mathbb{E}(\theta \mid y_1, \dots, y_n) \\
+\text{Var}(\tilde{Y} \mid y_1, \dots, y_n) &= \frac{a + \sum y_i}{b + n} \frac{b
++ n + 1}{b + n} = \mathbb{E}(\theta \mid y_1, \dots, y_n) \times \frac{b + n + 1}{b + n}
+\\
+\end{align}
+
+So as \(n\) grows large, the variance on \(\tilde{Y}\) approaches the
+variance of its expectation \(\mathbb{E}(\tilde{Y})\).
+
+\hypertarget{example-birth-rates}{%
+\subsection{Example: Birth Rates}\label{example-birth-rates}}
+
+In the 1990s, did women with college degrees have different numbers of
+children than women without college degrees? We sample \(n_1\) women
+without college degrees, denoted \(Y_{1,1}, \dots, Y_{n_1, 1}\), and
+\(n_2\) women with college degrees, \(Y_{1, 2}, \dots, Y_{n_2, 2}\). For
+some parameter \(\theta\) we can model the number of children for each
+woman as being i.i.d \(\text{Poisson}(\theta_1)\) and
+\(\text{Poisson}(\theta_2)\), respectively. We may be interested in
+conducting hypothesis tests to see whether or not these \(\theta\) are
+different.
+
+Recall that, in this two samples, the \emph{sufficient} statistic is
+simply the sum of all of the \(Y_i\). Say we observe
+
+\begin{itemize}
+\tightlist
+\item
+  No college: \(n_1 = 111\), \(\sum Y_i = 217\),
+  \(\sum Y_i / n_1 = 1.95\) (this is just useful for intuition)
+\item
+  College: \(n_2 = 44\), \(\sum Y_i = 66\), \(\sum Y_i / n_2 = 1.50\)
+\end{itemize}
+
+Say our prior on both \(\theta\) is \(\text{Gamma(a = 2, 1)}\), which is
+lightly centered on \textasciitilde{}1. You can toy around with choices
+of different priors by changing \texttt{a} and \texttt{b} below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{a =}\StringTok{ }\DecValTok{2}
+\NormalTok{b =}\StringTok{ }\DecValTok{1}
+\NormalTok{n1 =}\StringTok{ }\DecValTok{111}
+\NormalTok{sy1 =}\StringTok{ }\DecValTok{217}
+\NormalTok{n2 =}\StringTok{ }\DecValTok{44}
+\NormalTok{sy2 =}\StringTok{ }\DecValTok{66}
+\NormalTok{df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}
+  \DataTypeTok{theta =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.01}\NormalTok{),}
+  \DataTypeTok{prior =} \KeywordTok{dgamma}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.01}\NormalTok{), a, b),}
+  \DataTypeTok{pos.theta1 =} \KeywordTok{dgamma}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.01}\NormalTok{), a }\OperatorTok{+}\StringTok{ }\NormalTok{sy1, b }\OperatorTok{+}\StringTok{ }\NormalTok{n1),}
+  \DataTypeTok{pos.theta2 =} \KeywordTok{dgamma}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.01}\NormalTok{), a }\OperatorTok{+}\StringTok{ }\NormalTok{sy2, b }\OperatorTok{+}\StringTok{ }\NormalTok{n2)}
+\NormalTok{)}
+\NormalTok{df.long =}\StringTok{ }\KeywordTok{melt}\NormalTok{(df, }\DataTypeTok{id.vars =} \StringTok{'theta'}\NormalTok{, }\DataTypeTok{variable_name =} \StringTok{'dist'}\NormalTok{)}
+\KeywordTok{ggplot}\NormalTok{(df.long, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ theta, }\DataTypeTok{y =}\NormalTok{ value, }\DataTypeTok{group =}\NormalTok{ dist, }\DataTypeTok{color =}\NormalTok{ dist)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{'probability'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-4-1} \end{center}
+
+Notice that we can calculate the probability that
+\(\theta_1 > \theta_2\) by integrating over the joint density
+\(p(\theta_1, \theta_2)\) over the region where \(\theta_1 > \theta_2\).
+This is calculated at the beginning of Chapter 4, and it is about 0.97.
+
+\hypertarget{exponential-families-and-conjugate-priors}{%
+\section{Exponential families and conjugate
+priors}\label{exponential-families-and-conjugate-priors}}
+
+Binomial and Poisson models are \emph{exponential family models}.
+
+\begin{quote}
+\textbf{Exponential family model}: a model whose densities can be
+expressed as \[p(y \mid \phi) = h(y)c(\phi)e^{\phi t(y)}\] where
+\(\phi\) is the unknown parameter and \(t(y)\) is the sufficient
+statistic.
+\end{quote}
+
+Diaconis and Ylvisaker (1979) showed that the above class of models has
+conjugate prior densities
+
+\[p(\phi \mid n_0, t_0) = \kappa (n_0, t_0) c(\phi)^{n_0} e^{n_0 t_0 \phi}\]
+
+Where the posterior density is therefore
+
+For this class of priors, we can interpret \(n_0\) as a ``prior sample
+size'' and \(t_0\) is the prior expectation of the sufficient statistic
+\(t(Y)\).
+
+\hypertarget{example-binomial-model}{%
+\subsection{Example: Binomial model}\label{example-binomial-model}}
+
+\hypertarget{parameterization}{%
+\subsubsection{Parameterization}\label{parameterization}}
+
+We can obtain the representation from a single binary random variable
+(why?)
+
+\[p(y \mid \theta) = \theta^{y} (1 - \theta)^{1 - y}\]
+
+We can express this as an exponential family model by reparameterizing
+by the log odds \(\phi = \log \frac{\theta}{1 - \theta}\), so that
+\(\theta = \frac{e^\phi}{e^\phi + 1}\):
+
+\begin{align}
+p(y \mid \phi) &= \left( \frac{e^\phi}{e^\phi + 1} \right)^y \left(\frac{1}{e^\phi + 1} \right)^{1 - y} \\
+&= \frac{e^{\phi y}}{(e^\phi + 1)^y} \frac{1}{e^\phi + 1} \left( e^\phi + 1\right)^y \\
+&= e^{\phi y} (1 + e^\phi)^{-1} \\
+\end{align}
+
+Here,
+
+\begin{itemize}
+\tightlist
+\item
+  \(h(y) = 1\)
+\item
+  \(c(\phi) = (1 + e^\phi)^{-1}\)
+\item
+  \(t(y) = y\)
+\end{itemize}
+
+(It's intuitive that the sufficient statistic is \(y\))
+
+\hypertarget{prior}{%
+\subsubsection{Prior}\label{prior}}
+
+The conjugate prior on \(\phi\) (discarding the constant \(\kappa\)) is
+
+\begin{align}
+p(\phi \mid n_0, t_0) &\propto (1 + e^{\phi})^{-n_0} e^{n_0 t_0 \phi}
+\end{align}
+
+To return to a density on \(\theta\), let
+\(\theta = g(\phi) = \frac{e^\phi}{e^\phi + 1}\) and
+\(\phi = h(\theta) = \log \frac{\theta}{1 - \theta}\). Then, using the
+change of variables formula (Exercise 3.10),
+
+\begin{align}
+p_{\theta}(\theta \mid n_0, t_0) &= p_{\phi}(h(\theta) \mid n_0, t_0) \times \left| \frac{dh}{d\theta} \right| \\
+&\propto \left(1 + \text{exp}\left(\log \left(\frac{\theta}{1 - \theta}\right)\right)\right)^{-n_0} \text{exp}\left(n_0 t_0 \log \left(\frac{\theta}{1 - \theta}\right) \right) \times \frac{1}{\theta - \theta^2} \\
+&\propto \left(1 + \frac{\theta}{1 - \theta} \right)^{-n_0} \left(\frac{\theta}{1 - \theta}\right)^{n_0 t_0} \times \frac{1}{\theta - \theta^2} \\
+&\propto \left(\frac{1}{1 - \theta} \right)^{-n_0} \left(\frac{\theta}{1 - \theta}\right)^{n_0 t_0} \times \frac{1}{\theta (1 - \theta)} \\
+&\propto (1 - \theta)^{n_0} \theta^{n_0 t_0} (1 - \theta)^{-n_0 t_0} \theta^{-1} (1 - \theta)^{-1} \\
+&\propto \theta^{n_0 t_0 - 1} (1 - \theta)^{n_0 - n_0t_0 - 1} \\
+&\propto \theta^{n_0 t_0 - 1} (1 - \theta)^{n_0 (1 - t_0) - 1} \\
+&= \text{dbeta}(\theta, n_0 t_0, n_0 (1 - t_0))
+\end{align}
+
+So the posterior is
+
+\begin{align}
+p(\theta \mid y_1, \dots, y_n) &= \text{dbeta}\left(\theta,\; (n_0 + n)\left(n_0 t_0 + \sum t(y_i) \right),\; (n_0 + n) \left(1 - n_0 t_0 - \sum t(y_i) \right) \right)
+\end{align}
+
+\hypertarget{example-poisson-model}{%
+\subsection{Example: Poisson model}\label{example-poisson-model}}
+
+\hypertarget{parameterization-1}{%
+\subsubsection{Parameterization}\label{parameterization-1}}
+
+\begin{align}
+p(y \mid \theta) &= \frac{1}{y!} \theta^{y} e^{-\theta} \\
+&= \frac{1}{y!} e^{y \log \theta} \text{exp}(-e^{\log \theta}) \\
+&= h(y) c(\phi) e^{\phi t(y)} \\
+\end{align}
+
+where
+
+\begin{itemize}
+\tightlist
+\item
+  \(\phi = \log \theta\)
+\item
+  \(h(y) = \frac{1}{y!}\)
+\item
+  \(t(y) = y\)
+\item
+  \(c(\phi) = \text{exp}(-e^\phi)\) (The book has a typo here).
+\end{itemize}
+
+\hypertarget{prior-1}{%
+\subsubsection{Prior}\label{prior-1}}
+
+Then the prior is
+\(p(\phi \mid n_0, t_0) = \text{exp}(n_0 e^{-\phi}) e^{n_0 t_0 \phi}\).
+For time, I will do change of variables to show how this induces a
+\(\text{Gamma}(n_0 t_0, n_0)\) density on \(\theta\).
+
+\hypertarget{exercises}{%
+\section{Exercises}\label{exercises}}
+
+\hypertarget{section}{%
+\subsection{3.1}\label{section}}
+
+\hypertarget{a}{%
+\subsubsection{a}\label{a}}
+
+\begin{align}
+P(Y_1 = y_1, \dots, Y_{100} &= y_100 \mid \theta) &= \theta^{\sum y_i} (1 - \theta)^{100 - \sum y_i} \\
+P(\sum Y_i = y \mid \theta) &= {100 \choose y} \theta^{y}(1 - \theta)^{100 - y}
+\end{align}
+
+\hypertarget{b}{%
+\subsubsection{b}\label{b}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Hand-implementing this, but you can use dbinom easily}
+\NormalTok{my_dbinom =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(y, n, theta) }\KeywordTok{choose}\NormalTok{(n, y) }\OperatorTok{*}\StringTok{ }\NormalTok{theta}\OperatorTok{^}\NormalTok{y }\OperatorTok{*}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{theta)}\OperatorTok{^}\NormalTok{(n }\OperatorTok{-}\StringTok{ }\NormalTok{y)}
+\NormalTok{theta.discrete =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.1}\NormalTok{)}
+
+\NormalTok{Y =}\StringTok{ }\DecValTok{57}
+\NormalTok{N =}\StringTok{ }\DecValTok{100}
+
+\NormalTok{ps =}\StringTok{ }\KeywordTok{sapply}\NormalTok{(theta.discrete, }\ControlFlowTok{function}\NormalTok{(theta) }\KeywordTok{my_dbinom}\NormalTok{(Y, N, theta))}
+
+\NormalTok{df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{theta =}\NormalTok{ theta.discrete, }\DataTypeTok{p =}\NormalTok{ ps)}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{round}\NormalTok{(df, }\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    theta     p
+## 1    0.0 0.000
+## 2    0.1 0.000
+## 3    0.2 0.000
+## 4    0.3 0.000
+## 5    0.4 0.000
+## 6    0.5 0.030
+## 7    0.6 0.067
+## 8    0.7 0.002
+## 9    0.8 0.000
+## 10   0.9 0.000
+## 11   1.0 0.000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ theta, }\DataTypeTok{y =}\NormalTok{ p)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{breaks =}\NormalTok{ theta.discrete)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-5-1} \end{center}
+
+\hypertarget{c}{%
+\subsubsection{c}\label{c}}
+
+If we have a uniform prior on beliefs of
+\(\theta \in \{0, 0.1, \dots, 1.0\}\), then
+\(P(\theta = 0.0) = P(\theta = 0.1) = \dots = 1/11\).
+
+\begin{align}
+p(\theta \mid \sum Y_i = 57) &= \frac{p(\sum Y_i = 57 \mid \theta)p(\theta)}{p(\sum Y_i = 57)} \\
+&= \frac{p(\sum Y_i = 57 \mid \theta)p(\theta)}{\sum_{\theta'} p(\sum Y_i = 57 \mid \theta') p(\theta')} 
+\end{align}
+
+Notice that \(p(\theta)\) is constant for all \(\theta\), so it can be
+pulled out of the sum at the bottom and cancelled with the numerator:
+
+\begin{align}
+p(\theta \mid \sum Y_i = 57)
+&= \frac{p(\sum Y_i = 57 \mid \theta)}{\sum_{\theta'} p(\sum Y_i = 57 \mid \theta')} \\
+&\propto p(\sum Y_i = 57 \mid \theta)
+\end{align}
+
+since the denominator is the constant
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{denom =}\StringTok{ }\KeywordTok{sum}\NormalTok{(ps)}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{round}\NormalTok{(denom, }\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.099
+\end{verbatim}
+
+So the posterior distribution has the same shape, but different scale.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{posteriors =}\StringTok{ }\KeywordTok{sapply}\NormalTok{(theta.discrete, }\ControlFlowTok{function}\NormalTok{(theta) }\KeywordTok{my_dbinom}\NormalTok{(Y, N, theta) }\OperatorTok{/}\StringTok{ }\NormalTok{denom)}
+
+\NormalTok{df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{theta =}\NormalTok{ theta.discrete, }\DataTypeTok{p =}\NormalTok{ posteriors)}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{round}\NormalTok{(df, }\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    theta     p
+## 1    0.0 0.000
+## 2    0.1 0.000
+## 3    0.2 0.000
+## 4    0.3 0.000
+## 5    0.4 0.002
+## 6    0.5 0.304
+## 7    0.6 0.675
+## 8    0.7 0.019
+## 9    0.8 0.000
+## 10   0.9 0.000
+## 11   1.0 0.000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ theta, }\DataTypeTok{y =}\NormalTok{ p)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{breaks =}\NormalTok{ theta.discrete)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-7-1} \end{center}
+
+Notice the denominator calculation could have been ignored - we could
+simply normalize the proportional prior densities
+\(p(\sum Y_i = 57 \mid \theta)\) to 1.
+
+\hypertarget{d}{%
+\subsubsection{d}\label{d}}
+
+Since \(p(\theta) = 1\), the density
+\(p(\theta) \times P(\sum Y_i = 57 \mid \theta) = P(\sum Y_i = 57 \mid \theta)\).
+From (a),
+
+\[
+P(\sum Y_i = 57 \mid \theta) = {100 \choose 57} \theta^{57} (1 - \theta)^{43}
+\]
+
+which is implemented in the \texttt{my\_dbinom} function. So
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{theta.continuous =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.001}\NormalTok{)}
+\KeywordTok{qplot}\NormalTok{(theta.continuous, }\KeywordTok{sapply}\NormalTok{(theta.continuous, }\ControlFlowTok{function}\NormalTok{(theta) }\KeywordTok{my_dbinom}\NormalTok{(Y, N, theta)),}
+      \DataTypeTok{geom =} \StringTok{'line'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-8-1} \end{center}
+
+\hypertarget{e}{%
+\subsubsection{e}\label{e}}
+
+Treat the uniform prior as a \(\text{Beta}(1, 1)\) distribution. Then
+\(\left( \theta \mid \sum Y_i = y \right) \sim \text{Beta}(58, 44)\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qplot}\NormalTok{(theta.continuous, }\KeywordTok{dbeta}\NormalTok{(theta.continuous, }\DecValTok{58}\NormalTok{, }\DecValTok{44}\NormalTok{), }\DataTypeTok{geom =} \StringTok{'line'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-9-1} \end{center}
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  is the posterior density before normalization by the constant
+  \(p(\sum Y_i = 57) = 0.099\). (e) is the posterior density fully,
+  after normalization. Notice that (d) and (e) have the same shape, due
+  to the lack of influence of \(p(\theta)\) on posterior calculation.
+\end{enumerate}
+
+\hypertarget{section-1}{%
+\subsection{3.2}\label{section-1}}
+
+For consistency, I will rewrite these as done in Chapter 1, where
+\(\theta_0 = a / (a + b)\) is the initial guess of \(\theta\) and
+\(w = a + b\) is the strength of that guess. Then,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# What is the expected value of theta after observing result y, given a Beta}
+\CommentTok{# prior parameterized by theta0 and w?}
+\NormalTok{N =}\StringTok{ }\DecValTok{100}
+\NormalTok{exp.posterior =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(w, theta0, y) \{}
+\NormalTok{  (N }\OperatorTok{/}\StringTok{ }\NormalTok{(w }\OperatorTok{+}\StringTok{ }\NormalTok{N)) }\OperatorTok{*}\StringTok{ }\NormalTok{(y }\OperatorTok{/}\StringTok{ }\NormalTok{N) }\OperatorTok{+}\StringTok{ }\NormalTok{(w }\OperatorTok{/}\StringTok{ }\NormalTok{(w }\OperatorTok{+}\StringTok{ }\NormalTok{N)) }\OperatorTok{*}\StringTok{ }\NormalTok{theta0}
+\NormalTok{\}}
+\NormalTok{Theta0 =}\StringTok{ }\KeywordTok{rev}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\FloatTok{0.0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.1}\NormalTok{))}
+\NormalTok{W =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{32}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.5}\NormalTok{)}
+
+\NormalTok{y =}\StringTok{ }\DecValTok{57}
+\NormalTok{d =}\StringTok{ }\KeywordTok{outer}\NormalTok{(Theta0, W, }\DataTypeTok{FUN =} \ControlFlowTok{function}\NormalTok{(theta0, w) }\KeywordTok{exp.posterior}\NormalTok{(w, theta0, }\DecValTok{57}\NormalTok{))}
+\KeywordTok{rownames}\NormalTok{(d) =}\StringTok{ }\NormalTok{Theta0}
+\KeywordTok{colnames}\NormalTok{(d) =}\StringTok{ }\NormalTok{W}
+
+\NormalTok{df =}\StringTok{ }\KeywordTok{melt}\NormalTok{(d)}
+\KeywordTok{colnames}\NormalTok{(df) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'theta0'}\NormalTok{, }\StringTok{'w'}\NormalTok{, }\StringTok{'theta'}\NormalTok{)}
+
+\NormalTok{p =}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ w, }\DataTypeTok{y =}\NormalTok{ theta0, }\DataTypeTok{z =}\NormalTok{ theta)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_contour}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{colour =}\NormalTok{ ..level..)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{32}\NormalTok{), }\DataTypeTok{labels =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{32}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{breaks =}\NormalTok{ Theta0)}
+\KeywordTok{library}\NormalTok{(directlabels)}
+\KeywordTok{direct.label}\NormalTok{(p, }\DataTypeTok{method =} \StringTok{'bottom.pieces'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-10-1} \end{center}
+
+One can use this plot to determine whether or not they should believe
+that \(\theta > 0.5\) by quantifying their prior beliefs about the
+proportion with two factors: \(\theta_0\), an initial estimate of the
+true proportion, and \(w\), the ``sample size'' of observed individuals
+that contributed to the initial estimate. Then, viewing the
+corresponding contour on this plot would give an estimate of the
+posterior proportion given these two variables. It is shown here that
+\(\theta > 0.5\) for most prior beliefs except for those with relatively
+low and very strong estimates about \(\theta_0\).
+
+\hypertarget{section-2}{%
+\subsection{3.3}\label{section-2}}
+
+\hypertarget{a-1}{%
+\subsubsection{a}\label{a-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ya =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{6}\NormalTok{)}
+\NormalTok{yb =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{11}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Notice that \(\sum y_a = 117, n_a = 10, \sum y_b = 113, n_b = 13\).
+
+If
+
+\begin{align}
+\theta_A &\sim \text{Gamma}(120, 10) \\
+\theta_B &\sim \text{Gamma}(12, 1)
+\end{align}
+
+then
+
+\begin{align}
+\theta_A \mid \mathbf{y}_a &\sim \text{Gamma}(120 + 117, 10 + 10) = \text{Gamma}(237, 20) \\
+\theta_B \mid \mathbf{y}_b &\sim \text{Gamma}(12 + 113, 1 + 13) = \text{Gamma}(125, 14) \\
+\end{align}
+
+So
+
+\begin{align}
+\mathbb{E}(\theta_A) &=  237/20 = 11.85\\
+\mathbb{E}(\theta_A) &= 125/14 = 8.92\\
+\text{Var}(\theta_A) &= 237/400 = 0.593\\
+\text{Var}(\theta_B) &= 125/196 = 0.638\\
+\end{align}
+
+95\% quantile-based confidence intervals can be solved by setting the
+CDF of the Gammas to \(p\), and solving for \(\theta\). Alternatively,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qgamma}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.025}\NormalTok{, }\FloatTok{0.975}\NormalTok{), }\DecValTok{237}\NormalTok{, }\DecValTok{20}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10.38924 13.40545
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qgamma}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.025}\NormalTok{, }\FloatTok{0.975}\NormalTok{), }\DecValTok{125}\NormalTok{, }\DecValTok{14}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  7.432064 10.560308
+\end{verbatim}
+
+\hypertarget{b-1}{%
+\subsubsection{b}\label{b-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ya =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{6}\NormalTok{)}
+\NormalTok{yb =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{11}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{7}\NormalTok{)}
+
+\NormalTok{n0 =}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{50}
+\NormalTok{exps =}\StringTok{ }\NormalTok{(}\DecValTok{12} \OperatorTok{*}\StringTok{ }\NormalTok{n0 }\OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(yb)) }\OperatorTok{/}\StringTok{ }\NormalTok{(n0 }\OperatorTok{+}\StringTok{ }\KeywordTok{length}\NormalTok{(yb))}
+\KeywordTok{qplot}\NormalTok{(n0, exps, }\DataTypeTok{geom =} \KeywordTok{c}\NormalTok{(}\StringTok{'point'}\NormalTok{, }\StringTok{'smooth'}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-13-1} \end{center}
+
+Very strong prior beliefs that the expected value of
+\(\theta \approx 12\) would be necessary, because \(\theta_{ML} = 8.69\)
+which is quite low. According to the graph \(n_0\) values of close to 50
+are required.
+
+\hypertarget{c-1}{%
+\subsubsection{c}\label{c-1}}
+
+We have existing knowledge about population A. Knowing that B is
+related, we have incorporated these beliefs into our prior on population
+B. However, nothing more than a weak prior expectation of B to be
+similar to A should be encoded in our analysis, since it is entirely
+possible that the parameter of B is quite different from A. So we should
+view the populations as independent.
+
+\hypertarget{section-3}{%
+\subsection{3.4}\label{section-3}}
+
+\hypertarget{a-2}{%
+\subsubsection{a}\label{a-2}}
+
+This is fairly straightforward like 3.1, skipping
+
+\hypertarget{b-2}{%
+\subsubsection{b}\label{b-2}}
+
+This is fairly straightforward like 3.1, skipping
+
+\hypertarget{c-2}{%
+\subsubsection{c}\label{c-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prior =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(theta) \{}
+\NormalTok{  (}\DecValTok{1}\OperatorTok{/}\DecValTok{4}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{gamma}\NormalTok{(}\DecValTok{10}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{gamma}\NormalTok{(}\DecValTok{2}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{gamma}\NormalTok{(}\DecValTok{8}\NormalTok{))) }\OperatorTok{*}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{3} \OperatorTok{*}\StringTok{ }\NormalTok{theta }\OperatorTok{*}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{theta)}\OperatorTok{^}\DecValTok{7} \OperatorTok{+}\StringTok{ }\NormalTok{theta}\OperatorTok{^}\DecValTok{7} \OperatorTok{*}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{theta))}
+\NormalTok{\}}
+\NormalTok{thetas =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.005}\NormalTok{)}
+\KeywordTok{qplot}\NormalTok{(thetas, }\KeywordTok{prior}\NormalTok{(thetas), }\DataTypeTok{geom =} \StringTok{'line'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-14-1} \end{center}
+
+Some kind of bimodal prior on rates of teen recidivism - for example,
+you believe that in some regions, teen recidivism is rather low, but
+there are some regions where teen recidivism is high.
+
+\hypertarget{d-1}{%
+\subsubsection{d}\label{d-1}}
+
+\hypertarget{i}{%
+\paragraph{i}\label{i}}
+
+\begin{align}
+p(\theta) \times p(y \mid \theta) &= \frac{1}{4}\frac{\Gamma(10)}{\Gamma(2) \Gamma(8)} \left[ 3\theta (1 - \theta)^7 + \theta^7 (1 - \theta) \right] \times \left[ {43 \choose 15} \theta^{15} (1 - \theta)^{28} \right] \\
+&= \frac{1}{4} \frac{\Gamma(44)}{\Gamma(16) \Gamma(29)} \frac{\Gamma(10)}{\Gamma(2) \Gamma(8)} \left[3\theta^{16} (1 - \theta)^{35} + \theta^{22} (1 - \theta)^{29} \right] \\
+\end{align}
+
+\hypertarget{ii}{%
+\paragraph{ii}\label{ii}}
+
+This is proportional to some mixture with unknown weights of a
+\(\text{Beta}(17, 36)\) and a \(\text{Beta}(23, 30)\) which intuitively
+are the posterior densities in parts a and b.
+
+\hypertarget{iii}{%
+\paragraph{iii}\label{iii}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{posterior =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(theta) \{}
+  \KeywordTok{prior}\NormalTok{(theta) }\OperatorTok{*}\StringTok{ }\KeywordTok{choose}\NormalTok{(}\DecValTok{43}\NormalTok{, }\DecValTok{15}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{theta}\OperatorTok{^}\DecValTok{15} \OperatorTok{*}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{theta)}\OperatorTok{^}\DecValTok{28}
+\NormalTok{\}}
+\KeywordTok{qplot}\NormalTok{(thetas, }\KeywordTok{posterior}\NormalTok{(thetas), }\DataTypeTok{geom =} \StringTok{'line'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-15-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{cat}\NormalTok{(}\StringTok{"Mode:"}\NormalTok{, thetas[}\KeywordTok{which.max}\NormalTok{(}\KeywordTok{posterior}\NormalTok{(thetas))], }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Mode: 0.315
+\end{verbatim}
+
+Notice that
+
+\begin{align}
+\text{mode}(\text{Beta}(17, 36)) &= (17 - 1) / (17 + 36 - 2) = 0.313 \\
+\text{mode}(\text{Beta}(23, 30)) &= (23 - 1) / (23 + 30 - 2) = 0.431
+\end{align}
+
+So the mode is between these two modes, although closer to that of the
+\(\text{Beta}(17, 36)\).
+
+\hypertarget{e-1}{%
+\subsubsection{e}\label{e-1}}
+
+Unclear: general formula for any beta mixture with any weights and
+parameters? Or general formula for any observed result for this model,
+given then prior in c)?
+
+\hypertarget{section-4}{%
+\subsection{3.5}\label{section-4}}
+
+\hypertarget{a-3}{%
+\subsubsection{a}\label{a-3}}
+
+First,
+
+\begin{align}
+\tilde{p} &= \sum_{k = 1}^K w_k p_k (\theta \mid n_{0, k}, t_{0, k}) \\
+&= \sum_{k = 1}^K \left( w_k \kappa (n_{0, k}, t_{0, k}) c(\phi)^{n_{0, k}} \text{exp}(n_{0, k} t_{0, k} \phi) \right) \\
+\end{align}
+
+Now
+
+\begin{align}
+p(\phi \mid y_1, \dots, y_n) &\propto p(\phi) p(y_1, \dots, y_n \mid \phi) \\
+
+&\propto \left[ \sum_{k = 1}^K \left( w_k \kappa (n_{0, k}, t_{0, k}) c(\phi)^{n_{0, k}} \text{exp}(n_{0, k} t_{0, k} \phi) \right)  \right] \times \left[ \prod_{i = 1}^n h(y_i) c(\phi) \text{exp}(\phi t(y_i)) \right] \\
+&\propto \left[ \sum_{k = 1}^K \left( w_k \kappa (n_{0, k}, t_{0, k}) c(\phi)^{n_{0, k}} \text{exp}(n_{0, k} t_{0, k} \phi) \right)  \right] \times \left[ \text{exp}\left(\phi \sum_{i = 1}^n t(y_i)\right) c(\phi)^n \prod_{i = 1}^n h(y_i) \right] \\
+&\propto \left[ \sum_{k = 1}^K \left( w_k \kappa (n_{0, k}, t_{0, k}) c(\phi)^{n_{0, k}} \text{exp}(n_{0, k} t_{0, k} \phi) \right)  \right] \times \left[ \text{exp}\left(\phi \sum_{i = 1}^n t(y_i)\right) c(\phi)^n \right] \\
+&\propto \sum_{k = 1}^K \left( w_k \kappa (n_{0, k}, t_{0, k}) c(\phi)^{n_{0, k} + n} \text{exp}\left(\phi \times \left[ n_{0, k} t_{0, k}+ \sum_{i = 1}^n t(y_i) \right] \right) \right) \\
+&\propto \sum_{k = 1}^K w_k p\left(\theta \; \middle| \; n_0 + n, \; n_0 t_0 + \sum_{i = 1}^{n} t(y_i)\right)
+\end{align}
+
+So the posterior is another weighted mixture. However I don't believe
+the weights of the relative components are preserved (neither are they
+in the Beta mixtures above).
+
+\hypertarget{b-3}{%
+\subsubsection{b}\label{b-3}}
+
+Not specified whether we need to use the exponential family
+parameterization or the standard parameterization. I will use the
+standard parameterization.
+
+Let \begin{align}
+\tilde{p} &= \sum_{k = 1}^K w_k p_k (\theta \mid a_k, b_k) \\
+&= \sum_{k = 1}^K \left( w_k \frac{b_k^{a_k}}{\Gamma(a_k)} x^{a_k - 1} e^{-b_k x} \right) \\
+\end{align}
+
+Then \begin{align}
+p(\theta \mid y_1, \dots, y_n) &\propto p(\theta) p(y_1, \dots, y_n \mid \theta) \\
+&\propto \left[ \sum_{k = 1}^K \left( w_k \frac{b_k^{a_k}}{\Gamma(a_k)} \theta^{a_k - 1} e^{-b_k \theta} \right) \right] \times \left[ \prod_{i = 1}^n \frac{1}{y_i !} \theta^{y_i} e^{-\theta} \right] \\
+&\propto \left[ \sum_{k = 1}^K \left( w_k \frac{b_k^{a_k}}{\Gamma(a_k)} \theta^{a_k - 1} e^{-b_k \theta} \right) \right] \times \left[ \theta^{\sum y_i} e^{-n\theta} \right] \\
+&\propto \sum_{k = 1}^K \left( w_k \frac{b_k^{a_k}}{\Gamma(a_k)} \theta^{a_k + \sum y_i - 1} e^{-(b_k + n)\theta} \right) \\
+&\propto \sum_{k = 1}^K w_k p\left(\theta \; \middle| \; a_k + \sum y_i, \; b_k + n \right) \\
+\end{align}
+
+\hypertarget{section-5}{%
+\subsection{3.9}\label{section-5}}
+
+\hypertarget{a-4}{%
+\subsubsection{a}\label{a-4}}
+
+We take advantage of the fact that the Galenshore distribution can be
+viewed as an exponential model
+
+\begin{align}
+p(y \mid \theta) &= \frac{2}{\Gamma(a)} \theta^{2a} y^{2a - 1} e^{-\theta^2 y^2} \\
+&= \left( \frac{2}{\Gamma(a)} y^{2a - 1} \right) \times \left(\theta^{2a} \right) \times \left( e^{-\theta^2 y^2} \right) \\
+&= \left( \frac{2}{\Gamma(a)} y^{2a - 1} \right) \times \left(\theta^2 \right)^a \times \left( e^{\left(\theta^2\right) -y^2} \right) \\
+&= h(y) c(\phi) e^{\phi t(y)}
+\end{align}
+
+Where
+
+\begin{itemize}
+\tightlist
+\item
+  \(h(y) = \frac{2}{\Gamma(a)} y^{2a - 1}\)
+\item
+  \(c(\phi) = \phi^a\)
+\item
+  \(t(y) = -(y^2)\)
+\item
+  \(\phi = \theta^2\)
+\end{itemize}
+
+Then, the conjugate priors for the \(\phi\) parameterization are given
+by
+
+\begin{align}
+p(\phi \mid n_0, t_0) &= \kappa (n_0, t_0) \phi^{a n_0} \text{exp}(n_0 t_0 \phi) \\
+&\propto \phi^{a n_0} \text{exp}(n_0 t_0 \phi) \\
+\end{align}
+
+To obtain the priors for \(\theta\), let
+\(\theta = g(\phi) = \sqrt{\phi}\) and \(\phi = h(\theta) = \theta^2\).
+Notice \(dh/d\theta = 2\theta\). By the change of variables formula,
+
+\begin{align}
+p(\theta \mid n_0, t_0) &= p(h(\theta) \mid n_0, t_0) \times \left| \frac{dh}{d\theta} \right| \\
+&\propto \kappa(n_0, t_0) \theta^{2a n_0} \text{exp}\left( n_0 t_0 \theta^2 \right) \times 2 \theta \\
+&\propto \theta^{2a n_0 + 1} \text{exp}\left( n_0 t_0 \theta^2 \right) \\
+&\propto \text{dgalenshore}\left(\theta, \underbrace{a n_0 + 1}_{a_{\text{Galenshore}}}, \underbrace{\sqrt{-n_0 t_0}}_{\theta_{\text{Galenshore}}} \right)
+\end{align}
+
+Notice this is true since
+\(\text{dgalenshore}(y, a, \theta) \propto y^{2a - 1} e^{- \theta^2 y^2}\)
+- the rest of the PDF is a constant that doesn't depend on \(y\). Also
+notice that \(\sqrt{-n_0 t_0}\) is defined since \(n_0 > 0\) and \(t_0\)
+is the initial ``guess'' of \(t(y) = - (y^2) < 0\), so \(-n_0 t_0 > 0\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dgalenshore =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(y, a, theta) \{}
+\NormalTok{  (}\DecValTok{2} \OperatorTok{/}\StringTok{ }\KeywordTok{gamma}\NormalTok{(a)) }\OperatorTok{*}\StringTok{ }\NormalTok{theta}\OperatorTok{^}\NormalTok{(}\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{a) }\OperatorTok{*}\StringTok{ }\NormalTok{y}\OperatorTok{^}\NormalTok{(}\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{a }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\DecValTok{1} \OperatorTok{*}\StringTok{ }\NormalTok{(theta}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{y}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{y =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\FloatTok{0.02}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.02}\NormalTok{)}
+\NormalTok{df =}\StringTok{ }\KeywordTok{rbind}\NormalTok{(}
+  \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ y, }\DataTypeTok{density =} \KeywordTok{dgalenshore}\NormalTok{(y, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{), }\DataTypeTok{dist =} \StringTok{'alpha = 1, theta = 1'}\NormalTok{),}
+  \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ y, }\DataTypeTok{density =} \KeywordTok{dgalenshore}\NormalTok{(y, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{), }\DataTypeTok{dist =} \StringTok{'alpha = 1, theta = 3'}\NormalTok{),}
+  \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ y, }\DataTypeTok{density =} \KeywordTok{dgalenshore}\NormalTok{(y, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{), }\DataTypeTok{dist =} \StringTok{'alpha = 3, theta = 1'}\NormalTok{),}
+  \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ y, }\DataTypeTok{density =} \KeywordTok{dgalenshore}\NormalTok{(y, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{), }\DataTypeTok{dist =} \StringTok{'alpha = 4, theta = 2'}\NormalTok{)}
+\NormalTok{)}
+
+\KeywordTok{ggplot}\NormalTok{(df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ y, }\DataTypeTok{y =}\NormalTok{ density, }\DataTypeTok{group =}\NormalTok{ dist, }\DataTypeTok{color =}\NormalTok{ dist)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-16-1} \end{center}
+
+\hypertarget{b-4}{%
+\subsubsection{b}\label{b-4}}
+
+Since this is an exponential family, the posterior of \(\phi\) is given
+by \(p(\phi \mid n_0 + n, n_0 t_0 + n\bar{t}(\mathbf{y}))\). This means
+that
+
+\begin{align}
+\theta \mid y_1, \dots, y_n &\sim \text{Galenshore}\left(a (n_0 + n) + 1, \sqrt{- (n_0 + n) (n_0 t_0 + n \bar{t}(\mathbf{y}))} \right) \\
+\end{align}
+
+\hypertarget{c-3}{%
+\subsubsection{c}\label{c-3}}
+
+By taking advantage of the exponential family we already know
+\(t(y) = -(y^2)\) is our sufficient statistic. Specifically when
+comparing multiple \(Y_1, \dots, Y_n\), we have
+\(\sum_{i = 1}^n - (y^2)\) as our sufficient statistic.
+
+Note it was a technicality that I picked \(t(y) = -(y^2)\). I could have
+parameterized the exponential family such that \(t(y) = y^2\), and the
+negative is distributed in the other functions. Also notice that since
+\(y^2 > 0\), the \(t(y)\)s provide the same information.
+
+\hypertarget{d-2}{%
+\subsubsection{d}\label{d-2}}
+
+From the formula for the expectation of a Galenshore distribution, if we
+have
+\[\theta \mid y_1, \dots, y_n \sim \text{Galenshore}\left(a (n_0 + n) + 1, \sqrt{- (n_0 + n) (n_0 t_0 + n \bar{t}(\mathbf{y}))} \right)\]
+
+then
+
+\begin{align}
+\mathbb{E}(\theta \mid y_1, \dots, y_n) = \frac{\Gamma\left(\frac{1}{2} a(n_0 + n) + 2 \right)}{ \sqrt{- (n_0 + n) (n_0 t_0 + n \bar{t}(\mathbf{y}))} \Gamma\left( a(n_0 + n) + 1 \right)}
+\end{align}
+
+\hypertarget{e-2}{%
+\subsubsection{e}\label{e-2}}
+
+This one looks tedious\ldots{}
+
+\hypertarget{section-6}{%
+\subsection{3.10}\label{section-6}}
+
+Change of variables
+
+\hypertarget{a-5}{%
+\subsubsection{a}\label{a-5}}
+
+If \(\psi = g(\theta) = \log \frac{\theta}{1 - \theta}\), then let
+\(\theta = h(\psi) = \frac{e^\psi}{1 + e^\psi}\). Then, by the change of
+variables formula,
+
+\begin{align}
+p_{\psi}(\psi) &= p_{\theta}(h(\psi)) \times \left| \frac{dh}{d\psi} \right| \\
+&= \left[ \frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \left( \frac{e^\psi}{1 + e^\psi}  \right)^{a - 1} \left( 1 - \frac{e^\psi}{1 + e^\psi} \right)^{b - 1} \right] \times \frac{e^\psi}{(e^\psi + 1)^2} \\
+&= \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \left[ \left( \frac{e^\psi}{1 + e^\psi}  \right)^{a - 1} \left( \frac{1}{1 + e^\psi} \right)^{b - 1} \right] \times \frac{e^\psi}{(e^\psi + 1)^2} \\
+&= \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \left[ \left( \frac{e^\psi}{1 + e^\psi}  \right)^a \left( \frac{1 + e^\psi}{e^\psi} \right) \left( \frac{1}{1 + e^\psi} \right)^b \left(\frac{1 + e^\psi}{1} \right) \right] \times \frac{e^\psi}{(e^\psi + 1)^2} \\
+&= \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \left[ \left( \frac{e^\psi}{1 + e^\psi}  \right)^a \left( \frac{1}{1 + e^\psi} \right)^b \frac{(e^\psi + 1)^2}{e^\psi} \right] \times \frac{e^\psi}{(e^\psi + 1)^2} \\
+&= \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \left( \frac{e^\psi}{1 + e^\psi}  \right)^a \left( \frac{1}{1 + e^\psi} \right)^b
+\end{align}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{h =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(psi) \{}
+  \KeywordTok{exp}\NormalTok{(psi) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{exp}\NormalTok{(psi) }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{dh =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(psi) \{}
+  \KeywordTok{exp}\NormalTok{(psi) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{exp}\NormalTok{(psi) }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)}\OperatorTok{^}\DecValTok{2}
+\NormalTok{\}}
+\NormalTok{dpsi =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(psi, a, b) \{}
+\NormalTok{  (}\KeywordTok{gamma}\NormalTok{(a }\OperatorTok{+}\StringTok{ }\NormalTok{b) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{gamma}\NormalTok{(a) }\OperatorTok{*}\StringTok{ }\KeywordTok{gamma}\NormalTok{(b))) }\OperatorTok{*}\StringTok{ }\KeywordTok{h}\NormalTok{(psi)}\OperatorTok{^}\NormalTok{(a }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\KeywordTok{h}\NormalTok{(psi))}\OperatorTok{^}\NormalTok{(b }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{dh}\NormalTok{(psi)}
+\NormalTok{\}}
+
+\CommentTok{# To verify this is a valid PDF - with various a and b, integral should be approximately 1}
+\KeywordTok{integrate}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(p) }\KeywordTok{dpsi}\NormalTok{(p, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{), }\DecValTok{-100}\NormalTok{, }\DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 1 with absolute error < 9e-07
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{integrate}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(p) }\KeywordTok{dpsi}\NormalTok{(p, }\DecValTok{4}\NormalTok{, }\DecValTok{8}\NormalTok{), }\DecValTok{-100}\NormalTok{, }\DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 1 with absolute error < 1.2e-08
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{integrate}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(p) }\KeywordTok{dpsi}\NormalTok{(p, }\DecValTok{10}\NormalTok{, }\DecValTok{1}\NormalTok{), }\DecValTok{-100}\NormalTok{, }\DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 1 with absolute error < 5.6e-05
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{psi =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\OperatorTok{-}\DecValTok{5}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.05}\NormalTok{)}
+\NormalTok{density =}\StringTok{ }\KeywordTok{dpsi}\NormalTok{(psi, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+
+\KeywordTok{qplot}\NormalTok{(psi, density, }\DataTypeTok{geom =} \StringTok{'line'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-17-1} \end{center}
+
+This prior is also visualized via Monte-Carlo simulation in exercise
+4.6. One perhaps counterintuitive result here is that for a
+Beta-Binomial model, an uninformative (uniform) prior on \(\theta\)
+\emph{does} result in an informative prior on the log-odds. This was
+apparently a ``major criticism of Bayesian inference'' led by R.A.
+Fisher. For more information about this (and an introduction into the
+Jeffreys' prior exercises next up), see
+\href{https://www2.stat.duke.edu/courses/Fall11/sta114/jeffreys.pdf}{these
+lecture notes}.
+
+Point: it is impossible to have a totally diffuse prior on a random
+variable with infinite support such as the log-odds, though\ldots{}
+
+\hypertarget{b-5}{%
+\subsubsection{b}\label{b-5}}
+
+If \(\psi = g(\theta) = \log \theta\), then let
+\(\theta = h(\psi) = e^\psi\). Then, by the change of variables formula,
+
+\begin{align}
+p_{\psi}(\psi) &= p_{\theta}(h(\psi)) \times \left| \frac{dh}{d\psi} \right| \\
+&= \left[ \frac{b^a}{\Gamma(a)} \text{exp}\left(\psi (a - 1)\right) \text{exp}\left( -b e^\psi \right)  \right] \times \text{exp}\left( \psi \right) \\
+&= \frac{b^a}{\Gamma(a)} \text{exp}\left(a\psi - \psi - b e^\psi + \psi \right) \\
+&= \frac{b^a}{\Gamma(a)} \text{exp}\left(a\psi - \psi - b e^\psi + \psi \right) \\
+&= \frac{b^a}{\Gamma(a)} \text{exp}\left(a\psi - b e^\psi \right)
+\end{align}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dpsi =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(psi, a, b) \{}
+\NormalTok{  (b}\OperatorTok{^}\NormalTok{a) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{gamma}\NormalTok{(a)) }\OperatorTok{*}\StringTok{ }\KeywordTok{exp}\NormalTok{(a }\OperatorTok{*}\StringTok{ }\NormalTok{psi }\OperatorTok{-}\StringTok{ }\NormalTok{b }\OperatorTok{*}\StringTok{ }\KeywordTok{exp}\NormalTok{(psi))}
+\NormalTok{\}}
+
+\CommentTok{# To verify this is a valid PDF - with various a and b, integral should be approximately 1}
+\KeywordTok{integrate}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(p) }\KeywordTok{dpsi}\NormalTok{(p, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{), }\DecValTok{-100}\NormalTok{, }\DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 1 with absolute error < 3.3e-06
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{integrate}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(p) }\KeywordTok{dpsi}\NormalTok{(p, }\DecValTok{4}\NormalTok{, }\DecValTok{8}\NormalTok{), }\DecValTok{-100}\NormalTok{, }\DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 1 with absolute error < 2.3e-05
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{integrate}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(p) }\KeywordTok{dpsi}\NormalTok{(p, }\DecValTok{10}\NormalTok{, }\DecValTok{1}\NormalTok{), }\DecValTok{-100}\NormalTok{, }\DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 1 with absolute error < 3.1e-05
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{psi =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\OperatorTok{-}\DecValTok{10}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.05}\NormalTok{)}
+\NormalTok{density =}\StringTok{ }\KeywordTok{dpsi}\NormalTok{(psi, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+
+\KeywordTok{qplot}\NormalTok{(psi, density, }\DataTypeTok{geom =} \StringTok{'line'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{3_files/figure-latex/unnamed-chunk-18-1} \end{center}
+
+\hypertarget{section-7}{%
+\subsection{3.12}\label{section-7}}
+
+\hypertarget{a-6}{%
+\subsubsection{a}\label{a-6}}
+
+If \(Y\) is Binomial, then
+\(p(y \mid \theta) = {n \choose y} \theta^y (1 - \theta)^{n - y}\).
+
+So
+\(I(\theta) = -\mathbb{E}(\partial^2 \ell(y \mid \theta) / \partial \theta^2 )\)
+where \(\ell(y \mid \theta) = \log p(y \mid \theta)\). Now,
+
+\begin{align}
+\ell(y \mid \theta) &= \log p(y \mid \theta) \\
+&= \log \left( {n \choose y} \theta^y (1 - \theta)^{n - y} \right) \\
+&= \log \left( {n \choose y} \right) + y \log(\theta) + (n - y) \log(1 - \theta) \\
+\ell_\theta(y \mid \theta) &= \frac{y}{\theta}- \frac{n - y}{1 - \theta} \\
+\ell_{\theta \theta}(y \mid \theta) &= - \frac{y}{\theta^2} - \frac{n - y}{(1 - \theta)^2} \\
+\end{align}
+
+So
+
+\begin{align}
+I(\theta) &= -\mathbb{E}\left( -\frac{y}{\theta^2} - \frac{n - y}{(1 - \theta)^2} \right) \\
+&= - \left( -\frac{1}{\theta^2} \mathbb{E}(y) - \frac{1}{(1 - \theta)^2} \mathbb{E}(n - y) \right) \\
+&= \frac{n\theta}{\theta^2} + \frac{n - n\theta}{(1 - \theta)^2} \\
+&= \frac{n}{\theta} + \frac{n}{1 - \theta} \\
+&= \frac{n}{\theta (1 - \theta)}
+\end{align}
+
+So Jeffreys' prior distribution is
+
+\begin{align}
+p_J(\theta) &= c \times \sqrt{\frac{n}{\theta (1 - \theta)}} \\
+\end{align}
+
+where \[
+c = \left( \int_0^1 \sqrt{\frac{n}{\theta(1 - \theta)}} \; d\theta \right)^{-1}.
+\]
+
+\hypertarget{b-6}{%
+\subsubsection{b}\label{b-6}}
+
+\begin{align}
+\ell(y \mid \psi) &= \log p(y \mid \psi) \\
+&= \log \left( {n \choose y} e^{\psi y} (1 + e^\psi)^{-n} \right) \\
+&= \log {n \choose y} + \psi y - n \log \left(1 + e^\psi \right) \\
+\ell_\psi(y \mid \psi) &= y - \frac{n e^\psi}{e^\psi + 1} \\
+\ell_{\psi \psi}(y \mid \psi) &= - \frac{n e^\psi}{\left( e^\psi + 1 \right)^2}
+\end{align}
+
+So
+
+\begin{align}
+I(\psi) &= -\mathbb{E}\left( - \frac{n e^\psi}{\left( e^\psi + 1 \right)^2}\right) \\
+&= \frac{n e^\psi}{\left( e^\psi + 1 \right)^2} \\
+\end{align}
+
+Then Jeffreys prior is \begin{align}
+p_J(\psi) &\propto \sqrt{ \frac{n e^\psi}{\left( e^\psi + 1 \right)^2} } \\
+&\propto \frac{\sqrt{n e^\psi}}{e^\psi + 1}
+\end{align}
+
+\hypertarget{c-4}{%
+\subsubsection{c}\label{c-4}}
+
+If \(\psi = g(\theta) = \log \frac{\theta}{1 - \theta}\), then let
+\(\theta = h(\psi) = \frac{e^\psi}{1 + e^\psi}\). Then, by the change of
+variables formula,
+
+\begin{align}
+p_{\psi}(\psi) &\propto p_{\theta}(h(\psi)) \times \left| \frac{dh}{d\psi} \right| \\
+&\propto \sqrt{\frac{n}{\frac{e^\psi}{1 + e^\psi} \left(1 - \frac{e^\psi}{1 + e^\psi}\right)}} \times \frac{e^\psi}{(e^\psi + 1)^2} \\
+&\propto \sqrt{\frac{n(e^\psi + 1)^2}{e^\psi} } \times \frac{e^\psi}{(e^\psi + 1)^2} \\
+&\propto \frac{\sqrt{n}(e^\psi + 1)}{\sqrt{e^\psi}} \times \frac{e^\psi}{(e^\psi + 1)^2} \\
+&\propto \frac{\sqrt{n}\sqrt{e^\psi}}{e^\psi + 1} \\
+&\propto p_J(\psi).
+\end{align}
+
+In this case, it has been demonstrated that Jeffreys' prior is invariant
+under monotone transformation.
+
+\hypertarget{section-8}{%
+\subsection{3.13}\label{section-8}}
+
+Improper Jeffreys' prior
+
+\hypertarget{a-7}{%
+\subsubsection{a}\label{a-7}}
+
+If \(Y \sim \text{Poisson}(\theta)\),
+\(p(y) = \frac{\theta^y e^{-\theta}}{y!}\).
+
+\begin{align}
+\ell(y \mid \theta) &= \log p(y \mid \theta) \\
+&= \log \left( \frac{\theta^y e^{-\theta}}{y!} \right) \\
+&= \log \left( \frac{1}{y!} \right) + y \log (\theta) - \theta \\
+\ell_\theta(y \mid \theta) &= \frac{y}{\theta} - 1\\
+\ell_{\theta \theta}(y \mid \theta) &= -\frac{y}{\theta^2} \\
+\end{align}
+
+So
+
+\begin{align}
+I(\psi) &= -\mathbb{E}\left( - \frac{y}{\theta^2} \right) \\
+&= \frac{1}{\theta^2} \mathbb{E}(y) \\
+&= \frac{\theta}{\theta^2} \\
+&= \frac{1}{\theta}
+\end{align}
+
+and Jeffreys' prior is
+
+\begin{align}
+p_J(\theta) &= c \times \sqrt{\frac{1}{\theta}} \\
+&= c \times \frac{1}{\sqrt{\theta}}\\\\
+\end{align}
+
+Notice that, to be a proper probability distribution, it must be the
+case that
+
+\begin{align}
+\int_0^{\infty} c \times \frac{1}{\sqrt{\theta}} \; d\theta = c \int_0^{\infty} \frac{1}{\sqrt{\theta}} \; d\theta = 1\\
+\end{align}
+
+However, this integral does not converge (\(p\)-test, \(p = 1/2\)), so
+there is no value of \(c\) such that this is a valid probability
+distribution. Thus (per the name of the exercise) this is an
+\emph{improper} Jeffreys' prior.
+
+\hypertarget{b-7}{%
+\subsubsection{b}\label{b-7}}
+
+However, even if \(p_J(\theta)\) is not a valid probability
+distribution, we can still imagine performing ``inference'' using this
+prior.
+
+\begin{align}
+f(\theta, y) &= \sqrt{I(\theta)} \times p(y \mid \theta) \\
+&= \frac{1}{\sqrt{\theta}} \times  \frac{\theta^y e^{-\theta}}{y!} \\
+&= \theta^{-1/2} \times  \frac{\theta^y e^{-\theta}}{\Gamma(y + 1)} \\
+&= \theta^{y - 1/2} e^{-\theta} \frac{1}{\Gamma(y + 1)} \\
+\end{align}
+
+As a function of \(\theta\) only, this is proportional to \begin{align}
+\dots &\propto \theta^{y - 1/2} e^{-\theta} \\
+&\propto \text{dgamma}(\theta, y + \frac{1/2}, 1)
+\end{align}
+
+Since \(\Gamma(y + \frac{1/2}, 1)\), \(y >= 0\) \emph{is} a valid
+parameterization of a Gamma density, it follows that we can normalize
+\(f(\theta, y)\) such that it represents a valid posterior density for
+\(\theta\). If we actually calculate
+\(f(\theta, y) / \int f(\theta, y) \; d\theta\) (which I won't do here),
+we will get such a Gamma density.
+
+Notes: the prior in a) can be thought of as an improper
+\(\text{Gamma}(1/2, 0)\). Since improper Jeffreys' priors are not real
+probability densities, their usage is controversial for some. (Who?)
+
+
+\end{document}
