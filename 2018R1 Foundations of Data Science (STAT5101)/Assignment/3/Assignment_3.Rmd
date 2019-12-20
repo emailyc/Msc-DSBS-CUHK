@@ -1,0 +1,153 @@
+---
+title: <center><h1>STAT5101 Foundations of Data Science Assignment 3</h1></center><br/>
+author: "<center>Yiu Chung WONG 1155017920</center>"
+output:
+  pdf_document: default
+  keep_md: yes
+  html_document: null
+  pdinner_document: default
+  word_document: default
+--- 
+
+<br />
+<br />
+
+```{r, echo = F, results = 'hide', message=FALSE, , warning = FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+#options(width = 1500)
+library("ggplot2")
+library("dplyr")
+library("scales")
+```
+
+
+###1. A population has four members (called A, B, C, and D). You would like to select a random sample of n = 2, which you decide to do in the following way: Flip a coin; if it is heads, the sample will be items A and B; if it is tails, the sample will be items C and D. Although this is a random sample, it is not a simple random sample. Explain why. 
+
+A simple random sample is an individual being chosen randomly from the population. In this setting, a group instead of a individual is being chosen.
+
+The combination of the two sample is predetermined. There is no chance for A and D being selected together and same goes for B and C.
+<br />
+
+###2 The following data represent the number of days absent per year in a population of six employees of a small company:
+
+<center><h4>1 5 6 8 8 15</h4></center>
+
+###Assuming that you sample with replacement, select all possible samples of n = 2 and construct the sampling distribution of the mean. Compute the mean of all sample means and also compute the population mean. Are they equal? What is this property called?
+```{r, width = 200}
+population <- c(1,5,6,8,8,15)
+samples <- t(merge(population, population))
+samples
+means <- data.frame(sample_means = colMeans(samples))
+hist(means$sample_means, main = "", xlab = "Sample Means", prob = T, col = "darkred")
+lines(density(means$sample_means), col = "darkblue", lwd = 2)
+abline(v=mean(means$sample_means), col="black")
+
+q2 <- c(mean(population), mean(means$sample_means))
+names(q2) <- c("Population Mean", "Sample Mean")
+q2
+```
+* Sample means and the population mean are equal. 
+* Central Limit Therom
+<br />
+
+###3 The amount of time a bank teller spends with each customer has a population mean μ = 3.10 minutes and standard deviation σ = 0.40 minutes. Assume the population is symmetrically distributed, if a random sample of 16 customers is selected,
+
+####a) What is the probability that the average time spent per customer will be at least 3 minutes?
+```{r}
+pnorm(q = 3, mean = 3.10, sd = 0.40 / sqrt(16), lower.tail = FALSE)
+```
+<br />
+
+####b) There is an 85% chance that the sample mean will be below how many minutes?
+```{r}
+qnorm(p = .85, mean = 3.10, sd = 0.40 / sqrt(16))
+```
+<br />
+
+####c) If a random sample of 64 customers is selected, there is an 85% chance that the sample mean will be below how many minutes?
+```{r}
+qnorm(p = .85, mean = 3.10, sd = 0.40 / sqrt(64))
+```
+<br />
+
+###4 A study of women in corporate leadership was conducted by Catalyst, a New York research organization. The study concluded that slightly more than 15% of corporate officers at Fortune 500 companies are women. Suppose that you select a random sample of 200 corporate officers, and the true proportion held by women is 0.15.
+
+####a) What is the probability that in the sample, less than 15% of the corporate officers will be women?
+```{r}
+n <- 200
+se <- sqrt(0.15*(1 - 0.15)/n)
+mu <- 0.15
+pnorm(q = 0.15, mean = mu, sd = se)
+```
+<br />
+
+####b) What is the probability that in the sample, between 13% and 17% of the corporate officers will be women?
+```{r}
+n <- 200
+se <- sqrt(0.15*(1 - 0.15)/n)
+mu <- 0.15
+pnorm(q = 0.17, mean = mu, sd = se) - pnorm(q = 0.13, mean = mu, sd = se)
+```
+<br />
+
+###5 Do ringing cell phones disturb business presentations? In a poll of 326 business men and women, 303 answered this question ”yes” and only 23 answered ”no”.
+
+####a) Construct a 95% confidence interval for the population proportion of business men and women who have their presentations disturbed by cell phones.
+```{r}
+p <- 303/326
+z_value <- qnorm(p = .975)
+se <- sqrt(p * (1 - p) / 326)
+
+CI <- p + c(-1, 1) * z_value * se
+CI
+```
+<br />
+
+####b) Interpret the interval constructed in (a).
+We are 95% confident that the true percentage of people finding ringing cell phones disturb business presentations in the population is between `r percent(CI[1])` and `r percent(CI[2])`.
+
+Although the interval from `r CI[1]` to `r CI[2]` may or may not contain the true proportion, 95% of intervals formed from samples of size 326 in this manner will contain the true proportion.
+
+####c) If you were to conduct a follow-up study that would provide 95% confidence that the point estimate is correct to within ±0.04 of the population proportion, how large a sample size would be required?
+```{r}
+p <- 303/326
+e <- 0.04
+z_value <- qnorm(p = .975)
+
+n <- p * (1 - p) / (e/z_value)^2
+
+ceiling(n)
+```
+<br />
+
+###6 The manager of a paint supply store wants to estimate the actual amount of paint contained in 1- gallon cans purchased from a nationally known manufacturer. It is known from the manufacturer’s specifications that the standard deviation of the amount of paint is equal to 0.02 gallon. A random sample of 50 cans is selected, and the sample mean amount of paint per 1-gallon can is 0.995 gallon.
+
+####a) Set up a 99% confidence inetrval estimate of the true population mean amount of paint included in a 1-gallon can.
+```{r}
+x_bar <- 0.995
+sigma <- 0.02
+z_value <- qnorm(p = 0.995)
+n <- 50
+
+x_bar + c(-1, 1) * z_value * sigma/sqrt(n)
+```
+<br />
+
+####b) On the basis of your result in (a), do you think that the manager has a right to complain to the manufacturer? Why?
+No. The confidence interval contains the value 1; we are 95% confident that the true average volume of the paints is within this interval. Since the value 1 is within this interval, we do not complain.
+<br />
+
+####c) Does the population amount of paint per can have to be normally distributed here? Explain.
+No. According to Central Limit Therom, regardless the population distribution, as long as we have a large sample size, the sample distribution will approach normal.
+<br />
+
+###7 A consumer group wants to estimate the mean electric bill for the month of July for single-family homes in a large city. Based on studies conducted in other cities, the standard deviation is assumed to be $25. The group wants to estimate the mean bill for July to within ± $4 of the true average with 99% confidence. What sample size is needed?
+```{r}
+sigma <- 25
+e <- 4
+z_value <- qnorm(p = 0.995)
+
+n <- (sigma / (e/z_value))^2
+ceiling(n)
+```

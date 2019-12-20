@@ -1,0 +1,127 @@
+---
+title: <center><h1>2018R1 High-Dimensional Data Analysis (STAT5103) Assignment 1</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  html_document:
+    keep_md: yes
+  word_document: default
+  pdf_document: default
+--- 
+<br />
+<br />
+
+###1. Let
+$$\mathbf{A} = \left(\begin{array}
+{rrr}
+1 & 2 & 3 \\
+2 & 1 & 2 \\
+3 & 2 & 1
+\end{array}\right)$$
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+require("knitr")
+library(dplyr)
+opts_chunk$set(echo = TRUE, cache=TRUE)
+options(width = 90)
+```
+
+```{r}
+A <- matrix(c(1,2,3,2,1,2,3,2,1), 3, 3)
+A
+```
+<br />
+
+####(a) Find the eigenvalues ($\lambda_{1}$, $\lambda_{2}$, $\lambda_{3}$) and their corresponding normalized eigenvectors ($\mathrm{x_1}$, $\mathrm{x_2}$, $\mathrm{x_3}$)  
+```{r}
+eigen(A)
+```
+
+<br />
+
+####(b) Let **P** = ($x_{1}$, $x_{2}$, $x_{3}$), a matrix formed by using the eigenvectors as columns. Find **PDP¡¬** where **D** is a diagonal matrix with the eigenvalues ($\lambda_{1}$, $\lambda_{2}$, $\lambda_{3}$) on its diagonal. 
+```{r}
+P <- eigen(A)$vectors
+D <- diag(eigen(A)$values)
+P %*% D %*% solve(P)
+```
+
+<br />
+
+####(c) Find the singular value decomposition of **A**. 
+```{r}
+svd(A)
+```
+
+<br />
+
+###2. Let the eigenvalue-eigenvector pairs of a 2x2 symmetric matrix **A** be 
+<br />
+
+\[
+  \left(3,\;\left(\begin{array}{cc} 
+1^{}/{\sqrt{2}}\\
+-1^{}/{\sqrt{2}}
+\end{array}\right) \right)  
+\;and\;
+  \left(5,\;\left(\begin{array}{cc} 
+1^{}/{\sqrt{2}}\\
+1^{}/{\sqrt{2}}
+\end{array}\right) \right)
+\]
+<br />
+
+
+####(a) Find **A**. 
+```{r}
+x = 1/sqrt(2)
+P = matrix(c(x, -x, x, x), 2, 2)
+D = diag(c(3,5))
+A = P %*% D %*% solve(P)
+A
+```
+
+<br />
+
+####(b) Find the determinant of **A**. 
+```{r}
+det(A)
+```
+
+<br />
+
+####(c) Find the trace of **A**. 
+```{r}
+sum(diag(A))
+```
+
+<br />
+
+###3. Using $x_{3}$ - $x_{9}$ of the US Crime Data, compute 
+<br />
+
+####(a) the sample mean ($\bar{\mathrm{x}}$),
+```{r}
+crime <- readxl::read_excel("uscrime.xlsx", sheet = 1, skip = 1)
+sapply(crime[, 3:9], mean)
+```
+<br />
+
+####(b) the sample covariance matrix (**S**), and
+<br />
+<center>$cov_{x,y}=\frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}$</center>
+<br />
+
+```{r}
+cov(crime[, 3:9]) %>% round(., 2)
+```
+<br />
+
+####(c) the sample correlation matrix (**R**).
+<br />
+<center>$r =\frac{\sum ^n _{i=1}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum ^n _{i=1}(x_i - \bar{x})^2} \sqrt{\sum ^n _{i=1}(y_i - \bar{y})^2}}$</center>
+<br />
+
+```{r}
+cor(crime[, 3:9]) %>% round(., 2)
+```

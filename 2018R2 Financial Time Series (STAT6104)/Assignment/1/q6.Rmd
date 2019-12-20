@@ -1,0 +1,24 @@
+---
+title: "Assignment 1"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=TRUE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
+
+##6
+
+```{r read data}
+milk <- read.csv("monthly_milk.csv", header = TRUE, nrows = 168)
+milk <- ts(milk[[2]], frequency = 12, start = c(1962, 1),end = c(1975, 12))
+```
+
+```{r}
+milk %>% stl(s.window='periodic') %>% autoplot
+```

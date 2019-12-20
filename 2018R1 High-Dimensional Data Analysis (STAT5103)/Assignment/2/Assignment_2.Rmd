@@ -1,0 +1,235 @@
+---
+title: <center><h1>2018R1 High-Dimensional Data Analysis (STAT5103) Assignment 2</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+#Car Data
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("GGally")
+library("dplyr")
+```
+
+```{r, echo = F}
+data_url = "https://s3-ap-southeast-1.amazonaws.com/learn-ap-southeast-1-prod-fleet02-xythos/593a61e7aa84f/3406258?response-content-disposition=inline%3B%20filename%2A%3DUTF-8%27%27carc.txt&response-content-type=text%2Fplain&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20181005T132212Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Credential=AKIAJDDBGKVKR5QVHNHA%2F20181005%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=66d546c9727fb21f79f72849055ca2b5b4e84e4e83f7b5388f8fc7055e766e15"
+```
+
+```{r}
+car <- read.csv(data_url, header = FALSE, sep = "\t", na.strings = c("NaN", "Nan"))
+car <- car[,-c(3, 4, 13)]
+names <- c("Price", "Mileage", "Headroom", "Rear", "Trunk", "Weight", "Length", "Turning_diameter", "Displacement", "Gear_ratio")
+names(car) <- names
+summary(car)
+```
+<br />
+
+###1. Plot the correlation chart.
+```{r fig2, fig.height = 30, fig.width = 30, fig.align = "center"}
+my.lm <- function(data, mapping, ...){
+  p <- ggplot(data = data, mapping = mapping) + 
+    geom_point(size = 3) + 
+    geom_smooth(method = loess, fill = "red", color = "red", size = 3, ...) +
+    geom_smooth(method = lm, fill = "blue", color = "blue", size = 3, ...)
+  p
+}
+
+
+g <- ggpairs(
+        car, 
+        columns = 1:10 ,
+        upper = list(continuous = wrap("cor", size = 14)),
+        lower = list( continuous = my.lm)
+        )
+
+g <- g + ggtitle("Car Dataset Correlation Matrix") + 
+        theme(plot.title = element_text(lineheight = .8,
+                                        face = "bold",
+                                        size = 40), 
+              axis.title.x = element_text(size = 20))
+
+g
+```
+<br />
+
+###2. Based on your correlation chart, summarize your findings. <br />
+
+* Predictors are either highly skewed or bimodal. Although OLS regression does not assume normality in the predictors, non-normal data **MAY** cause the relationship between them and the target variable to be non-linear. Looking at the leftmost column and comparing loess curves (red) to the linear regression lines (blue) of all the graphs, the relationships between these predictors and `Price` are relatively linear, so no linear transformations is required prior to modeling.
+<br />
+
+* In the same column, most of the points are centered around the lower price values among all graphs. This is likely due to the fact that there are many more low-cost cars then there are expensive ones (indicated by the top left density graph). Now look at the regression lines and their confidence intervals (both in blue), the confidence intervals get wider as price increases. This indicates that heteroskedasticity may exist in the residual terms and might lead to biased standard error, which in-turns lead to unreliable confidence intervals and hypothesis test of the regression coefficients.
+<br />
+
+* If we take a look at `Price`:
+```{r}
+sum_stat <- psych::describe(car$Price)
+sum_stat
+```
+The standard deviation of `Price` is surprisingly large at `r round(sum_stat[4], 2)`; Skewness is `r round(sum_stat[11], 2)`, which means the distribution is highly skewed towards high prices. Although OLS regression does not assume normality for the target variable, one must be caution with normality of the residuals.
+<br />
+
+* Many predictors are highly correlated to each other. For example, `Weight` and `Length` have correlation `r round(cor(car$Weight, car$Length),3)`; `Displacement` and `Gear_ratio` have correlation `r round(cor(car$Displacement, car$Gear_ratio),3)`. Collinearity can also hide amongst the whole set of predictors instead of just two. Therefore, we are not safe from  multicollinearity simply because other predictors are of lower correlation. Other metrics such as Variance Inflation Factor is better at simultaneously evaluating one predictor against all others. One must be caution of multicollinearity in this dataset because they reduces the precision of the estimate coefficients (by weakening statistical power), as well as making coefficients sensitive (varies greatly) under the presence of other predictors in the model. 
+<br />
+
+
+###3. Conduct a regression analysis using $X_{1}$ as the dependent variable and theothers as independent variables.<br />       
+```{r}
+full_model <- lm(data = car, Price ~ .)
+```
+<br />
+
+####a. State the model
+$$
+\begin{align*}
+\mathrm{Price} = \beta_{0} 
+    &+ \beta_{1}\;  \mathrm{Mileage} \\
+    &+ \beta_{2}\;  \mathrm{Headroom}    \\
+    &+ \beta_{3}\;  \mathrm{Rear} \\
+    &+ \beta_{4}\;  \mathrm{Trunk} \\
+    &+ \beta_{5}\;  \mathrm{Weight}   \\
+    &+ \beta_{6}\;  \mathrm{Length}  \\
+    &+ \beta_{7}\;  \mathrm{Turning\;diameter}  \\
+    &+ \beta_{8}\;  \mathrm{Displacement}  \\
+    &+ \beta_{9}\;  \mathrm{Gear\;ratio}  \\
+    &+ \epsilon
+\end{align*}
+$$
+
+
+####b. What is the regression equation?
+```{r, echo=FALSE}
+full_coef <- paste(round(coef(full_model), 2))
+```
+$$
+\begin{align*}
+\mathrm{\hat{Price}} = `r full_coef[1]` 
+    &+ `r full_coef[2]`\;  \mathrm{Mileage} \\
+    &+ `r full_coef[3]`\;  \mathrm{Headroom}    \\
+    &+ `r full_coef[4]`\;  \mathrm{Rear} \\
+    &+ `r full_coef[5]`\;  \mathrm{Trunk} \\
+    &+ `r full_coef[6]`\;  \mathrm{Weight}   \\
+    &+ `r full_coef[7]`\;  \mathrm{Length}  \\
+    &+ `r full_coef[8]`\;  \mathrm{Turning\;diameter}  \\
+    &+ `r full_coef[9]`\;  \mathrm{Displacement}  \\
+    &+ `r full_coef[10]`\;  \mathrm{Gear\;ratio}  
+\end{align*}
+$$
+<br />
+
+
+####c. Test the overall utility of the model with $\alpha$ = 0.05.
+```{r}
+null_model <- lm(data = car, Price~1)
+anova(null_model, full_model)
+```
+<br />
+
+
+####d. Give the parameter table and based on the p-values, which independent variables are useful for the prediction of the price of the car?
+```{r}
+summary(full_model)$coef
+```
+```{r}
+#Coefficients with p-value <= .05
+summary(full_model)$coef[summary(full_model)$coef[,4] <= .05, 4] %>%
+        formatC(., format = "e", digits = 2) %>%
+        data.frame("Sigificant Coefficients" = .)
+```
+<br />
+
+####e. What is the adjusted *$R^2$*? Comment.
+*$R^2$* increases as the number of predictor increase regardless of whether each predictor is useful or not; *$R^2$* will slowly approach one even if we dump in the kitchen sink. The adjusted *$R^2$* is used to offset such effect by penalising model with predictors that do a bad job in explaining variations in the target variable. 
+Adjusted for the number of predictors, the portion of variation in `Price` explained by the predictors is `r summary(full_model)$adj.r.squared `. There are still close to half the variation that are not explained by the full model.
+```{r}
+summary(full_model)$adj.r.squared 
+```
+<br />
+
+
+###4. Use stepwise regression (the method discussed in class) for variable selection. For your final model,<br />
+```{r}
+step_model <- MASS::stepAIC(object = full_model, 
+                            direction = "both",
+                            trace = FALSE
+                            )
+        
+```
+<br />
+
+####a. What is the AIC value?
+When we fit a model with training data, we estimate the regression coefficients such that the training RSS (not test RSS) is as small as possible. Training error may decrease as more predictors are added, but test error may not. Hence we cannot use training RSS or *$R^2$* to perform model selection (from a set of models with varying number of predictors). 
+The *Akaike Information Criterion* (AIC) is a technique to adjust the training error for different model sizes; since more predictors means lower training error which tends to underestimate the test error, AIC penalises model with higher number of predictors and favors parsimonious models.  
+```{r}
+extractAIC(step_model)[2]
+```
+<br />
+
+####b. State the model
+$$
+\begin{align*}
+\mathrm{Price} = \beta_{0} 
+    &+ \beta_{1}\;  \mathrm{Headroom}    \\
+    &+ \beta_{2}\;  \mathrm{Rear} \\
+    &+ \beta_{3}\;  \mathrm{Weight}   \\
+    &+ \beta_{4}\;  \mathrm{Length}  \\
+    &+ \beta_{5}\;  \mathrm{Turning\;diameter}  \\
+    &+ \beta_{6}\;  \mathrm{Gear\;ratio}  \\
+    &+ \epsilon
+\end{align*}
+$$
+
+<br />
+
+####c. What is the regression equation?
+```{r, echo=FALSE}
+step_coef <- paste(round(coef(step_model), 2))
+```
+$$
+\begin{align*}
+\mathrm{\hat{Price}} = `r step_coef[1]` 
+    &+ `r step_coef[2]`\;  \mathrm{Headroom}    \\
+    &+ `r step_coef[3]`\;  \mathrm{Rear} \\
+    &+ `r step_coef[4]`\;  \mathrm{Weight}   \\
+    &+ `r step_coef[5]`\;  \mathrm{Length}  \\
+    &+ `r step_coef[6]`\;  \mathrm{Turning\;diameter}  \\
+    &+ `r step_coef[7]`\;  \mathrm{Gear\;ratio}  \\
+\end{align*}
+$$
+<br />
+
+####d. Test the overall utility of the model with $\alpha$ = 0.05.
+```{r}
+anova(null_model, step_model)
+```
+<br />
+
+####e. Give the parameter table and based on the p-values,which independent variables are useful for the prediction of the price of the car?
+```{r}
+summary(step_model)$coef
+summary(step_model)$coef[summary(step_model)$coef[,4] <= .05, 4] %>%
+        formatC(., format = "e", digits = 2) %>%
+        data.frame("Sigificant Coefficients" = .)
+```
+<br />
+
+####f. What is the adjusted *$R^2$*? Comment.
+```{r}
+summary(step_model)$adj.r.squared  
+```
+The adjusted *$R^2$* is `r summary(step_model)$adj.r.squared` which is a little higher then the full model's. 
+stepAIC selects the model based on AIC. The goal is to find a parsimonious model with the smallest AIC by removing or adding predictors in the scope. Comparing to `full_model`, `step_model` contains fewer predictors. Hence, `step_model` is penalised less when calculating the adjusted *$R^2$*. 

@@ -1,0 +1,233 @@
+---
+title: <center><h1>STAT5101 Foundations of Data Science Assignment 1</h1></center><br
+  />
+author: "<center>Yiu Chung WONG 1155017920</center>"
+output:
+  pdf_document: default
+  keep_md: yes
+  html_document: null
+  pdinner_document: default
+  word_document: default
+--- 
+
+<br />
+<br />
+
+```{r, echo = F, results = 'hide', message=FALSE, , warning = FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 120)
+library("ggplot2")
+library("dplyr")
+```
+
+
+###1. When do Americans decide what to make for dinner? An online survey indicated the following: 
+```{r}
+dinner <- data.frame(Time_int = 1:4, 
+                     Time = c("At the last minute",  
+                              "Plan in advance", 
+                              "That day", 
+                              "Don't know"), 
+                     Percentage = c(37, 25, 37, 1))
+dinner$Time <- with(dinner, factor(dinner$Time, levels=dinner[order(-Percentage), ]$Time))
+dinner
+```
+
+<br />
+
+####(a) Construct a bar chart, a pie chart, and a Pareto diagram.  
+```{r, echo = FALSE}
+ggplot(data = dinner, aes(x = Time, y = Percentage)) + 
+        geom_bar(stat="identity") + 
+        ggtitle("When Americans decide what to make for dinner")
+
+df <- data.frame(value = dinner$Percentage,
+                 Group = dinner$Time) %>%
+   # factor levels need to be the opposite order of the cumulative sum of the values
+   mutate(Group = factor(Group, levels = rev(dinner$Time)),
+          cumulative = cumsum(value),
+          midpoint = cumulative - value / 2,
+          label = paste0(Group, " ", round(value / sum(value) * 100, 1), "%"))
+
+ggplot(df, aes(x = 1, weight = value, fill = Group)) +
+   geom_bar(width = 1, position = "stack") +
+   coord_polar(theta = "y") +
+   geom_text(aes(x = 1.3, y = midpoint, label = label))
+```
+
+```{r, echo = FALSE}
+#dinner$Time <- with(dinner, factor(dinner$Time, levels=dinner[order(-dinner$Percentage), ]$Time))
+dinner <- within(dinner, acc_sum <- cumsum(Percentage))
+nr <- nrow(dinner)
+N <- sum(dinner$Percentage)
+dinner_ticks <- data.frame(xtick0 = rep(nr +.55, 11), xtick1 = rep(nr +.59, 11), 
+                         ytick = seq(0, N, N/10))
+y2 <- c("  0%", " 10%", " 20%", " 30%", " 40%", " 50%", " 60%", " 70%", " 80%", " 90%", "100%")
+
+g <- ggplot(dinner, aes(x=Time, y=Percentage)) + 
+    geom_bar(stat="identity", aes(fill = Time_int)) +
+    geom_line(aes(x=Time_int, y = acc_sum, color = Time_int)) +
+    geom_point(aes(x=Time_int, y = acc_sum, color = Time_int), pch = 19) +
+    scale_y_continuous(breaks=seq(0, N, N/10), limits=c(-.02 * N, N * 1.02)) + 
+    scale_x_discrete(breaks = dinner$Time) +
+    guides(fill = FALSE, color = FALSE) + 
+    annotate("rect", xmin = nr + .55, xmax = nr + 1, 
+             ymin = -.02 * N, ymax = N * 1.02, fill = "white") +
+    annotate("text", x = nr + .8, y = seq(0, N, N/10), label = y2, size = 3.5) +
+    geom_segment(x = nr + .55, xend = nr + .55, y = -.02 * N, yend = N * 1.02, color = "grey50") +
+    geom_segment(data = dinner_ticks, aes(x = xtick0, y = ytick, xend = xtick1, yend = ytick)) +
+    labs(title = "When Americans decide what to make for dinner") +
+    theme_bw()
+g
+```
+
+<br />
+
+####(b) Which graphical method do you like the best to portray these data? Provide one good feature of the selected method 
+Pareto diagram. Can easily see the portion of each category consumes as well as the ordering. 
+
+<br />
+
+###2. The following data represent the battery life, in shots, for three pixel digital cameras: 
+```{r}
+battery <- c(30, 18, 14, 17, 38, 46, 26, 35, 38, 12, 11)
+```
+<br />
+
+####(a) Place the data into an ordered array.  
+```{r}
+battery[order(battery)]
+```
+<br />
+
+####(b) Construct a stem-and-leaf display
+```{r}
+stem(battery)
+```
+<br />
+
+####(c) For the ordered array and the stem-and-leaf display, which method provides more information? Discuss
+The stem-and-leaf display provides more information. Not only does the stem-and-leaf display displays ordering, it also illustrates the distrubution of the dataset.
+<br />
+
+####(d) Compute the mean, minimum, maximum, median, first quartile, and third quartile using R.(Hint:  apply R commands mean and summary on the vector)
+```{r}
+summary(battery)
+```
+<br />
+
+####(e) Compute the mode, variance, standard deviation, range, and coefficient of variatio
+```{r}
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+e = list(getmode(battery), 
+         var(battery), 
+         sd(battery), 
+         range(battery), 
+         scales::percent(sd(battery)/mean(battery))
+         )
+names(e) <- c("mode", "variance", "standard deviation", "range", "coefficient of variatio")
+e
+```
+<br />
+
+####(f) Form the box-and-whisker plot.
+```{r}
+boxplot(battery, ylab ="Battery life")
+```
+<br />
+
+
+###3.  
+```{r}
+steel <- readxl::read_excel("STEEL.xls", sheet = 1)
+incre = (0.00550--0.00350)/6
+breaks = seq(-0.00350, 0.00550, by=incre)
+steel_cut = cut(steel$Error, breaks)
+```
+<br />
+
+####(a) Construct the frequency distribution and the percentage distribution. (use 6 categories between -0.00350 and 0.00550)  
+```{r}
+data.frame(Frequency = as.numeric(table(steel_cut)), 
+           Percentage = scales::percent(as.numeric(table(steel_cut))/100), 
+           Cum_percent = cumsum(table(steel_cut)))
+```
+<br />
+
+####(b) Plot the percentage histogram.
+```{r}
+ggplot(data = steel, aes(x = Error)) + 
+        geom_histogram(binwidth = incre) +
+        labs(title="Percentage Histogram.", 
+             x ="Classes", y = "Percentage")
+```
+<br />
+
+####(c) Plot the percentage polygon.
+```{r}
+mid <- seq(breaks[1], by = incre, length.out = 8) - incre/2
+
+p_poly <- data.frame(mid = mid, 
+                    freq = c(0, as.numeric(table(steel_cut)), 0))
+
+ggplot(p_poly, aes(mid, freq))  +
+        geom_point(data=p_poly, mapping=aes(x = mid, y=freq), size=2) +
+        geom_line() +
+        scale_x_continuous(breaks = p_poly$mid) +
+        labs(title="Percentage Ploygon", x ="Class Mid Points", y = "Percentage")
+```
+<br />
+
+####(d) Plot the cumulative percentage ploygon.
+```{r}
+cp_ploygon = data.frame(upper = breaks, 
+                         cp = c(0, as.numeric(cumsum(table(steel_cut)))))
+
+ggplot(cp_ploygon, aes(upper, cp))  +
+        geom_point(data=cp_ploygon, mapping=aes(y=cp), size=2) +
+        geom_line() +
+        scale_x_continuous(breaks = cp_ploygon$upper, labels = cp_ploygon$upper) +
+        labs(title="Cumulative Percentage Ploygon",
+        x ="Upper Boundry", y = "Cumulative Percentage")
+```
+<br />
+
+
+###4.  
+```{r}
+battery2 <- readxl::read_excel("BATTERIES2.xls", sheet = 1)
+```
+<br />
+
+####(a) Compute the coefficient of correlation r.  
+```{r}
+cor(battery2$`Price ($)`, battery2$CCA)
+```
+<br />
+
+####(b) What conclusions can you reach about the relationship between the cold-cranking amps and the price?  
+They are moderately correlated; when one goes up, the other also goes up slightly.
+<br />
+
+
+###5. Construct a side-by-side bar chart for three age groups. 
+```{r}
+media = rep(c("Local TV", "National TV", "Radio", "Local newspaper", "Internet"), each = 3)
+count = c(107, 119, 133, 73, 102, 127, 75, 97, 109, 52, 79, 107, 95, 83, 76)
+age = rep(c("Under 36", "36-50", "50+"), 5)
+
+news  <- data.frame(media, count, age)
+
+ggplot(news, aes(media, count)) + 
+        geom_bar(aes(fill = age), 
+                 width = .4, 
+                 position = position_dodge(width=0.5), 
+                 stat="identity") +
+        labs(title="\nNumber of people across media categories\n(grouped by age)",
+        x ="Media", y = "Count")
+
+```

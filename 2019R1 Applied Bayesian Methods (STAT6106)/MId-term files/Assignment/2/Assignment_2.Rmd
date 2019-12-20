@@ -1,0 +1,244 @@
+---
+title: <center><h1> 2019R1 Applied Bayesian Methods (STAT6106) Assignment 2</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("dplyr")
+```
+
+```{r, echo = T}
+set.seed(6106);
+```
+
+#### 3.2.
+
+```{r}
+theta_0 <- rev(seq(0.0, 1.0, by = 0.1));
+w <- seq(0, 32, by = 0.1);
+
+posterior_expectation <- function(w, n, priors, y)
+{
+  a <- priors * w
+  b <- (1 - priors) * w
+  pbeta(.5, shape1 = a + y, shape2 = b + n - y, lower.tail = FALSE);
+}
+
+post <- outer(theta_0, w, FUN = function(t_0, w_0, n = 100, y = 57)
+  {
+  posterior_expectation(w_0, n, t_0, y);
+  }
+)
+
+rownames(post) <- theta_0;
+colnames(post) <- w;
+df = reshape2::melt(post);
+
+colnames(df) = c('theta_0', 'w', 'post_theta')
+
+contour_plot <- ggplot(df, aes(x = w, y = theta_0, z = post_theta)) +
+  geom_contour(aes(colour = ..level..), binwidth = 0.099) +
+  scale_color_continuous(name = '¼ Mi. Time (s)') +
+  scale_x_continuous(breaks = c(1, 2, 8, 16, 32), labels = c(1, 2, 8, 16, 32)) +
+  scale_y_continuous(breaks = theta_0, limits = c(0,1));
+directlabels::direct.label(contour_plot, 'bottom.pieces')
+
+```
+Given n = 100 and success = 57, a sigificant portion of teh contour plot consist of posterior probabilities between 0.5 and 0.66; only a small portion of the plot assigns probabilities lower than 0.5 when both w and priod are at extreme ends. Therefore, one can be confident to say that the theta is bigger or equal than 0.5.
+
+<br />
+
+#### 3.3a.
+
+```{r}
+ya <- c(12, 9, 12, 14, 13, 13, 15, 8, 15, 6);
+yb <- c(11, 11, 10, 9, 9, 8, 7, 10, 6, 8, 8, 9, 7);
+
+ya_mean <- (120 + sum(ya)) / (10 + length(ya));
+ya_var <- (120 + sum(ya)) / (10 + length(ya))^2;
+yb_mean <- (12 + sum(yb)) / (1 + length(yb));
+yb_var <- (12 + sum(yb)) / (1 + length(yb))^2;
+
+ya_CI <- qgamma(c(.025, .975), 120 + sum(ya), 10 + length(ya));
+yb_CI <- qgamma(c(.025, .975), 12 + sum(yb), 1 + length(yb));
+```
+posterior mean and variance of $y_a$ are `r ya_mean`and `r ya_var`
+posterior mean and variance of $y_b$ are `r yb_mean` and `r yb_var`
+
+95% quantile- based confidence intervals for $\theta_a$ is `r ya_CI`
+95% quantile- based confidence intervals for $\theta_b$ is `r yb_CI`
+
+#### 3.3b.
+```{r}
+n0 <- 1:50;
+expected_theta <- (12 * n0 + sum(yb)) / (n0 + length(yb));
+ggplot(data = data.frame(expected = expected_theta, n0 = n0), aes(x = n0, y = expected)) + geom_smooth() + geom_point(shape=4);
+```
+MLE of $\theta_a$ is `r (120 + sum(ya))/ (10 + length(ya))`. 
+For posterior expectation of $\theta_b$ to be close to this number, a prior with large $n_0$ is required.
+
+#### 3.3c.
+* The fact that the two types of mouse are related should be incorpoated into the priod of $\theta_b$. 
+<br />
+
+#### 3.9
+$$
+\begin{aligned}
+ p(\theta \mid n_0, t_0) &\propto \text{dgalenshore}\left(\theta, {a n_0 + 1}, {\sqrt{-n_0 t_0}} \right)
+\end{aligned}
+$$
+#### a. 
+```{r}
+dgalenshore = function(y, a, theta) {
+  (2 / gamma(a)) * theta^(2 * a) * y^(2 * a - 1) * exp(-1 * (theta^2) * y^2)
+}
+y = seq(0.02, 5, by = 0.02)
+df = rbind(
+  data.frame(y = y, density = dgalenshore(y, 1, 1), dist = 'alpha = 1, theta = 1'),
+  data.frame(y = y, density = dgalenshore(y, 10, 1), dist = 'alpha = 10, theta = 1'),
+  data.frame(y = y, density = dgalenshore(y, 10, 5), dist = 'alpha = 10, theta = 5')
+)
+
+ggplot(df, aes(x = y, y = density, group = dist, color = dist)) +
+  geom_line()
+```
+<br />
+
+#### b.
+$$
+\begin{aligned}
+\text{Galenshore}\left(a (n_0 + n) + 1, \sqrt{- (n_0 + n) (n_0 t_0 + n \bar{t}(\mathbf{y}))} \right) \\
+\end{aligned}
+$$
+<br />
+
+#### d.
+$$
+\begin{aligned}
+\mathbb{E}(\theta \mid y_1, \dots, y_n) = \frac{\Gamma\left(\frac{1}{2} a(n_0 + n) + 2 \right)}{ \sqrt{- (n_0 + n) (n_0 t_0 + n \bar{t}(\mathbf{y}))} \Gamma\left( a(n_0 + n) + 1 \right)}
+\end{aligned}
+$$
+
+
+#### 1. 
+```{r echo=T}
+estBetaParams <- function(mu, var) {
+  alpha <- ((1 - mu) / var - 1 / mu) * mu ^ 2;
+  beta <- alpha * (1 / mu - 1);
+  return(params = list(alpha = alpha, beta = beta));
+}
+prior <- estBetaParams(.6, .3^2);
+
+n <- 1000;
+success <- .65 * n;
+posterior <- list(alpha = prior$alpha + success, beta = prior$beta + n);
+
+curve(dbeta(x, prior$alpha + success, prior$beta + n - success));
+curve(dbeta(x, prior$alpha, prior$beta), add = TRUE );
+
+```
+* Prior $\alpha$ is `r prior$alpha` and prior beta is `r prior$beta`.
+
+#### 2. 
+
+```{r}
+Pr_C1_Prior <- 0.5;
+Pr_C2_Prior <- 0.5;
+
+Pr_C1_success <- 0.6;
+Pr_C2_success <- 0.4;
+
+Pr_C1_Post <- (Pr_C1_Prior * (1 - Pr_C1_success)^2) /
+  (Pr_C1_Prior * (1 - Pr_C1_success)^2 + Pr_C2_Prior * (1 - Pr_C2_success)^2 );
+
+Pr_C2_Post <- (Pr_C2_Prior * (1 - Pr_C2_success)^2) /
+  (Pr_C1_Prior * (1 - Pr_C1_success)^2 + Pr_C2_Prior * (1 - Pr_C2_success)^2 );
+
+C1_expected_count <- 1/(Pr_C1_success);
+C2_expected_count <- 1/(Pr_C2_success);
+
+total_expected_count <- Pr_C1_Post * C1_expected_count + Pr_C2_Post * C2_expected_count
+```
+* Expected count until first head is `r total_expected_count` spins.
+<br />
+
+#### 3.1 
+$$\mathcal{N}({{180\over 40^2} + {150n\over 20^2}\over{1\over40^2} + {n\over20^2}},\,{1\over{1\over 40^2} + {n\over 20^2}})$$
+<br />
+
+#### 3.2
+```{r}
+n <- 10;
+theta_post <- ((180/(40^2)) + ((150*n)/(20^2))) / ((1/40^2)+(n/20^2));
+var <- 1 / ((1/40^2)+(n/20^2));
+
+CI <- qnorm(c(.025, .975), theta_post, sqrt(var));
+```
+95% posterior interval is between `r CI[1]` and `r CI[2]`
+
+#### 3.3
+```{r}
+thetas <- seq(180 - 4*40, 180 + 4*40, length.out = 1000);
+
+prior <- rnorm(1000, 180, 40);
+likelihood <- dnorm(150, mean = thetas, sd = 20);
+post <- rnorm(1000, theta_post, sqrt(var));
+
+colors <- c("red", "blue", "black");
+labels <- c("likelihood", "prior", "post")
+
+#plot(density(post), xlim = c(min(thetas), max(thetas)), ylim = c(0, 0.08), type = 'l', col = colors[1], xlab = "Theta", ylab = "Density");
+plot(likelihood, x = thetas, type = 'l', col = colors[1], xlab = "Theta", ylab = "Density", xlim = c(min(thetas), max(thetas)), ylim = c(0, 0.065));
+lines(density(prior), col = colors[2]);
+lines(density(post), col = colors[3]);
+
+legend("topright", inset=.05, title="Distributions",
+  labels, lwd=2, lty=c(1, 1, 1, 1, 2), col=colors)
+```
+
+
+#### 4a. 
+$$
+\mathcal{L}(p_i\mid 100, y_i) = {100 \choose y_i} {\prod_{i=1}^{6}} p^{y_i}_{i} 
+$$
+<br />
+
+#### 4b.
+* Dirichlet distribution
+
+$$
+f \left(x_1,\ldots, x_{K}; \alpha_1,\ldots, \alpha_K \right) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^K x_i^{\alpha_i - 1}
+$$
+
+where
+
+$$
+\mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^K \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^K \alpha_i\right)},\qquad\boldsymbol{\alpha}=(\alpha_1,\ldots,\alpha_K).
+$$
+
+#### 4c.
+* In binomial case people tend to use Beta(1,1) as prior. Hence we can use Dirichlet(1,1,1,1,1,1) as prior.
+
+#### 4d. 
+$$
+\mathrm{Dirichlet}(1 + 10,1+10,1+10,1+20,1+10,1+40)
+$$
+<br />
+

@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/427287/d3d4b2eb25e84e32984148db040142a2
+bundleId: https://api.rpubs.com/api/v1/document/427287/d3d4b2eb25e84e32984148db040142a2
+url: http://rpubs.com/danskin/427287
+when: 1539594502.1592

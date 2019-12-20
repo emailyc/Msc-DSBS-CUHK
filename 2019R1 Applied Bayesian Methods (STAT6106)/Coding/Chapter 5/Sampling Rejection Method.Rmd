@@ -1,0 +1,88 @@
+---
+title: "Rejection Method"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+###################
+#54. demo: Acceptance-Rejection Sampling
+# target: to sample from distribution p(x) = 20*x*(1-x)^3, for 0<x<1
+#Step 0. select envelop distribution: q(x)=1, 0<x<1
+#Step 1. determine the constant c such that p(x)/q(x)<=c
+#     use caculus to get the maximum value of f(x) = p(x)/q(x)= 20*x*(1-x)^3
+#       df(x)/dx = 0  => x=1/4, c=135/64
+#Step 2. sample x from distribution q(x)=1, 0<x<1
+#        sample u from uniform distribution Uniform[0,c*q(x)]=Uniform[0,135/64]
+#               (this is equivalent to sample u' from Uniform[0,1], then set u=c*u'
+#Step 3. reject x if u>p(x), otherwise keep x
+
+c=135/64 #height of q(x)
+n = 10000   #try this number of time
+result = rep(NA, n)  #default vaule is NA
+for (i in 1:n)
+{
+	x = runif(1,0,1) #p*(x)
+	u = c*runif(1,0,1) #[0,c*q(x)] the dot
+	if ( u < 20*x*(1-x)^3 ) #if the dot is lower than p*(x)
+		result[i] = x
+	else  
+		result[i] = NA   #if reject, put NA as the value
+}
+output=result[!is.na(result)]
+
+
+#you can check the percentage of rejection
+length(output)/n
+
+#you draw the normalized histogram of sampled data, and compare with the target density
+hist(output,freq=FALSE)
+x = seq(0, 1, 0.01)
+lines(x, 20*x*(1-x)^3, lwd=3, col='red')
+
+#you can summarize the sample
+summary(output)
+sd(output)
+#you can draw the autocorrelation function of the sample vector of data
+acf(output) # the ACF of the samples
+```
+
+```{r}
+##5'. Beta distribution with Acceptance-Rejection Sampling
+## Works for a >= 1, b >= 1
+## Note this is less efficient than transform method above
+my.rbeta.rej = function(n, a, b)
+{
+  y = numeric(n)
+  num.accepted = 0
+  num.trials = 0
+  while(num.accepted < n)
+  {
+    num.trials = num.trials + 1
+    u = runif(1) #dot
+    x = runif(1)
+    if(u < x^(a-1) * (1 - x)^(b-1) )
+    {
+      num.accepted = num.accepted + 1
+      y[num.accepted] = x
+    }
+  }
+
+  cat(paste("Acceptance rate =", n / num.trials, "\n"))
+  return(y)
+}
+
+a = 2
+b = 5
+
+x = my.rbeta.rej(10000, a, b)
+hist(x, freq=FALSE, main = "Beta Distribution Sampling (Acceptance-Rejection)")
+t = seq(0, 1, 0.01)
+lines(t, dbeta(t, a, b), lwd=3, col='red')
+```
+

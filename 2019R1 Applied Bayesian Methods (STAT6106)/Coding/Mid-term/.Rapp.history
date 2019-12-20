@@ -1,0 +1,68 @@
+integrate(sin, 0, pi)
+integrate(3*sin, 0, pi)
+integrate(function(x)3*sin(x), 0, pi)
+set.seed(0)#
+N <- 1000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+lsd= sqrt(0.5)#
+a=sqrt(pi)#
+for(i in 1:10){#
+  X <- rlnorm(N,3,lsd)#
+  Y <- abs(cos(X))#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}#
+estimate= a* estimate
+estimate
+set.seed(0)#
+N <- 1000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+lsd= sqrt(0.5)#
+a=sqrt(pi)#
+for(i in 1:10){#
+  X <- rlnorm(N,3,lsd)#
+  Y <- abs(cos(X))#
+  estimate[i] <- mean(Y*sqrt(pi))#
+  data <- cbind(data,Y)#
+}#
+estimate= a* estimate
+estimate
+set.seed(0)#
+g <- function(x){abs(cos(x))/x*exp(-(log(x)-3)^2)}#
+#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rlnorm(N)#
+  Y <- g(X)/dlnorm(X)#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}
+estimate
+mean(estimate)#
+sd(estimate)
+set.seed(0)#
+N <- 1000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+lsd= sqrt(0.5)#
+a=sqrt(pi)#
+for(i in 1:10){#
+  X <- rlnorm(N,3,lsd)#
+  Y <- abs(cos(X))#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}#
+estimate= a* estimate#
+estimate#
+mean(estimate)#
+sd(estimate)
+integrate(g, 0, Inf)
+integrate(g, 0, Inf)
+integrate(g, 0, 9999)
+g
+? integrate
+integrate(g, 0, Inf)

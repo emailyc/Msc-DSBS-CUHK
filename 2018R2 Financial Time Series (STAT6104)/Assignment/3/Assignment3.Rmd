@@ -1,0 +1,205 @@
+---
+title: <center><h1> 2018R2 Financial Time Series (STAT6104)  Assignment 3</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+    code_folding:
+  word_document: default
+--- 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("forecast")
+```
+
+```{r}
+Y <- ts(c(1.33,-0.56,-1.31,-0.37,0.05,0.46,2.00,-0.19,
+         -0.25,1.07,-0.17,1.14,0.63,-0.75,0.15,0.71,
+         0.45,-0.14,0.57,1.43));
+```
+
+## 1
+```{r, warning=FALSE, message=FALSE}
+plot1 <- forecast::autoplot(Y)
+plot2 <- forecast::ggAcf(Y)
+plot3 <- forecast::ggPacf(Y)
+gridExtra::grid.arrange(plot1, plot2, plot3, nrow=3)
+```
+
+## 2
+```{r, warning=FALSE, message=FALSE}
+c2 <- acf(Y)$acf[3];
+theta <- uniroot(f = function(x){ (x / (x^2 + 1) ) - c2}, interval = c(-1, 0))$root;
+```
+
+$$\theta = `r theta`$$
+$$
+\begin{aligned}
+  \sigma^{2} * \hat{\theta} &= C_2 \\
+  \sigma^{2} &= C_2 / \hat{\theta} \\
+  &= `r c2`\ / `r theta` \\
+  &= `r c2 / theta`
+\end{aligned}
+$$
+
+
+
+
+
+## 3
+
+```{r}
+p = 2;
+X = matrix(nrow = length(Y) - p, ncol = p);
+for (i in 1:(length(Y)-p))
+{
+  X[i,] <- Y[(i):(i+1)]
+}
+X[,1:2] = X[,2:1];
+model <- lm(Y[-seq_len(p)]~X-1)
+phi_1 <- coef(model)[1];
+phi_2 <- coef(model)[2];
+
+z <- rep(0, length(Y));
+for (i in 3:length(Y))
+{
+  z[i] <- Y[i] - phi_1 * Y[i - 1] - phi_2 * Y[i - 2];
+}
+z <- z[-seq_len(p)];
+```
+
+
+$$\phi _1 = `r phi_1`$$
+$$\phi _2 = `r phi_2`$$
+
+95% CI for $\phi_1$ = (`r summary(model)$coefficients[1,1] - qnorm(.975) * summary(model)$coefficients[1,2]`, `r summary(model)$coefficients[1,1] + qnorm(.975) * summary(model)$coefficients[1,2]`)
+
+95% CI for $\phi_2$ = (`r summary(model)$coefficients[2,1] - qnorm(.975) * summary(model)$coefficients[2,2]`, `r summary(model)$coefficients[2,1] + qnorm(.975) * summary(model)$coefficients[2,2]`)
+
+$$\sigma^{2} = `r sum(z ^ 2) / length(z)`$$
+
+
+## 4
+
+```{r}
+sampleACF <- acf(x = Y, lag.max = 2, plot = FALSE)$acf
+YWalker <- matrix(c(1, sampleACF[2], sampleACF[2], 1), 2)
+r <- c(sampleACF[2], sampleACF[3])
+phi <- solve(YWalker, r)
+```
+$$\phi_1 = `r phi[1]`$$
+$$\phi_2 = `r phi[2]`$$
+
+
+## 5
+
+```{r}
+CLS <- function(parameters, findSigma = FALSE)
+{
+  z <- rep(0, length(Y));
+  z[1] <- Y[1];
+  for (i in 2:length(Y))
+  {
+    z[i] <- Y[i] - parameters[1] * Y[i - 1] - parameters[2] * z[i - 1];
+  }
+  if (findSigma)
+  {
+    return (z)
+  }
+  
+  return (sum(z ** 2));
+}
+
+phi <- optim(par = c(.1,.1), fn = CLS)$par[1]
+theta <- optim(par = c(.1,.1), fn = CLS)$par[2]
+z <- CLS(c(phi, theta), findSigma = TRUE)
+```
+
+$$\phi = `r phi`$$
+$$\theta = `r theta`$$
+$$\sigma^{2} = `r sum(z ^ 2) / length(Y)`$$
+
+## 6
+
+```{r}
+MLE <- arima(Y, order = c(1, 0, 1));
+phi <- MLE$coef[1];
+theta <- MLE$coef[2];
+z <- rep(0, length(Y));
+for (i in 2:length(Y))
+{
+  z[i] <- Y[i] - phi * Y[i - 1] - theta * z[i - 1];
+}
+```
+$$\phi = `r phi`$$
+$$\theta = `r theta`$$
+$$\sigma^{2} = `r sum(z^2) / length(z)`$$
+Maximized log-likelihood = `r MLE$loglik`
+
+## 7
+
+```{r}
+IC <- function(x, AR = 1)
+{
+  fit <- arima(x, c(AR, 0, 0));
+  n <- length(x);
+  p <- AR;
+  q <- 0
+  sig <- fit$sigma2
+  FPE <- sig*(n+p)/(n-p);
+  FPE
+}
+
+FPEs <- rep(0, 5);
+for (i in 1:6)
+{
+  FPEs[i] <- IC(Y, i)
+}
+```
+AR(`r which.min(FPEs)`) is the best in terms of FPE.
+
+## 8
+
+```{r}
+IC <- function(x, MA = 1)
+{
+  fit <- arima(x, c(0, 0, MA));
+  n <- length(x);
+  p <- 0;
+  q <- MA;
+  sig <- fit$sigma2
+  fit$aic
+}
+
+AICC <- rep(0, 5);
+for (i in 1:5)
+{
+  AICC[i] <- IC(Y, i)
+}
+```
+MA(`r which.min(AICC)`) is the best in terms of AICC.
+
+## 9
+
+```{r}
+p <- 0;
+q <- 1;
+h <- 10;
+n <- length(Y)
+MA <- arima(Y, order = c(0, 0, q));
+resid <- MA$residuals;
+r.z=as.numeric(acf(resid, h)$acf);
+portmanteau.stat <- n*(n+2)*sum((r.z[-1]^2)/(n-(1:h)));
+portmanteau.stat > qchisq(0.95,h - p - q)
+```
+
+$$H_0: Z_t \sim WN$$
+
+$$H_1: Z_t \ not \sim WN$$
+
+Portmanteau statistic is `r portmanteau.stat`; we fail to reject $H_0$. 
+
+## 10
+White Noise

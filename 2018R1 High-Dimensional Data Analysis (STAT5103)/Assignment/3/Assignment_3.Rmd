@@ -1,0 +1,186 @@
+---
+title: <center><h1>2018R1 High-Dimensional Data Analysis (STAT5103) Assignment 3</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo=FALSE}
+pcaCharts <- function(x) {
+    x.var <- x$sdev ^ 2
+    x.pvar <- x.var/sum(x.var)
+    print("proportions of variance:")
+    print(x.pvar)
+    
+    par(mfrow=c(2,2))
+    plot(x.pvar,xlab="Principal component", ylab="Proportion of variance explained", ylim=c(0,1), type='b')
+    plot(cumsum(x.pvar),xlab="Principal component", ylab="Cumulative Proportion of variance explained", ylim=c(0,1), type='b')
+    screeplot(x)
+    screeplot(x,type="l")
+    par(mfrow=c(1,1))
+}
+```
+
+#Principal Component Analysis (PCA) on carm Car Dataset
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("GGally")
+library("dplyr")
+library("ggbiplot")
+```
+
+```{r}
+pc_car <- read.csv('carm.txt', header = FALSE, sep = '')
+names <- c("Model", "Economy", "Service", "Non-depreciation_of_value", "Price", "Design", "Sporty_car", "Safety", "Easy_handling")
+names(pc_car) <- names
+rownames(pc_car) <- pc_car[,1]
+pc_car <- pc_car[,-1]
+summary(pc_car)
+```
+<br />
+
+#Analyzing carm.txt dataset
+carm.txt data sets comes with basic dataset with 8 variables. Using PCA, we are going to find linear combinations of the variables that both maximises variance and are mutually uncorrelated.
+```{r}
+head(pc_car)
+```
+
+
+###A. Compute the Principal Components. <br />
+
+```{r}
+#Principle Component using non-centered, non-scaled datas
+pc_car_pca <- prcomp(pc_car)
+names(pc_car_pca)
+pc_car_pca
+```
+
+Above PCA output returns 8 variable loadings as rotation. The number of variable loadings in rotation is equal to number variables in the dataset. These are also the eigen vectors of the covariance matrix of the original dataset.
+
+Each variable loadings also represent how to linearly combine the original dataset into a new dataset with orthogonal variables (Principal Components). Let's take a look at the first two Principle Components:
+
+$$
+\begin{align*}
+y_1 = 
+    & `r pc_car_pca$rotation[1,1]`\;  \mathrm{Economy} \\
+    &+ `r pc_car_pca$rotation[2,1]`\;  \mathrm{Service}    \\
+    &+ `r pc_car_pca$rotation[3,1]`\;  \mathrm{Non_depreciation\_of\_value} \\
+    & `r pc_car_pca$rotation[4,1]`\;  \mathrm{Price} \\
+    &+ `r pc_car_pca$rotation[5,1]`\;  \mathrm{Design}   \\
+    &+ `r pc_car_pca$rotation[6,1]`\;  \mathrm{Sporty\_car}  \\
+    &+ `r pc_car_pca$rotation[7,1]`\;  \mathrm{Safety}  \\
+    & `r pc_car_pca$rotation[8,1]`\;  \mathrm{Easy\_handling}  
+\end{align*}
+$$
+
+$$
+\begin{align*}
+y_2 = 
+    & `r pc_car_pca$rotation[1,2]`\;  \mathrm{Economy} \\
+    & `r pc_car_pca$rotation[2,2]`\;  \mathrm{Service}    \\
+    & `r pc_car_pca$rotation[3,2]`\;  \mathrm{Non_depreciation\_of\_value} \\
+    & `r pc_car_pca$rotation[4,2]`\;  \mathrm{Price} \\
+    &+ `r pc_car_pca$rotation[5,2]`\;  \mathrm{Design}   \\
+    &+ `r pc_car_pca$rotation[6,2]`\;  \mathrm{Sporty\_car}  \\
+    & `r pc_car_pca$rotation[7,2]`\;  \mathrm{Safety}  \\
+    & `r pc_car_pca$rotation[8,2]`\;  \mathrm{Easy\_handling}  
+\end{align*}
+$$
+
+Next step is to identify coverage of variance in dataset by individual Principal Components. `summary()` function can be used or scree plot can be used to explain the variance.
+```{r}
+summary(pc_car_pca)
+```
+
+```{r, fig.align='center'}
+pcaCharts(pc_car_pca)
+```
+
+* The top left skree plot, the proportion of variance explained decreased from the first principle component onward. This means the first principle component explains most of the variation in the dataset, second principle component explains the second most variation, and so on. 
+
+* We can see that from the third principle component onward, the variance explained are minuscule. We can consider dropping them in favour of a lower dimension dataset since these principle components explain so little variance of the original dataset.
+
+* The bottom two graphs represent essentially the same information but measured in variance, which is also the eigen value of the covariance matrix of the original dataset.
+
+#Principle Component Biplot
+```{r, fig.align='center'}
+g <- ggbiplot(pc_car_pca, obs.scale = 1, var.scale = 1, labels=row.names(pc_car),
+              ellipse = TRUE, 
+              circle = TRUE)
+g <- g + scale_color_discrete(name = '')
+g <- g + theme(legend.direction = 'horizontal', 
+               legend.position = 'top')
+
+g <- g + labs(title = "carm Principle Component Biplot")
+g
+```
+
+**Interpretation of biplot** : For each car, the data set contains scores on 8 different attributes: `Economy`, `Service`, `Non-depreciation_of_value`, `Price`, `Design`, `Sporty_car`, `Safety`, and `Easy_handling`. The plot shows the first two Principal Component (PC) scores and the loading vectors in a single biplot display.
+
+**Interpreting car types** : The principal axes of this plot represent PC1 and PC2 scores and individual cars are plotted on this basis.
+
+Cars that are close together have similar scores profiles. For example, similar scores are given to `Trab` and `Wart` across all eight attributes. This can also be interpreted as these two cars score similarly across all eight attributes. The same is true for `VWGo` and `OpVe`, although their scores are likely to be very different then those about `Trab` and `Wart`, since the two pairs of points are relatively far apart.
+
+**Interpreting Loading Vectors** : The loading vectors are a projected coordinate system for the original variables. So if a car is projected perpendicularly onto, say, the `Price` vector - we should get the relative `Price` score of that car. For example, a `Jagu`, which has a `Price` score of `r pc_car['Jagu',4]`, is very far along in the direction of the `Price` vector; whereas a `Trab` which has a `Price` score of `r pc_car['Trab',4]` only, would be very far along in the opposite direction of the `Price` vector if we project it perpendicularly on to the `Price` vector.
+
+A loading vector points in the direction which has the highest squared multiple correlation with the Principal Components. Thus, `Price` is better explained by PC1 than PC2 because its vector is pointing in the direction closer to PC1; whereas `Easy_handling` is much better explained by PC2 because its vector overlaps almost entirely with PC2. Vectors that point in the same direction correspond to attributes that have similar weight on PC1 and/or PC2, and can be interpreted as having the same meaning under the context of the dataset. 
+
+The length of the vector is proportional to the sum of the squared correlation between the attribute and the PCs. The longer the vector, the more correlated it is with PC1 and/or PC2. The `Price` vector is almost touching the circumference of the unit circle, and thus well explained by the first two PCs. On the other hand, the `Easy_handling` vector is much shorter, indicating that a large portion of the variance is explained by the other PCs not drawn in this plot.  
+<br />
+
+#Correlation between the original variables and the first two PCs.
+```{r}
+n <- nrow(pc_car)
+sigma <- (n-1) * cov(pc_car) / n
+CovYX <- t(pc_car_pca$rotation) %*% sigma
+VarY<- t(eigen(sigma)$vectors) %*% sigma %*% eigen(sigma)$vectors
+DiagvarY<- diag(1/sqrt(diag(VarY)))
+DiagSigma<- diag(1/sqrt(diag(sigma)))
+CorYX <- DiagvarY %*% t(pc_car_pca$rotation) %*% sigma %*% DiagSigma
+CorYX <- t(CorYX)[,1:2]
+CorYX <- cbind(CorYX, CorYX[,1]^2 + CorYX[,2]^2)
+colnames(CorYX) <- c(colnames(pc_car_pca$rotation)[1:2], "r^2 sum"); rownames(CorYX) <- colnames(pc_car)
+CorYX
+```
+
+This table confirms our findings in the biplot. In the leftmost two columns, we can see that PC1 is indeed highly correlated to `Price`, `Non-depreciation_of_value`, and `Design`; PC2 is highly correlated to `Easy_handling` which correspond to the huge overlapping between the vector and the axis. 
+
+The rightmost column shows the sum of squared correlation between the first two PCs and each car attribute. This can be interpret as the proportion of variance of the attribute explained by both PCs. Indeed, `Price`, which has the largest $r^{2}$ sum, also has the longest loading vector. 
+
+####For the sake of completeness, let's take a look at other Principle Components.
+```{r, fig.align='center', echo=FALSE}
+g <- ggbiplot(pc_car_pca, obs.scale = 1, var.scale = 1, labels=row.names(pc_car),
+              ellipse = TRUE, 
+              circle = TRUE,
+              choices = 3:4 )
+g <- g + scale_color_discrete(name = '')
+g <- g + theme(legend.direction = 'horizontal', 
+               legend.position = 'top')
+
+g <- g + labs(title = "carm Principle Component Biplot")
+g
+```
+
+This is the biplot of PC3 and PC4. Each vectors are very short because the PCs in this plot explain so few of their variations. There are also lots of overlapping between vectors, indicating the leftover variation from PC1 and PC2 are mostly redundant.
+
+
+##Summary on the cars (based on the first biplot)
+
+* The higher the car score on `Price` and `Economy` the lower it is scored on things like `Safety`,  `Service`,  and `Non-depreciation_of_value`. So safety and services does come at a price. And it also makes sense that expensive cars are better at retaining values.
+
+* `Safety` and `Service` can be interpret as the same thing under context of the data, as their loading vector point in a very similar direction.
+
+* What you pay is what you get: the price tag directly reflect how good a car score on `Sporty_car` and `Design`. The loading vector of `Price` and the other two are almost pointing at 180$^\circ$ away from each other. This means the higher the price, the better a car score at  `Sporty_car` and `Design`.
+
+* `Sporty_car` and `Design` are essentially the same measure as their loading vectors overlap. Maybe people only appreciate the appearance of sporty cars these days.
+
+* Whether a car is a sports car has relatively little to do with the easiness to handle. The `Sporty_car` loading vector points generally orthogonal (just a little more than 90$^\circ$) to the `Easy_handling` vector. 

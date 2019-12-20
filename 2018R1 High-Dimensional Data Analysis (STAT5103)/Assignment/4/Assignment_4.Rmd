@@ -1,0 +1,145 @@
+---
+title: <center><h1>2018R1 High-Dimensional Data Analysis (STAT5103) Assignment 4</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo=FALSE}
+pcaCharts <- function(x) {
+    x.var <- x$sdev ^ 2
+    x.pvar <- x.var/sum(x.var)
+    print("proportions of variance:")
+    print(x.pvar)
+    
+    par(mfrow=c(2,2))
+    plot(x.pvar,xlab="Principal component", ylab="Proportion of variance explained", ylim=c(0,1), type='b')
+    plot(cumsum(x.pvar),xlab="Principal component", ylab="Cumulative Proportion of variance explained", ylim=c(0,1), type='b')
+    screeplot(x)
+    screeplot(x,type="l")
+    par(mfrow=c(1,1))
+}
+```
+
+#Principal Component Analysis (PCA) on uscrime Dataset
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("GGally")
+library("dplyr")
+```
+
+```{r}
+uscrime <- read.csv('uscrime.txt', header = FALSE, sep = '')
+names <- c("Land_area", "Population", "Murder", "Rape",
+           "Robbery", "Assault", "Burglary", "Larceny",
+           "Auto_theft", "states_region_num", "states_division_num")
+names(uscrime) <- names
+uscrime <- uscrime[,3:9]
+summary(uscrime)
+```
+<br />
+
+#Analyzing uscrime.txt dataset
+carm.txt data sets comes with basic data set with 7 variables. Using PCA, we are going to find linear combinations of the variables that both maximizes variance and are mutually uncorrelated.
+```{r}
+head(uscrime)
+```
+
+
+###A. Compute the Principal Components. <br />
+
+```{r}
+#Principle Component using non-centered, non-scaled datas
+uscrime_pca <- prcomp(uscrime)
+names(uscrime_pca)
+uscrime_pca
+```
+
+Above PCA output returns 7 variable loadings as rotation. The number of variable loadings in rotation is equal to the number of variables in the data set. These are also the eigen vectors of the covariance matrix of the original dataset.
+
+Next step is to identify coverage of variance in dataset by individual Principal Components. `summary()` function can be used or scree plot can be used to explain the variance.
+```{r}
+summary(uscrime_pca)
+```
+
+```{r, fig.align='center'}
+pcaCharts(uscrime_pca)
+```
+
+The first principle component explains almost 90% of the variance!
+
+If we were to perform data reduction, we can conclude that the first principle component is enough to represent the entire dataset. In the context of factor analysis, the reason why all 7 variables 
+have similar patterns of responses is because they are all governed by one latent variable.
+
+Since the dataset is called `uscrime`, we can easily conclude that the one underlining, measurable variable, is crime! However, this is boring. We didn't even need principle component analysis to know all variables in the dataset are governed by crime data in the U.S.. 
+
+We can try to divide the variables into groups according to their common characteristics; maybe there are more than one latent variable governing these variables. Since the first two principle components can explain over 96% of the variance, we may start with two factors.
+<br />
+
+#Maximum Likelihood Factor Analysis without rotation
+```{r}
+mlm <- psych::fa(uscrime, nfactors = 2, rotate = "none", fm="ml")
+mlm_load <- mlm$loadings[1:7,]
+mlm_com <- mlm$communalities
+mlm_psi <- mlm$uniquenesses 
+mlm_tbl <- cbind(mlm_load, mlm_com, mlm_psi)
+mlm_tbl
+mlm$Vaccounted
+```  
+<br />
+
+Factor loadings can be interpreted like standardized regression coefficients, one could also say that the variable `r names(which.max(mlm_load[,1]))`` has a correlation of `r max(mlm_load[,1])` with Factor 1.
+
+The precise value of each loading are not our main concern; we ar?re looking for groups of high values that hopefully make sense and lead to a descriptive factor. Without rotation, all 7 variables load on the first two axes and is currently impossible to see any patterns.
+
+`Robbery` and `Auto_theft` have relatively high $\Psi$ value, this is bad because a high $\Psi$ indicates that particular variable is unique and does not load into any factor well. 
+
+If we subtract the $\Psi$ value from 1, we get the column commonality. Commonality is the proportion of variance of the $i$th variable contributed by the m common factors. Looking at the commonality for the variable `r names(which.max(mlm_com))`, which has a value of `r which.max(mlm_com)`. This value can be interpreted as: `r scales::percent(which.max(mlm_com))` of the `r names(which.max(mlm_com))` variance was contributed by the two common factors. Since some of the $\Psi$ values are high, the two factors may not be explaining the overall variance so well. 
+
+Sum of squared loadings tells us how much of all observed variance was explained by that factor. Here, the first factor is able to explain `r mlm$Vaccounted["SS loadings", 1]` units of variance. Some say a factor is worth keeping if the SS loading is greater than 1. This is the case for both factors factor.
+
+The two factors explains roughly `r scales::percent(mlm$Vaccounted["Cumulative Var",2])` of the total variance. 
+
+Since our factor loadings are difficult to interpret, perhaps we can get better results if we perform rotation on the loading.
+
+#Maximum Likelihood Factor Analysis with varimax rotation
+```{r}
+mlmv <- psych::fa(uscrime, nfactors = 2, rotate = "varimax", fm="ml")
+mlmv_load <- mlmv$loadings[1:7,]
+mlmv_com <- mlmv$communalities
+mlmv_psi <- mlmv$uniquenesses 
+mlmv_tbl <- cbind(mlmv_load, mlmv_com, mlmv_psi)
+mlmv_tbl
+mlmv$Vaccounted
+```
+<br />
+
+After Varimax rotation, the factors are also a little more clear to interpret. `Murder`and `Assault`, are heavily loaded onto ML1. So it's clear that this is the Violence factor. The rest load heavily onto ML2, which maybe summarised as the 'Theft' factor. The variable `Rape` exhibits cross load; it is loaded onto both factors roughly 50/50. Perhaps Theft and Rape often occur at the same time, which does not sound surprising.
+
+Both SS loadings remain greater than 1. Also, the SS loadings are more evenly divided between both factors than before rotation. The difference between the variance explained among the two factors also narrowed, but the sum remains the same. Therefore rotation is able to better separate the latent factors using our variables, but does not improve the relationship between variables and factors. This is also evident by looking at the $\Psi$ values, which are exactly the same as before rotation. 
+
+#Principal Component Factor Analysis with varimax rotation
+```{r}
+pcfa <- psych::principal(r = uscrime, nfactors = 2, rotate = "varimax")
+pcfa_load <- pcfa$loadings[1:7,]
+pcfa_com <- pcfa$communality
+pcfa_psi <- pcfa$uniquenesses 
+pcfa_tbl <- cbind(pcfa_load, pcfa_com, pcfa_psi)
+pcfa_tbl
+pcfa$Vaccounted
+```
+
+Principal Component Factor Analysis gives even clearer separation than Maximum Likelihood Factor Analysis. Variables in our 'Theft' factor 'Violence factor have more even loadings than before. 
+
+The distance difference between the two methods can be seen in the $\Psi$ values. Principal Component Factor Analysis gives lower $\Psi$ values which sums up to `r sum(pcfa_psi)`; whereas $\Psi$ values from Maximum Likelihood Factor Analysis sums up to `r sum(sum(mlmv_psi))`.  By using Principal Component Factor Analysis, latent factors explains more variation of each of our variables. Both SS loadings and Proportion Variance are higher using Principal Component Factor Analysis. 
+
+The fact that Principal Component Factor Analysis finds latent factors which explains more variation is because PCA is inherently a method for finding directions/rotations of maximum variance from data sets. 

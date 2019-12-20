@@ -1,0 +1,274 @@
+---
+title: <center> <h1>"5102 Project"</h1> </center>
+author: "Yiu Chung Wong"
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+  word_document: default
+---
+
+####In this study, we investigate the dataset obtained from The World Bank: World Development Indicators. A Generalised Linear Model is used to perform a prediction analysis on the response variable: Mortality rate, using ???(number) predictor variables.
+
+```{r, echo = FALSE, results = 'hide'}
+library("sas7bdat")
+library("ggplot2")
+library("caret")
+library("nortest")
+library("reticulate")
+library("knitr")
+library("mice")
+
+use_condaenv(condaenv = "stat5102_", required = TRUE)
+opts_chunk$set(echo = FALSE,
+               results = FALSE,
+               warning = FALSE,
+               message = FALSE,
+               cache=TRUE,
+               python = reticulate::eng_python)
+
+import("scipy")
+import("pandas", "pd")
+import("numpy", "np")
+import("matplotlib.pyplot", "plt")
+import("statsmodels.api", "sm")
+
+STAT5102 <- 5102
+set.seed(STAT5102)
+```
+```{r}
+corstars <-function(x, method=c("pearson", "spearman"), removeTriangle=c("upper", "lower"),
+                     result=c("none", "html", "latex")){
+    #Compute correlation matrix
+    require(Hmisc)
+    x <- as.matrix(x)
+    correlation_matrix<-rcorr(x, type=method[1])
+    R <- correlation_matrix$r # Matrix of correlation coeficients
+    p <- correlation_matrix$P # Matrix of p-value 
+    
+    ## Define notions for significance levels; spacing is important.
+    mystars <- ifelse(p < .0001, "****", ifelse(p < .001, "*** ", ifelse(p < .01, "**  ", ifelse(p < .05, "*   ", "    "))))
+    
+    ## trunctuate the correlation matrix to two decimal
+    R <- format(round(cbind(rep(-1.11, ncol(x)), R), 2))[,-1]
+    
+    ## build a new matrix that includes the correlations with their apropriate stars
+    Rnew <- matrix(paste(R, mystars, sep=""), ncol=ncol(x))
+    diag(Rnew) <- paste(diag(R), " ", sep="")
+    rownames(Rnew) <- colnames(x)
+    colnames(Rnew) <- paste(colnames(x), "", sep="")
+    
+    ## remove upper triangle of correlation matrix
+    if(removeTriangle[1]=="upper"){
+      Rnew <- as.matrix(Rnew)
+      Rnew[upper.tri(Rnew, diag = TRUE)] <- ""
+      Rnew <- as.data.frame(Rnew)
+    }
+    
+    ## remove lower triangle of correlation matrix
+    else if(removeTriangle[1]=="lower"){
+      Rnew <- as.matrix(Rnew)
+      Rnew[lower.tri(Rnew, diag = TRUE)] <- ""
+      Rnew <- as.data.frame(Rnew)
+    }
+    
+    ## remove last column and return the correlation matrix
+    Rnew <- cbind(Rnew[1:length(Rnew)-1])
+    if (result[1]=="none") return(Rnew)
+    else{
+      if(result[1]=="html") print(xtable::xtable(Rnew), type="html")
+      else print(xtable::xtable(Rnew), type="latex") 
+    }
+} 
+
+```
+
+```{python}
+#some self defined functions
+
+def calculate_mse(y_true, y_pred, n, k):
+    resid = (y_true - y_pred)
+    rss = np.sum(resid**2)
+    mse = rss / (n - (k + 1))
+    return mse
+```
+
+## Read Data
+```{r}
+world_bank = read.sas7bdat("project_data.sas7bdat", debug=FALSE)
+```
+
+# Preliminary Data Manipulation
+---
+
+First we remove a few variables:
+
+*  Year
+*  YearCode
+*  Country Name
+*  Country Code
+
+This is because they contribute no added value to our subsequent analysis.
+
+The variable "Age dependency ratio (% of working-age population)" includes people who are below 15 or above than 64. Mean while, the variable "Age dependency ratio, young (% of working-age population)" only includes people below 15. To seperate these two, we will subtract the seond from the first.
+The original "Age dependency ratio (% of working-age population)" is renamed to "Age dependency ratio (% of working-age population)".
+```{r}
+#Drop the column Year and YearCode
+world_bank = world_bank[!names(world_bank) %in% c("Year", "YearCode", "Country.Name", "Country.Code")]
+
+#Age dependency ratio (% of working-age population) includes people who are below 15 or above than 64
+#Age dependency ratio, young (% of working-age population) only includes people below 15
+#hence the first one includes redundant information
+
+colnames(world_bank)[colnames(world_bank)=="Age.dependency.ratio....of.worki"] <- "Age.dependency.ratio.old"
+colnames(world_bank)[colnames(world_bank)=="Age.dependency.ratio..young....o"] <- "Age.dependency.ratio.young"
+colnames(world_bank)[colnames(world_bank)=="Mortality.rate..infant..per.1.00"] <- "Infant.Mortality"
+colnames(world_bank)[colnames(world_bank)=="Mortality.rate..under.5..per.1.0"] <- "U5.Mortality"
+colnames(world_bank)[colnames(world_bank)=="Mortality.rate..under.5..male..p"] <- "Male.Mortality"
+colnames(world_bank)[colnames(world_bank)=="Mortality.rate..under.5..female"] <- "Female.Mortality"
+
+world_bank["Age.dependency.ratio.old"] = world_bank["Age.dependency.ratio.old"] - world_bank["Age.dependency.ratio.young"]
+
+```
+
+```{r}
+head(world_bank, 5)
+```
+
+##Missing Data
+
+The data set contains some obviously problematic data. For instance, some variables contains more then 90% missing data. Here, we remove variables with more than 5% missing data, and remove cases with more than 15% missing points.
+
+```{r}
+#remove case where Mortality rate, under-5 (per 1,000 live births) is Nan
+world_bank = world_bank[!is.na(world_bank$U5.Mortality),] 
+rownames(world_bank) <- NULL
+
+#remove columns with more than 5% missing
+world_bank <- world_bank[,-which(colMeans(is.na(world_bank)) > 0.10)]
+rownames(world_bank) <- NULL
+
+#remove rows with more than 5 field missing
+world_bank <- world_bank[-which(rowSums(is.na(world_bank)) > 5),]
+rownames(world_bank) <- NULL
+```
+
+## Impute Data with Multiple Imputation by Chained Equations (MICE)
+
+Dessription
+```{r}
+world_bank_imputed <- mice(data = world_bank, m = 10, method="rf", seed = STAT5102, printFlag = FALSE)
+world_bank_imputed <- complete(world_bank_imputed)
+
+```
+
+The data is now ready for analysis.
+
+# Exploratory Data Analysis
+---
+
+##Distributions of **Mortality Rate Under 5, Per 1000/Births**
+```{r}
+qplot(world_bank_imputed$U5.Mortality, geom="histogram", bins = sqrt(nrow(world_bank_imputed))) 
+```
+
+The response variable for this project is the quantitative variable, **Mortality Rate Under 5, Per 1000/Births**; let's call it `U5.Mortality` from here onward. 
+Exploring the relstionship between `U5.Mortality` and each of the predictor variables would very much be benifitil. However, there are still `r ncol(world_bank)` variables remaining in the dataset, even after deletion. Hence we will focus on the predictor variables instead.
+
+```{r}
+cormat <- round(cor(world_bank_imputed),2)
+melted_cormat <- reshape2::melt(cormat)
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + 
+  ggtitle("Correlation Heatmap")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+
+
+```{r, render=TRUE}
+mortality_names_index = grep("Mortality$", colnames(world_bank))
+mortality_names <- colnames(world_bank)[mortality_names_index]
+#cor(world_bank[mortality_names])
+corstars(world_bank[mortality_names], result="html")
+```
+
+# Exploring correlations with OLS regression
+---
+
+We see that everything is highly corrrelated; they are essentially the same measure. Highly correlated predictors can lead to instability in our estimator, as well as increased variance. 
+
+Not only do these variables covary, their vaule are also extremely close to each other. It is very tempting for us to just use a single one of these variables to predict our response variable. Let's do this and see what's gonna happen if we just pick one of these predictors to predict Mortality rate, under-5 (per 1,000 births)? Here we use Mortality rate, infant (per 1,000 births).
+
+```{r}
+#create data partition
+inTrain <- createDataPartition(y=world_bank$U5.Mortality, p=0.80, list=FALSE)
+train <- world_bank[inTrain,]
+test <- world_bank[-inTrain,]
+```
+
+```{r}
+OLS <- lm(data = train, U5.Mortality ~ Infant.Mortality)
+summary(OLS)
+```
+
+## Normality Test
+```{r, results=T}
+shapiro.test(resid(OLS))
+```
+```{r, results=T}
+ks.test(resid(OLS), "pnorm", 0, 1)
+```
+```{r, results=T}
+ad.test(resid(OLS))
+```
+
+```{python}
+r.train["U5.Mortality"]
+```
+
+```{python pyplot, render=T, engine='python'}
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig = plt.figure(figsize = (12,6))
+ax1 = plt.subplot(221)
+ax2 = plt.subplot(222)
+ax3 = plt.subplot(212)
+
+ax1.scatter(r.train["U5.Mortality"], fitted_values)
+ax1.set_xlabel("True Values")
+ax1.set_ylabel("Predictions")
+ax1.set_title("True Values v.s. Predictions")
+
+ax2.scatter(fitted_values, residuals)
+ax2.axhline(y = 0, color='r', linestyle = '--')
+ax2.set_xlabel("Fitted values")
+ax2.set_ylabel("Residual")
+ax2.set_title("Residual Plot")
+
+sm.qqplot(residuals, line='s', ax=ax3, fit=True)
+
+plt.tight_layout()
+#plt.show()
+fig.savefig("pyplot.png")
+plt.close(fig)
+
+#print("Test R^2: " + str(lm.score(X = X_test, y = y_test)))
+#print("Test MSE: " + str(calculate_mse(y_test, lm.predict(X_test), X_test.shape[0], X_test.shape[1])))
+```
+
+
+# Multiple Regression
+```{r}
+multiple <- lm(data = world_bank, U5.Mortality ~ .)
+summary(multiple)
+```
+
+```{python}
+import missingno
+```

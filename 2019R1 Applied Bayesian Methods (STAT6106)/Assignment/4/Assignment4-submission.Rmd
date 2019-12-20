@@ -1,0 +1,328 @@
+---
+title: <center><h1> 2019R1 Applied Bayesian Methods (STAT6106) Assignment 4</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr");
+opts_chunk$set(echo = TRUE, results = TRUE , cache=TRUE, message=FALSE, warning = FALSE);
+options(width = 100);
+library("ggplot2");
+library("dplyr");
+library("forecast")
+library(gridExtra)
+library(rgl);
+library(truncnorm)
+```
+
+```{r, echo = T}
+set.seed(6106);
+```
+
+```{r class-sampl-functions, echo=FALSE}
+my.rexp = function(n, lambda)
+{
+  u = runif(n)
+  return(-log(u) / lambda)
+}
+
+my.rgamma = function(n, k, theta)
+{
+  x = matrix(my.rexp(n * k, 1/theta), k, n)
+  return(apply(x, MARGIN = 2, FUN = sum))
+}
+
+my.rbeta = function(n, alpha, beta)
+{
+  u = my.rgamma(n, alpha, 1)
+  v = my.rgamma(n, beta, 1)
+
+  return(u / (u + v))
+}
+```
+
+#### A.
+
+```{r}
+my.rf = function(n, df1, df2)
+{
+  num <- replicate(sum(rnorm(n = df1)^2) / df1, n = n)
+  denom <- replicate(sum(rnorm(n = df2)^2) / df2, n = n)
+  return(num / denom)
+}
+
+## Test against pdf
+df1 <- 2
+df2 <- 3
+x = my.rf(1000, df1, df2)
+hist(x, freq=FALSE, main = "F Distribution Sampling")
+t = seq(0, max(x), 0.01)
+lines(t, df(t, df1, df2), lwd=3, col='red')
+```
+
+<br />
+
+\newpage
+
+### B.
+
+$$\langle F^N\rangle = (b-a) \dfrac{1}{N } \sum_{i=0}^{N-1} f(X_i).$$
+
+```{r}
+monte_carlo <- function(func, n = 10e5, from = 0, to = 1)
+{
+  estimates <- replicate(n = 10, 
+                         expr = {
+                           x <- runif(n, min = from, max = 1) * to
+                           mean(func(x)) * (to - from)
+                           }
+                         )
+  c(mean(estimates), sd(estimates))
+}
+
+```
+
+#### B1.
+```{r}
+b1_func <- function(x)exp(-(x^2))
+b1 <- monte_carlo(b1_func, to = 4)
+b1_average <- b1[1]
+b1_sd <- b1[2]
+```
+* Monte Carlo estimate is `r b1_average` with standard deviation `r b1_sd`
+<br />
+
+#### B2.
+
+```{r}
+b2 <- monte_carlo(sin, to = pi)
+b2_average <- b2[1]
+b2_sd <- b2[2]
+```
+* Monte Carlo estimate is `r b2_average` with standard deviation `r b2_sd`
+\newpage
+
+### C.
+```{r}
+n <- 10e4
+burnin <- n / 2
+
+x <- rep(NA,n)
+x[1] <- 1
+
+xy <- matrix(data = rep(NA, n), nrow = n, ncol = 2)
+xy[1,] <- c(10,10)
+```
+
+
+#### C1.
+```{r}
+c1_target = function(x) sin(x)
+c1_x <- x
+for(i in 2:n)
+{
+  currentx = c1_x[i-1]
+  #proposedx = currentx + rnorm(1,mean=0,sd=1)
+  proposedx = runif(n = 1, min = 0, max = pi)
+  #c <- dnorm(currentx, proposedx, 1) / dnorm(proposedx, currentx, 1)
+  A =  c1_target(proposedx)/c1_target(currentx)
+  c1_x[i] <- ifelse(runif(1) < A, proposedx, currentx)
+}
+c1_x = c1_x[-(1:burnin)] #remove burnins
+c1_hist <- qplot(x = c1_x, y =..density.., geom="histogram",
+                 bins = 25, fill=I("grey"),  col=I("black"), xlab = "x", ylab = "Density") 
+c1_acf <- ggAcf(c1_x)
+gridExtra::grid.arrange(grobs = list(c1_hist, c1_acf), nrow=2)
+c1_mean <- mean(c1_x)
+c1_var <- var(c1_x)
+```
+* mean: `r c1_mean`
+* variance: `r c1_var`
+<br />
+
+#### C2.
+```{r, }
+c2_target = function(x, y) return(exp(-(x^2+x*y+y^2)))
+c2_target_log = function(x, y) return(-(x^2+x*y+y^2))
+c2_xy <- xy
+sd <- 5
+
+for(i in 2:n)
+{
+  currentx <- c2_xy[i - 1, 1]
+  currenty <- c2_xy[i - 1, 2]
+  proposedx <- rnorm(1, currentx, sd)
+  proposedy <- rnorm(1, currenty, sd)
+  log_A <- c2_target_log(proposedx, proposedy) - c2_target_log(currentx, currenty)
+  A <- exp(log_A) 
+  #c2_xy[i,] <- ifelse(runif(1) < A, c(proposedx, proposedy), c(currentx, currenty))
+  if(runif(1) < A){
+    c2_xy[i,1] <- proposedx
+    c2_xy[i,2] <- proposedy
+  }else {
+    c2_xy[i,1] <- currentx
+    c2_xy[i,2] <- currenty
+  }
+}
+qplot(c2_xy[,1], c2_xy[,2], geom="line", main = "2-D trace plot")
+
+#remove burning
+c2_xy <- c2_xy[-(1:burnin),]
+
+#graphs
+c2x_hist <- qplot(x = c2_xy[,1], y =..density.., geom="histogram",
+                  bins = 25, fill=I("grey"),  col=I("black"), xlab = "x", ylab = "Density") 
+c2x_acf <- ggAcf(c2_xy[,1], main = "x ACF")
+c2y_hist <- qplot(x = c2_xy[,2], y =..density.., geom="histogram",
+                  bins = 25, fill=I("grey"),  col=I("black"), xlab = "y", ylab = "Density") 
+c2y_acf <- ggAcf(c2_xy[,2], main = "y ACF")
+gridExtra::grid.arrange(grobs = list(c2x_hist, c2x_acf, c2y_hist, c2y_acf), nrow=4)
+
+# plug x, y samples into target function
+c2 <- c2_target(c2_xy[,1], c2_xy[,2])
+
+#summary of target samples
+c2_mean <- mean(c2)
+c2_var <- var(c2)
+```
+* mean: `r c2_mean`
+* variance: `r c2_var`
+<br />
+
+#### C3.
+```{r}
+c3_target = function(x, y) exp(-(x^3+x*y+y^2))
+c3_target_log_x = function(x, y) -(x^3+x*y)
+c3_target_log_y = function(x, y) -(x*y+y^2)
+c3_xy = xy
+sd <- 5
+
+for(i in 2:n)
+{
+  
+  currentx <- c3_xy[i - 1, 1]
+  currenty <- c3_xy[i - 1, 2]
+  
+  #MH for x|y[i-1]
+  proposedx <- rlnorm(1, currentx, sd)
+  
+  log_A <- c3_target_log_x(proposedx, currenty) - c3_target_log_x(currentx, currenty)
+  
+  #proposal ratio of truncated normal
+  c <- dlnorm(x = currentx, meanlog = proposedx, sdlog = sd) / 
+    dlnorm(x = proposedx, meanlog = currentx, sdlog = sd)
+  A <- exp(log_A) * c
+  c3_xy[i,1] <- ifelse(runif(1) < A, proposedx, currentx)
+  
+  
+  
+  #MH for y|x[i]
+  current_x <- c3_xy[i, 1]
+  proposedy <- rnorm(1, currenty, sd)
+  log_A <- c3_target_log_y(current_x, proposedy) - c3_target_log_y(current_x, currenty)
+  A <- exp(log_A)
+  c3_xy[i,2] <- ifelse(runif(1) < A, proposedy, currenty)
+}
+qplot(c3_xy[,1], c3_xy[,2], geom="line", main = "2-D trace plot")
+
+#remove burning
+c3_xy <- c3_xy[-(1:burnin),]
+
+#graphs
+c3x_hist <- qplot(x = c3_xy[,1], y =..density.., geom="histogram",
+                  bins = 25, fill=I("grey"),  col=I("black"), xlab = "x", ylab = "Density") 
+c3x_acf <- ggAcf(c3_xy[,1], main = "x ACF")
+c3y_hist <- qplot(x = c3_xy[,2], y =..density.., geom="histogram",
+                  bins = 25, fill=I("grey"),  col=I("black"), xlab = "y", ylab = "Density") 
+c3y_acf <- ggAcf(c3_xy[,2], main = "y ACF")
+gridExtra::grid.arrange(grobs = list(c3x_hist, c3x_acf, c3y_hist, c3y_acf), nrow=4)
+
+# plug x, y samples into target function
+c3 <- c3_target(c3_xy[,1], c3_xy[,2])
+
+#summary of target samples
+c3_mean <- mean(c3)
+c3_var <- var(c3)
+```
+* mean: `r c3_mean`
+* variance: `r c3_var`
+<br />
+
+#### C4.
+```{r}
+c4_target = function(x, y) exp(-(x^3+x*y+y^3))
+c4_target_log_x = function(x, y) -(x^3+x*y)
+c4_target_log_y = function(x, y) -(x*y+y^3)
+c4_xy = xy
+sd <- 5
+
+for(i in 2:n)
+{
+  
+  currentx <- c4_xy[i - 1, 1]
+  currenty <- c4_xy[i - 1, 2]
+  
+  #MH for x|y[i-1]
+  proposedx <- rlnorm(1, currentx, sd)
+  
+  log_A <- c4_target_log_x(proposedx, currenty) - c4_target_log_x(currentx, currenty)
+    
+  c <- dlnorm(x = currentx, meanlog = proposedx, sdlog = sd) / 
+    dlnorm(x = proposedx, meanlog = currentx, sdlog = sd)
+  A <- exp(log_A) * c
+  c4_xy[i,1] <- ifelse(runif(1) < A, proposedx, currentx)
+  
+  
+  
+  #MH for y|x1[i]
+  current_x <- c4_xy[i, 1]
+  proposedy <- rlnorm(1, currenty, sd)
+  
+  log_A <- c4_target_log_y(current_x, proposedy) - c4_target_log_y(current_x, currenty)
+    
+  #proposal ratio of truncated normal
+  c <-  dlnorm(x = currenty, meanlog = proposedy, sdlog = sd) /
+    dlnorm(x = proposedy, meanlog = currenty, sdlog = sd)
+  A <- exp(log_A) * c
+  c4_xy[i,2] <- ifelse(runif(1) < A, proposedy, currenty)
+  
+}
+qplot(c4_xy[,1], c4_xy[,2], geom="line", main = "2-D trace plot")
+
+#remove burning
+c4_xy <- c4_xy[-(1:burnin),]
+
+#graphs
+c4x_hist <- qplot(x = c4_xy[,1], y =..density.., geom="histogram",
+                  bins = 25, fill=I("grey"),  col=I("black"), xlab = "x", ylab = "Density") 
+c4x_acf <- ggAcf(c4_xy[,1], main = "x ACF")
+c4y_hist <- qplot(x = c4_xy[,2], y =..density.., geom="histogram",
+                  bins = 25, fill=I("grey"),  col=I("black"), xlab = "y", ylab = "Density") 
+c4y_acf <- ggAcf(c4_xy[,2], main = "y ACF")
+gridExtra::grid.arrange(grobs = list(c4x_hist, c4x_acf, c4y_hist, c4y_acf), nrow=4)
+
+#plug x, y samples into target function
+c4 <- c4_target(c4_xy[,1], c4_xy[,2])
+
+#summary of target samples
+c4_mean <- mean(c4)
+c4_var <- var(c4)
+```
+
+* mean: `r c4_mean`
+* variance: `r c4_var`
+<br />
+

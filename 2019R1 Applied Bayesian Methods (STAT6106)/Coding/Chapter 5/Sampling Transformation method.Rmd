@@ -1,0 +1,67 @@
+---
+title: "Transformation method"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+##1. Exponential distribution sampling, using Inverse Transform Method
+my.rexp = function(n, lambda)
+{
+  u = runif(n)
+  return(-log(u) / lambda)
+}
+
+## Test against pdf
+lambda = 3
+x = my.rexp(10000, lambda)
+hist(x, freq=FALSE, main = "Exponential Distribution Sampling")
+t = seq(0, max(x), 0.01)
+lines(t, dexp(t, lambda), lwd=3, col='red')
+```
+
+```{r}
+##2. Gamma distribution sampling, using transform method
+## k must be an integer
+## We could generalize to non-integer k using acceptance-rejection, see
+## http://en.wikipedia.org/wiki/Gamma_distribution
+my.rgamma = function(n, k, theta)
+{
+  x = matrix(my.rexp(n * k, 1/theta), k, n)
+  return(apply(x, MARGIN = 2, FUN = sum))
+}
+
+## Test against pdf
+k = 5
+theta = 0.5
+x = my.rgamma(10000, k, theta)
+hist(x, freq=FALSE, main = "Gamma Distribution Sampling")
+t = seq(0, max(x), 0.01)
+lines(t, dgamma(t, shape = k, scale = theta), lwd=3, col='red')
+```
+
+```{r}
+##3. Beta distribution sampling, using transform method
+## alpha and beta must be integers (we are using the Gamma sampler above)
+my.rbeta = function(n, alpha, beta)
+{
+  u = my.rgamma(n, alpha, 1)
+  v = my.rgamma(n, beta, 1)
+
+  return(u / (u + v))
+}
+
+## Test against pdf
+a = 4
+b = 10
+x = my.rbeta(10000, a, b)
+hist(x, freq=FALSE, main = "Beta Distribution Sampling")
+t = seq(0, 1, 0.01)
+lines(t, dbeta(t, a, b), lwd=3, col='red')
+
+```

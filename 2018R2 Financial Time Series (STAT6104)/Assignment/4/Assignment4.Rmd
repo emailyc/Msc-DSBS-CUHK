@@ -1,0 +1,73 @@
+---
+title: <center><h1> 2018R2 Financial Time Series (STAT6104)  Assignment 3</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+    code_folding:
+  word_document: default
+--- 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(forecast);
+```
+
+```{r}
+Y = ts(c(1.33,-0.56,-1.31,-0.37,0.05,0.46,2.00,
+         -0.19,-0.25,1.07,-0.17,1.14,0.63,-0.75,0.15,
+         0.71,0.45,-0.14,0.57,1.43));
+```
+
+##1a
+```{r, warning=FALSE, message=FALSE}
+model <- arima(Y, order = c(1,0,1));
+forecast <- forecast::forecast(model);
+```
+Step 1 prediction interval: (`r forecast$lower[1, 2]`, `r forecast$upper[1, 2]`)
+Step 2 prediction interval: (`r forecast$lower[2, 2]`, `r forecast$upper[2, 2]`)
+
+##1b
+```{r, warning=FALSE, message=FALSE}
+model <- arima(Y, order = c(1,1,0));
+forecast <- forecast::forecast(model);
+```
+Step 1 prediction interval: (`r forecast$lower[1, 2]`, `r forecast$upper[1, 2]`)
+Step 2 prediction interval: (`r forecast$lower[2, 2]`, `r forecast$upper[2, 2]`)
+
+##1c
+```{r, warning=FALSE, message=FALSE}
+model <- HoltWinters(Y, beta = FALSE, gamma=FALSE);
+forecast <- forecast::forecast(model);
+```
+Day 21: `r forecast$mean[1]`
+Day 22: `r forecast$mean[2]`
+
+##2a
+```{r, warning=FALSE, message=FALSE}
+x <- tseries::get.hist.quote(instrument = "0005.hk",
+                             start = "2012-01-01",
+                             end = "2016-01-01",
+                             quote = "AdjClose");
+y <- as.ts(as.numeric(diff(log(x))));
+
+plot1 <- forecast::autoplot(y);
+plot2 <- forecast::ggAcf(y);
+gridExtra::grid.arrange(plot1, plot2, nrow=2);
+```
+It is stationary
+
+##2b
+```{r, warning=FALSE, message=FALSE}
+model <- forecast::auto.arima(y, ic = "aic");
+```
+
+##2c
+```{r, warning=FALSE, message=FALSE}
+X_t <- model$residuals;
+
+plot1 <- forecast::ggAcf(X_t);
+plot2 <- forecast::ggAcf(X_t ^ 2);
+gridExtra::grid.arrange(plot1, plot2, nrow=2);
+```

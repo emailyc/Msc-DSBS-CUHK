@@ -1,0 +1,173 @@
+---
+title: <center><h1> 2019R1 Discrete Data Analysis (STAT5107) Assignment 3</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("dplyr")
+```
+
+```{r}
+set.seed(5107);
+```
+
+#### 2.
+
+$$
+ log(\pi) = \alpha + \boldsymbol{\beta}{X} + \epsilon
+$$
+* For binary predictor, this is Relative Risk regression.
+* The coefficient is the log relative risk.
+* It has a log link function for the binomial (or Bernoulli) outcome.
+* The log-binomial regression does not respect the natural parameter constraints;
+* It does not ensure that predicted probabilities are mapped to the [0,1] range.
+* e.g. for predictors that take a positive value, the resulting $\pi$ would be greater than $1$.
+<br />
+
+#### 3.
+For
+
+$$
+f(y;k,p)= {\Gamma(y + k)\over \Gamma(k)\Gamma(y + 1)} p^k(1-p)^{y}~~~~~\text{for}~y=0,1,2,\ldots
+$$
+
+Then it can be rewritten in exponential form as:
+
+$$
+\begin{aligned}
+    f(y;k,p) &={\Gamma(y + k)\over \Gamma(k)\Gamma(y + 1)}\exp\left[\ln(p^{k}(1-p)^{y})\right] \\
+             &={\Gamma(y + k)\over \Gamma(k)\Gamma(y + 1)}\exp\left[k\ln(p) + y\ln(1-p)\right] \\
+             &=\exp\left[k\ln(p)\right]{\Gamma(y + k)\over \Gamma(k)\Gamma(y + 1)}\exp\left[y\ln(1-p)\right]  \\
+\end{aligned}
+$$
+where
+
+$$
+\begin{aligned}
+a(p) = exp\left[k\ln(p)\right]\\
+b(y) = {\Gamma(y + k)\over \Gamma(k)\Gamma(y + 1)}\\
+Q(p) = \ln(1-p)
+\end{aligned}
+$$
+<br />
+
+#### 4a.
+```{r}
+x_i <- 10000;
+pi_i <- -.0003 + .0304*x_i;
+P <- 100*pi_i/x_i;
+```
+The estimated proportion vote for Buchanan in 2000 was roughly `r P`% of that for for Perot in 1996.
+<br />
+
+#### 4b.
+
+```{r}
+pi_i_real <- .0079;
+x_i <- .0774;
+pi_i_predict <- -.0003 + .0304*x_i;
+```
+* The outcome is `r pi_i_real/pi_i_predict` times than what the linear relation would have predicted. This suggests anonymity.
+<br />
+
+#### 4c. 
+
+```{r}
+pi_logit = (1 + exp(-(-7.164 + 12.219*x_i)))^-1
+```
+
+* $\pi_i$ is `r pi_logit`. 
+* The outcome is `r pi_i_real/pi_logit` times than what the logistic regression would have predicted. This suggestes that it is an outlier.
+
+
+
+#### 5. 
+```{r}
+table <- matrix(c(17066, 48, 14464, 38, 788, 5, 126, 1, 37, 1), 2);
+p_table <- prop.table(table, margin = 2);
+
+scores <- c(0, .5, 1.5, 4.0, 7.0);
+alpha <- .0025;
+beta <- .0011;
+linear_relation <- function(x, a = alpha, b = beta){a + b*x};
+predicted_p <- linear_relation(scores);
+
+fitting <- matrix(c(p_table[2,], predicted_p),
+                  byrow = TRUE, 
+                  nrow = 2, dimnames = list(
+                    c("True_Proportion", "Fitted_Proportion"), 
+                    c("0", "<1", "1-2", "3-5", ">=6")));
+```
+
+* For non-drinker ($x$ = 0), $\hat{\pi}(x)$ = .0025
+* For every step increase in drinking level, the probability increase by `r beta`.
+* The CI for the coefficient incluses 0; there is a chance that alcohol has no effect on congenital sex organ malformations.
+
+```{r}
+t_fitting = as.data.frame(t(fitting))
+ggplot(data = t_fitting, aes(x = True_Proportion, y = Fitted_Proportion)) +
+  geom_point(size = 2) + 
+  geom_abline() +
+  scale_x_continuous(breaks = seq(0, .03, by = .005), labels = seq(0, .03, by = .005));
+```
+* This is a poor fitting.
+<br />
+
+```{r}
+get_relative_risk <- function(x, a){
+  array = x/x[a]; 
+  array[a:length(array)];
+  };
+relative_risk <- get_relative_risk(predicted_p, 1)
+```
+* Relative Risks compared to no drinking are: `r relative_risk`
+<br />
+
+\newpage
+
+### 6a. 
+```{r}
+alpha <- -.4284;
+beta <- .5893;
+crabs_model <- function(x) alpha + beta * x;
+weight <-2.44;
+expected_Y <- exp(crabs_model(weight));
+```
+* On average, a `r weight` kg female crab has `r expected_Y` satellites.
+<br />
+
+### 6b. 
+```{r}
+se <- .0650;
+log_CI <- qnorm(c(.025, .975), mean = beta, sd = se);
+CI <- exp(log_CI);
+```
+* On average, for every kg of weight increase, the number of satellites increase by `r exp(beta)`.
+<br />
+
+### 6c. 
+```{r}
+df <- 171;
+cutoff <- qchisq(p = .05, df = df, lower.tail = FALSE);
+w <- (beta - 0)^ 2 / se^2;
+```
+* $H_0$ = coefficient not sigificantly different from zero.
+* A chi-square distribution with `r df` degrees of freedom has a cutoff value at `r cutoff` ($\alpha$ = .05); the Wald test yields a test statistic at `r w`. Hence there is not enough evidence to reject $H_0$. 
+<br />

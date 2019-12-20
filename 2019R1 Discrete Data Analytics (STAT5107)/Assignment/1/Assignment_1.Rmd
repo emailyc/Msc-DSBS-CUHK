@@ -1,0 +1,160 @@
+---
+title: <center><h1> 2019R1 Discrete Data Analysis (STAT5107) Assignment 1</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("GGally")
+library("dplyr")
+```
+
+```{r, echo = T}
+set.seed(5107);
+```
+
+#### 1.
+
+a. nominal
+b. ordinal
+c. interval
+d. nominal
+e. ordinal
+f. nominal
+g. ordinal
+<br />
+
+#### 2.
+
+Variance of binomial distribution is
+
+$$
+\begin{aligned}
+ \sigma^2  = n \pi (1-\pi)
+\end{aligned}
+$$
+
+* When $\pi$ is close to zero, everything is multiplied by a value close to zero, hence $\sigma^2$ is small.
+* When $\pi$ is close to one, everything is multiplied by (1 - somehting close to one), which is close to zero. Hence $\sigma^2$ is also small. 
+* When $\pi$ is close to `0.5` , `n` is multiplied by `0.5 * (1 - 0.5)`, which is close to `r 0.5^2`, which is bigger than the values above.
+
+A smaller variance means more precise estimate of $\pi$ and vice versa.
+<br />
+
+#### 3. 
+$H_0$: $\pi$ = 0.5
+$H_1$: $\pi$ $\neq$ 0.5
+```{r echo=T}
+yes_count <- 842;
+no_count <- 982;
+n <- yes_count + no_count;
+H0 <- 0.5;
+alpha <- .05
+
+pie_hat <- yes_count / n;
+
+z_s <- (pie_hat - H0) / sqrt(H0*(1-H0)/n);
+
+p_value <- pnorm(q = z_s)
+
+CI <- pie_hat + c(1, -1) * qnorm(alpha/2) * sqrt(pie_hat*(1-pie_hat)/n)
+```
+The p-value is `r p_value` which is below the two tale cut off at `r alpha`. There is enough evidence to reject $H_0$ and favor $H_1$. 
+95% confidence interval: `r CI[1]`, `r CI[2]`
+<br />
+
+#### 4a. 
+```{r echo=T}
+n_better <- 20; 
+n_trial <- 20;
+n_simulate <- 1e4;
+H0 <- 0.5;
+pie_hat <- n_better/n_trial;
+
+p_grid <- seq(from=0 , to=1 , length.out=n_simulate);
+
+likelihood <- dbinom(x = n_better, size = n_trial, prob=p_grid);
+plot(p_grid, likelihood, main = "Likelihood Function: 20 success out of 20 trials", type = 'l');
+```
+
+The maximum likelihood estimate of $\pi$ is 
+
+$$
+\begin{aligned}
+ success / no. trial = 20/20 = 1
+\end{aligned}
+$$ 
+<br />
+
+#### 4b. 
+```{r}
+se <- sqrt(pie_hat * (1 - pie_hat) / n_trial)
+CI <- pie_hat + c(1, -1) * qt(alpha/2, df = n_trial - 1) * se;
+z_W <- (pie_hat - H0) / se;
+```
+Wald test statistic is $inf$. 
+The 95% Wald confidence interval for $\pi$ is between `r CI[1]` and `r CI[2]`.
+<br />
+
+#### 4c. 
+```{r}
+se <- sqrt(H0 * (1 - H0) / n_trial);
+z_S <- (pie_hat - H0) / se;
+CI <- pie_hat + c(1, -1) * qt(alpha/2, df = n_trial - 1) * se;
+cutoff <- qt(alpha/2, df = n_trial - 1, lower.tail = F);
+```
+Score test statistic is `r z_S`, which is greater than the cutoff at `r cutoff`. There is evidence to rehject $H_0$.
+The 95% Score confidence interval for $\pi$ is between `r CI[1]` and `r CI[2]`.
+<br />
+
+#### 4d. 
+```{r}
+L_H0 <- dbinom(n_better, n_trial, prob = H0, log = TRUE);
+L_pie_hat <- dbinom(n_better, n_trial, prob = n_better/n_trial, log = TRUE);
+z_L <- -2 * (L_H0 - L_pie_hat);
+cutoff <- qchisq(.95, 1, lower.tail = T);
+upper_bound <- 1 - exp(cutoff/(2*L_H0));
+```
+The confidence interval is between zero and `r upper_bound`;
+The log likelihood statistic is `r z_L`, which is greater than the cutoff at `r cutoff`. At 0.05 $\alpha$ level, we conclude that there is evidence to suggest the data DO NOT follow the null hypothesis. 
+<br />
+
+#### 6. 
+```{r echo=T}
+deaths <- c(109, 65, 22, 3, 1, 0);
+count <- 0:5;
+lamb <- mean(rep(count, times=deaths));
+expected <- dpois(count, lambda = lamb) * sum(deaths);
+
+#merge cases fewer than 5 observations
+deaths_merged <- deaths[1:3];
+deaths_merged[3] <- sum(deaths[-c(1, 2)]);
+expected_merged <- expected[1:3];
+expected_merged[3] <- sum(expected[-c(1, 2)]);
+count <- 0:2;
+
+chi_squared <- sum( ((deaths_merged - expected_merged)^2)/expected_merged );
+
+df <- length(count) - 1 - 1;
+
+p_value <- pchisq(chi_squared, df = df, lower.tail = F);
+
+```
+Average death is `r lamb` deaths per year.
+The chi-square statistic is `r chi_squared`; the p-value of the alternative hypothesis of the data fitting to a Poission distribution is `r p_value`. At 0.05 $\alpha$ level, we conclude that there is no real evidence to suggest the data DO NOT follow a Poisson distribution.

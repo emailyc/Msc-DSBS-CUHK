@@ -1,0 +1,531 @@
+---
+title: <center><h1> 2019R1 Applied Bayesian Methods (STAT6106) Assignment 5</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr");
+opts_chunk$set(echo = TRUE, results = TRUE , cache=TRUE, message=FALSE, warning = FALSE);
+options(width = 100);
+library("ggplot2");
+library("dplyr");
+library("reshape2")
+library("forecast")
+library("gridExtra")
+library("truncnorm")
+library("MCMCpack")
+```
+
+```{r, echo = T}
+set.seed(6106);
+```
+
+```{r, echo=FALSE, results = 'hide'}
+##########          1 gene    #########################
+#set your working directory:   change this to your own directory
+# your data file "Assignment5_data.csv" should be stored in this directory
+# the output figures will also be stored in this directory
+#setwd("D:\\teaching\\STAT6106")
+
+#install.packages("truncnorm")
+#install.packages("MCMCpack")
+#library(truncnorm)
+#library(MCMCpack)
+
+###########                 Functions             ############################
+
+# calculate the distance between fitted value and observed data value
+Dist<-function(betg, cg, dg)
+{
+   temp1<- cbind(Tim-dg,0)
+   temp2<- (apply(temp1, 1, min))^2
+   temp3<- Yg-(X%*%betg + cg*temp2)
+   t(temp3)%*%temp3
+}
+#
+
+# fitted value at time points
+Fit<-function(betg, cg, dg)
+{
+   temp1<- cbind(Tim-dg,0)
+   temp2<- (apply(temp1, 1, min))^2
+   X%*%betg + cg*temp2
+}
+#
+
+# sample the regression coefficient beta_g from its conditional distribution
+# that is: sample ag, bg, fg, hg , where fg=Ag*cos(phi_g), hg=Ag*sin(phi_g)
+f.abfh<-function(cg, dg, sig2)
+{
+   temp1<-cbind(Tim-dg,0)
+   temp2<-(apply(temp1, 1, min))^2
+   Ybetg<-Yg-cg*temp2
+   Vmat<-solve(t(X)%*%X/sig2 + diag(rep(1,4))/alp1)
+   Mean<-Vmat%*%t(X)%*%Ybetg/sig2
+   Mean + chol(Vmat)%*%matrix(rnorm(4),ncol=1)
+}
+#
+
+# sample cg from its conditional distribution
+f.c<-function(betg, dg, sig2)
+{
+   Y.c<-Yg-X%*%betg
+   temp<-cbind(Tim-dg,0)
+   X.c<-(apply(temp, 1, min))^2
+   A<-1/alp2 +  t(X.c)%*%X.c/sig2
+   B<-t(Y.c)%*%X.c/sig2
+   rnorm(1,B/A,sd=1/sqrt(A))
+}
+#
+
+# sample dg using M-H with a truncated-Normal proposal distribution
+f.d<-function(betg, cg, dg, sig2)
+{
+   f<-function(d){
+      temp1<-cbind(Tim-d,0)
+      temp2<-(apply(temp1, 1, min))^2
+      temp3<-Yg-X%*%betg-cg*temp2
+      -t(temp3)%*%temp3/(2*sig2)
+      }
+   dg1<-rtruncnorm(1, a=0, b=Inf, mean=0.5, sd=sqrt(alp3))
+   nume<-dtruncnorm(dg,a=0,b=Inf,mean=0.5,sd=sqrt(alp3))
+   denom<-dtruncnorm(dg1,a=0,b=Inf,mean=0.5,sd=sqrt(alp3))
+   a<-min(1,exp(f(dg1)-f(dg))*(nume/denom))
+   u<-runif(1)
+   if (u<=a) dg=dg1
+   dg
+}
+#
+
+# sample sig2g from its conditional distribution
+f.sig<-function(betg, cg, dg)
+{
+   a<<-10
+   b<<-0.01
+   temp1<-cbind(Tim-dg,0)
+   temp2<-(apply(temp1, 1, min))^2
+   temp3<-Yg-X%*%betg-cg*temp2
+   delta<-t(temp3)%*%temp3
+   rinvgamma(1, a+10, b+delta/2)
+}
+#
+
+# calculate the non-normalized log-joint-posterior density
+log.pd<-function(betg, cg, dg, sig2)
+{
+   temp1<-cbind(Tim-dg,0)
+   temp2<-(apply(temp1, 1, min))^2
+   temp3<-Yg-X%*%betg-cg*temp2
+   delta<-t(temp3)%*%temp3
+   lik1=-0.5*log(sig2)-delta/(2*sig2)
+   lik2=-t(betg)%*%betg/(2*alp1)
+   lik3=-cg^2/(2*alp2)
+   lik4=-(a+1)*log(sig2)-b/sig2
+   res=0
+   if (0<=dg & dg<=500)  res=(lik1+lik2+lik3+lik4)/10   
+   res
+}
+
+##################### main sampling program ###############################
+#------------------            setup        ---------------------------------
+
+# input data, set data structures
+Y<-read.csv("Assignment5_data.csv", header=TRUE)
+Y<-Y[,-1]      #delete the first column, which is the gene ID 
+Tim<-15*(0:19)   #time: the time when the data are measured  
+mu<-0.04        #fix mu at 0.04
+X<-matrix(1, nrow=20, ncol=4)     #set up the covariates X as in Equation 3
+X[,2]<-0.01*Tim
+X[,3]<-cos(mu*Tim)
+X[,4]<- -sin(mu*Tim)
+
+#  set up constants
+alp1<-4     #alpha1, for prior of beta_g
+alp2<-4     #alpha2, for prior of c_g
+alp3<-0.5   #alpha3, the variance of truncated-Normal proposal for d_g
+n=1000      #number of iterations that we will run MCMC for
+
+#  initial value
+   #3: we simultaneously run 3 independent MCMC chains
+   #7: record 7 parameters:  ag, bg, fg, hg, cg,dg,sig2
+Itv=matrix(NA, nrow=3, ncol=7) #store the initial values
+Itv[1,]<-c(-0.1, -0.1, -0.1, -0.1, -0.1, 0.2, 0.01) #initial value for chain1
+Itv[2,]<-c(0, 0, 0, 0, 0, 0, 0.1)                   #initial value for chain2
+Itv[3,]<-c(0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.2)       #initial value for chain3
+Paras<-vector("list", 3)  #creat an empty List of 3 elements
+ #each element will store the parameter values of all iterations from one chain
+
+#------------------            run             ---------------------------------
+Yg<-t(Y[1,])  #this means: we are working on the 1st gene's data. 
+              #(change 1 to another number if you want to work on another gene)
+#run the MCMC
+for(k in 1:3)  #for each of the 3 independent MCMC chain
+{  
+   betg0=Itv[k,1:4]    # betg0, cg0, dg0, sig20 store the current value
+   cg0=Itv[k,5]        # here we set the current value as the initial value
+   dg0=Itv[k,6]
+   sig20=Itv[k,7]
+   
+  #the matrix will store the parameter values of all iterations from one chain   
+   para<-matrix(NA, nrow=7, ncol=n) 
+   para[,1]<-c(betg0,cg0,dg0,sig20)
+   
+   for(i in 2:n) #iterations
+   { 
+       #sampling each parameters iteratively
+      betg0<-f.abfh(cg0, dg0, sig20)
+      cg0<-f.c(betg0, dg0, sig20)
+      dg0<-f.d(betg0, cg0, dg0, sig20)
+      sig20<-f.sig(betg0, cg0, dg0)
+       #store the parameter values of the current iteration
+      para[,i]<-c(betg0,cg0,dg0,sig20)
+   }
+   Paras[[k]]<-para  #store the current chain para to the list Paras
+}
+ 
+ 
+   
+#--------------- result analysis: Trace plot     ------------------------------       
+
+Name1<-c("Trace plot of chain parameter a",
+         "Trace plot of chain parameter b",
+         "Trace plot of chain parameter f",
+         "Trace plot of chain parameter h",
+         "Trace plot of chain parameter c",
+         "Trace plot of chain parameter d",
+         "Trace plot of chain parameter sig2")
+  #we directly draw and output to a JPG file: jpeg()  .... dev.off()
+jpeg("abfh.jpg") #if you want to see the plot in R window, comment this line out
+op<-par(mfrow=c(2, 2))
+for(j in 1:4){
+   upper=1.2*max(abs(Paras[[1]][j,]))
+   plot(Paras[[1]][j,1:n],main=Name1[j], ylab="sample value",
+        ylim=c(-upper, upper), type='l')
+   lines(Paras[[2]][j,1:n], lty=1, col='red')
+   lines(Paras[[3]][j,1:n], lty=1, col='green')
+   }
+par(op)
+dev.off()      #if you want to see the plot in R window, comment this line out
+   
+   #we directly draw and output to a JPG file: jpeg()  .... dev.off()
+jpeg("cdsig2.jpg")
+op<-par(mfrow=c(2, 2))   #store the current graphical parameters
+for(j in 5:7){
+   upper=1.2*max(abs(Paras[[1]][j,]))
+   plot(Paras[[1]][j,1:n],main=Name1[j], ylab="sample value",
+        ylim=c(-upper, upper), type='l')
+   lines(Paras[[2]][j,1:n], lty=1, col='red')
+   lines(Paras[[3]][j,1:n], lty=1, col='green')
+   }
+par(op)     #restore the stored graphical parameters
+dev.off()
+
+#---------------result analysis: R_hat value for each parameter   -------------   
+# we directly use the "gelman.diag" function to calculate R_hat
+#  it requires you to put each group (a chain or a segment) to a structure
+#     this structure can be made by using the "mcmc" function
+R_hat<-rep(NA, 7)
+for(j in 1:7){
+   chains<-list(mcmc(Paras[[1]][j,(n/2):n]),
+                mcmc(Paras[[2]][j,(n/2):n]), 
+                mcmc(Paras[[3]][j,(n/2):n]))
+   R_hat[j]<-gelman.diag(chains, autoburnin=F)$psrf[1]   
+}
+R_hat  #show all R_hat values 
+   
+#-----------------result analysis:  Acf    plot   --------------------------
+Name2<-c("Acf of chain a","Acf of chain b","Acf of chain f",
+         "Acf of chain h","Acf of chain c","Acf of chain d",
+         "Acf of chain sig2")
+         
+jpeg("Acf.jpg")
+op<-par(mfrow=c(3, 3))
+for(j in 1:7){
+   acf(Paras[[3]][j,(n/2):n],main=Name2[j])
+}
+par(op)
+dev.off()   
+   
+#-----------------result analysis:  posterior summary---------------------------
+#--------------------------   mean method: get posterior   ---------------------
+# parameter estimation
+para<-Paras[[3]]          #select the chain to summarize
+(Mean<-apply(para[,(n/2):n], 1, mean))
+(Sd<-apply(para[,(n/2):n], 1, sd))
+(b<-0.01*Mean[2]) 
+(A<-sqrt((Mean[3])^2+(Mean[4])^2))     #the Ag in Equation (1)
+(phi<- acos(Mean[3]/A))           #the phi_g in Equation (1)
+
+# for fitting plot
+Y1.mean<-Fit(Mean[1:4], Mean[5], Mean[6])  #the fitted values
+(Dist1.mean<-t(Yg-Y1.mean)%*%(Yg-Y1.mean)) #sum square of the residue
+
+
+#----------------  MAP  method: get the maximal posteior estimate---------------
+para.map<-Paras[[3]]  #select the chain to summarize
+logpd<-rep(NA, n)   #store posterior probabiltity of each iteration
+for (i in 1:n){    #for each iteration: calculate posterior probabiltity
+    logpd[i]<-log.pd(para.map[1:4,i], para.map[5,i],
+    para.map[6,i], para.map[7,i])
+}  
+Mx<-max(logpd)    #find the maximal posterior probabiltity
+cnt<-which.max(logpd) #find where the maximal posterior probabiltity is
+#plot(logpd,type="l")    #the trace plot of non-normalized log-joint-posterior
+Map<-para.map[, cnt]  #get the parameter of the maximal posterior probabiltity
+#log.pd(para[1:4, cnt], para[5, cnt], para[6, cnt], para[7, cnt])
+(b.map<-0.01*Map[2]) 
+(A.map<-sqrt((Map[3])^2+(Map[4])^2))
+(phi.map<- acos(Map[3]/A.map))   
+
+# for fitting plot
+Y1.map<-Fit(Map[1:4], Map[5], Map[6])      #the fitted values
+(Dist1.map<-t(Yg-Y1.map)%*%(Yg-Y1.map))    #sum square of the residue
+
+#---------------result analysis:   fitting plot ---------
+jpeg("Y.fit.jpg")
+op<-par(mfrow=c(2,1))   #set the plotting parameter: 2 row, 1 column
+plot(Tim, Yg, xlab="time", ylab="y", main="Fitting plot of gene 1 (mean)")
+lines(Tim, Y1.mean, lty=1, col='red')
+#
+plot(Tim, Yg, xlab="time", ylab="y", main="Fitting plot of gene 1 (MAP)")
+lines(Tim, Y1.map, lty=1, col='red')
+par(op)
+dev.off()
+#
+```
+
+#### 1
+
+Prior distributions for parameters are: $p(\beta_g)\sim1$, $p(c_g)\sim1$, $p(d_g)\sim1$, $p(\sigma^2_g) \sim \frac1{\sigma^2}$
+
+We adopt Gibbs sampling + MH algorithm to sample these parameters:
+
+During the i-th step
+
+1. Sample $\beta_{g(i+1)}$ from condition distribution $p(\beta_{g(i+1)}| c_{g(i)}, d_{g(i)}, \sigma^2_{g(i)}, Y)$, with acceptance ratio 1.
+
+1. Sample $c_{g(i+1)}$ from condition distribution: $p(c_{g(i+1)}| \beta_{g(i+1)}, d_{g(i)}, \sigma^2_{g(i)}, Y)$, with acceptance ratio 1.
+
+1. Sample $d_{g(i+1)} \sim \mathcal{TN}(1,0.5, 0, \infty)$ with acceptance probability $$\min(\frac{L(\beta_{g(i+1)}, c_{g(i+1)}, d_{g(try)}, \sigma^2_{g(i)})}{L(\beta_{g(i+1)}, c_{g(i+1)}, d_{g(i)}, \sigma^2_{g(i)})} \cdot \frac{dlnorm(d_{g(i)}, d_{g(try)}, \sigma^2 )}{dlnorm(d_{g(try)}, d_{g(i)}, \sigma^2)}, 1)$$
+
+1. Sample $\sigma^2_{g(i+1)}$ from condition distribution: $p(\sigma^2_{g(i+1)}| \beta_{g(i+1)}, c_{g(i+1)}, d_{g(i+1)}, Y)$, with acceptance ratio 1.
+<br />
+\newpage
+
+#### 2 
+
+```{r}
+q2.Y.Means <- as.data.frame(matrix(0, nrow = nrow(Y), ncol = ncol(Y)))
+q2.para.Means <- matrix(0, nrow = nrow(Y), ncol = 7)
+q2.para.SDs <- matrix(0, nrow = nrow(Y), ncol = 7)
+
+para.names <- c("ag", "bg", "fg", "hg", "cg", "dg", "sigma2g")
+colnames(q2.para.Means) <- para.names
+colnames(q2.para.SDs) <- para.names
+
+#for each gene
+for (gene in 1:nrow(Y)){
+  
+  #Obtain data for a gene 
+  Yg<-t(Y[gene,])
+  
+  #Initial values, only one chain per gene
+  betg0 <- c(0.1, 0.1, 0.1, 0.1)
+  cg0 <- 0.1   
+  dg0 <- 0.5
+  sig20 <- 0.2
+  
+  #the matrix will store the parameter values of all iterations from one chain   
+  para<-matrix(NA, nrow=7, ncol=n) 
+  para[,1]<-c(betg0,cg0,dg0,sig20)
+  
+   for(i in 2:n) #iterations
+   { 
+       #sampling each parameters iteratively
+      betg0<-f.abfh(cg0, dg0, sig20)
+      cg0<-f.c(betg0, dg0, sig20)
+      dg0<-f.d(betg0, cg0, dg0, sig20)
+      sig20<-f.sig(betg0, cg0, dg0)
+       #store the parameter values of the current iteration
+      para[,i]<-c(betg0,cg0,dg0,sig20)
+   }
+   
+  #-----------------result analysis:  posterior summary---------------------------
+  #--------------------------   mean method: get posterior   ---------------------
+  # parameter estimation
+  (Mean<-apply(para[,(n/2):n], 1, mean))
+  (Sd<-apply(para[,(n/2):n], 1, sd))
+  (b<-0.01*Mean[2]) 
+  (A<-sqrt((Mean[3])^2+(Mean[4])^2))     #the Ag in Equation (1)
+  (phi<- acos(Mean[3]/A))           #the phi_g in Equation (1)
+  
+  # posterior summary
+  q2.para.Means[gene,] <- Mean
+  q2.para.SDs[gene,] <- Sd
+   
+  # for fitting plot
+  q2.Y.mean<-Fit(Mean[1:4], Mean[5], Mean[6])  #the fitted values
+  q2.Y.Means[gene,] <- q2.Y.mean
+  (Dist.mean<-t(Yg-q2.Y.mean)%*%(Yg-q2.Y.mean)) #sum square of the residue
+}
+
+```
+
+
+##### Means
+```{r}
+q2.para.Means
+```
+
+##### Sd
+```{r}
+q2.para.SDs
+```
+
+```{r}
+#---------------result analysis:   fitting plot ---------
+
+# Observed data
+Y.Observes <- cbind(1:20, Y)
+colnames(Y.Observes) <- c("gene_no", 15 * 0:19)
+
+observe_melt <- melt(Y.Observes, id="gene_no", value.name = "expression", variable.name="time")
+observe_melt$gene_no <- as.factor(observe_melt$gene_no)
+
+# Fitted data
+q2.Y.Means <- cbind(1:20, q2.Y.Means)
+colnames(q2.Y.Means) <- c("gene_no", 15 * 0:19)
+
+#ggplot likes melted data frames
+q2.mean_melt <- melt(q2.Y.Means, id="gene_no", value.name = "expression", variable.name="time")
+q2.mean_melt$gene_no <- as.factor(q2.mean_melt$gene_no)
+
+# Plotting
+ggplot(observe_melt, aes(x = time, y = expression, group = gene_no)) +
+  geom_point() +
+  geom_smooth(data = q2.mean_melt, aes(x = time, y = expression, group = gene_no), se = FALSE) +
+  ggtitle("Fitted Curved with observed data (mean)")
+
+```
+<br />
+\newpage
+
+#### 3
+
+```{r}
+X<-matrix(0, nrow=20, ncol=4) #a = 0
+X[,2]<-0 #b = 0
+X[,3]<-cos(mu*Tim)
+X[,4]<- -sin(mu*Tim)
+
+f.fh0<-function(cg, dg, sig2)
+{
+   temp1<-cbind(Tim-dg,0)
+   temp2<-(apply(temp1, 1, min))^2
+   Ybetg<-Yg-cg*temp2
+   Vmat<-solve(t(X)%*%X/sig2 + diag(rep(1,4))/alp1)
+   Mean<-Vmat%*%t(X)%*%Ybetg/sig2
+   Mean + chol(Vmat)%*%matrix(c(0,0,rnorm(2)),ncol=1) #First 2 parameters 0
+}
+```
+
+```{r}
+q3.Y.Means <- as.data.frame(matrix(0, nrow = nrow(Y), ncol = ncol(Y)))
+q3.para.Means <- matrix(0, nrow = nrow(Y), ncol = 7)
+q3.para.SDs <- matrix(0, nrow = nrow(Y), ncol = 7)
+
+para.names <- c("ag", "bg", "fg", "hg", "cg", "dg", "sigma2g")
+colnames(q3.para.Means) <- para.names
+colnames(q3.para.SDs) <- para.names
+
+#for each gene
+for (gene in 1:nrow(Y)){
+  
+  #Obtain data for a gene 
+  Yg<-t(Y[gene,])
+  
+  #Initial values, only one chain per gene
+  betg0 <- c(0, 0, 0.1, 0.1)
+  cg0 <- 0  
+  dg0 <- 0
+  sig20 <- 0.2
+  
+  #the matrix will store the parameter values of all iterations from one chain   
+  para<-matrix(NA, nrow=7, ncol=n) 
+  para[,1]<-c(betg0,cg0,dg0,sig20)
+  
+   for(i in 2:n) #iterations
+   { 
+       #sampling each parameters iteratively
+      betg0<-f.fh0(cg0, dg0, sig20)
+      cg0<-0
+      dg0<-0
+      sig20<-f.sig(betg0, cg0, dg0)
+       #store the parameter values of the current iteration
+      para[,i]<-c(betg0,cg0,dg0,sig20)
+   }
+   
+  #-----------------result analysis:  posterior summary---------------------------
+  #--------------------------   mean method: get posterior   ---------------------
+  # parameter estimation
+  (Mean<-apply(para[,(n/2):n], 1, mean))
+  (Sd<-apply(para[,(n/2):n], 1, sd))
+  (b<-0.01*Mean[2]) 
+  (A<-sqrt((Mean[3])^2+(Mean[4])^2))     #the Ag in Equation (1)
+  (phi<- acos(Mean[3]/A))           #the phi_g in Equation (1)
+  
+  # posterior summary
+  q3.para.Means[gene,] <- Mean
+  q3.para.SDs[gene,] <- Sd
+   
+  # for fitting plot
+  q3.Y.mean<-Fit(Mean[1:4], Mean[5], Mean[6])  #the fitted values
+  q3.Y.Means[gene,] <- q3.Y.mean
+  (Dist.mean<-t(Yg-q3.Y.mean)%*%(Yg-q3.Y.mean)) #sum square of the residue
+}
+
+```
+
+
+##### Means
+```{r}
+q3.para.Means[,c("fg", "hg", "sigma2g")]
+```
+
+##### Sd
+```{r}
+q3.para.SDs[,c("fg", "hg", "sigma2g")]
+```
+
+```{r}
+#---------------result analysis:   fitting plot ---------
+
+#Fitted data
+q3.Y.Means <- cbind(1:20, q3.Y.Means)
+colnames(q3.Y.Means) <- c("gene_no", 15 * 0:19)
+
+#ggplot likes melted data frames
+q3.mean_melt <- melt(q3.Y.Means, id="gene_no", value.name = "expression", variable.name="time")
+q3.mean_melt$gene_no <- as.factor(q3.mean_melt$gene_no)
+
+# Plotting
+ggplot(observe_melt, aes(x = time, y = expression, group = gene_no)) +
+  geom_point() +
+  geom_smooth(data = q3.mean_melt, aes(x = time, y = expression, group = gene_no), se = FALSE) +
+  ggtitle("Fitted Curved with observed data (mean)")
+
+```
+<br />

@@ -1,0 +1,138 @@
+---
+title: <center><h1> 2019R1 Discrete Data Analysis (STAT5107) Assignment 2</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("GGally")
+library("dplyr")
+```
+
+```{r}
+set.seed(5107);
+```
+
+#### 1a.
+
+* relative risk
+<br />
+
+#### 1bi.
+```{r}
+(1-.45) / 1
+```
+<br />
+
+#### 1bii.
+```{r}
+1 / (1-.45)
+```
+<br />
+
+#### 2.
+
+$$
+\begin{aligned}
+ P(\text{disease}\mid\text{+}) &= \frac{P(\text{+}\mid\text{disease}) P(\text{disease})}{P(+)} \\
+ &= \frac{P(\text{+}\mid\text{disease}) P(\text{disease})}{P(\text{+}\mid\text{disease}) P(\text{disease}) + P(\text{+}\mid\text{healthy}) P(\text{healthy})} \\
+ &= {\pi_1p}/[{\pi_1p} + {\pi_2{(1-p)}}]
+\end{aligned}
+$$
+<br />
+
+#### 3. 
+
+* Injury
+
+```{r echo=T}
+table <- matrix(data = c(1601, 510, 162527, 412368), 2, 2, 
+                dimnames = list(c("None", "Seat belt"), c("Fatal", "Nonfatal")));
+pi_table <- prop.table(as.matrix(table), margin = 1)
+difference_of_proportions <- pi_table[1,1] - pi_table[2,1];
+relative_risk <- pi_table[1,1] / pi_table[2,1];
+odds_ratio <- (pi_table[1,1] * pi_table[2,2]) / (pi_table[1,2] * pi_table[2,1]);
+```
+* difference of proportions = `r difference_of_proportions`
+* relative risk = `r relative_risk`
+* odds ratio = `r odds_ratio`
+* Because both $\pi_{11}$ and ${\pi_{12}}$ are close to zero
+<br />
+
+#### 4a. 
+```{r echo=T}
+table <- matrix(data = c(28, 18, 656, 658), 2, 2, 
+                dimnames = list(c("placebo", "Aspirin"), c("Yes", "No")));
+pi_table <- prop.table(as.matrix(table), margin = 1)
+
+sample_odds_ratio <- (table[1,1] * table[2,2]) / (table[2,1] * table[1,2]);
+
+se_log_theta <- sqrt(sum(1/table));
+
+CI_log_theta <- qnorm(c(.025, .975), log(sample_odds_ratio), se_log_theta);
+CI_theta <- exp(CI_log_theta);
+```
+
+* Sample odds ratio is `r sample_odds_ratio`
+* standard error of $log \hat{\theta}$ is `r se_log_theta`
+* 95% confidence interval for $log \theta$ lies between `r CI_log_theta[1]` and `r CI_log_theta[2]`
+* 95% confidence interval for $\theta$ lies between `r CI_theta[1]` and `r CI_theta[2]`
+* The 95% confidence interval includes the value 1. Hence it is possible for the two to be equal.
+<br />
+
+#### 4b. 
+```{r}
+exp_diff <- pi_table[1,1] - pi_table[2,1];
+var <- pi_table[1,1] * pi_table[1,2] / sum(table[1,]) +
+  pi_table[2,1] * pi_table[2,2] / sum(table[2,]);
+sd <- sqrt(var);
+wald_CI <- qnorm(c(.025, .975), exp_diff, sd);
+```
+* 95% confidence interval for difference of proportions lies between `r wald_CI[1]` and `r wald_CI[2]`
+<br />
+
+#### 4c. 
+````{r}
+sample_relative <- pi_table[1,1] / pi_table[2,1];
+exp_log_relative <- log(sample_relative);
+var <- ((1 - pi_table[1,1]) / ((sum(table[1,])) * pi_table[1,1])) +
+  ((1 - pi_table[2,1]) / ((sum(table[2,])) * pi_table[2,1]))
+sd <- sqrt(var);
+wald_CI_log <- qnorm(c(.025, .975), exp_log_relative, sd);
+wald_CI <- exp(wald_CI_log);
+```
+* Sample relative risk = `r sample_relative`
+* 95% confidence interval for the log relative risk lies between `r wald_CI_log[1]` and `r wald_CI_log[2]`
+* 95% confidence interval for the relative risk lies between `r wald_CI[1]` and `r wald_CI[2]`
+<br />
+
+
+#### 5. 
+
+$H_0$: independence for all combination
+$H_1$: at least one combination not independent
+```{r echo=T}
+table <- matrix(data = c(178, 570, 138, 138, 648, 252, 108, 442, 252), 3, 3, 
+                dimnames = list(c("Less than high school", "High school or junior college",
+                                  "Bachelor or graduate"),
+                                c("Fundamentalist", "Moderate", "Liberal")));
+
+chisq.test(table)
+```
+* p-value is zero; there are enough evidence to reject $H_0$; there is an association.

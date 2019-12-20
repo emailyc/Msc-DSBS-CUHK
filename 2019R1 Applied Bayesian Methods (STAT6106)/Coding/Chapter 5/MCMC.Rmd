@@ -1,0 +1,52 @@
+---
+title: "MCMC"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+###################
+#6. demo: Metropolis algorithm
+# target: to sample from a distribition of a loaded die
+#    which is a multinomial distribution with  p(x)= [0.1, 0.1, 0.2, 0.4, 0.1, 0.1] 
+#		over x=[1,2,3,4,5,6]
+#Step -1. select proposal distribution: uniform over 1~6, p(Xi |Xj)=1/6
+#Step 0. start with any initial value with 1~6, say x[1]=1
+#Step 1. sample x.try from proposal distribution q(x)=1/6, x=[1,2,3,4,5,6]
+#Step 2. calculate importance ratio r=min(p(x.try)/p(x.old),1)
+#Step 3. sample u from uniform(0,1), x.new =x.try if u<r, otherwise x.new=x.old
+
+p=c(0.1, 0.1, 0.2, 0.4, 0.1, 0.1)
+n = 10000
+x=rep(NA, n)
+x[1]=1
+for(i in 2:n)
+{
+  #this is how we sample from a discrete uniform distribution (1~6) from uniform(0,1)
+  x.try=sample(1:6, 1)#ceiling(runif(1,0,1)*6)
+  r=min(p[x.try]/p[x[i-1]],1)
+  u=runif(1,0,1)
+  if(u<r)
+    x[i]=x.try
+  else
+    x[i]=x[i-1]
+}
+
+#you can plot the trajectory of this chain
+plot(x[1:100],type="l")
+  #then you will see it converges fast
+output=x[101:n]
+#you can summarize the sample
+summary(output)
+sd(output)
+#you can draw the sample histogram
+hist(output,freq=FALSE,breaks=0.5+0:6) # plotting the sample density
+#you can draw the autocorrelation function of the sample vector of data
+acf(output) # the ACF of the samples
+```
+

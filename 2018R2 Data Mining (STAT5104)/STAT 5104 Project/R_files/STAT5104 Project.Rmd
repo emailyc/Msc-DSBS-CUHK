@@ -1,0 +1,552 @@
+---
+title: STAT5104 Data Mining Project
+header-includes:
+    - \usepackage{setspace}\doublespacing
+    - \usepackage{float}
+author: | 
+  | CHAN Yiu Fung (1155010561)
+  | CHUNG Wai Tung (1155118104)
+  | LAM Siu Hung (1006201460)
+  | LAU Chiu Kit (1155120306)
+  | WONG Tsz Wing (1004666311)
+  | WONG Yiu Chung (1155017920)
+date: <center>`r format(Sys.time(), '%d %B, %Y')`</center>
+abstract: |
+  This report explores the possibility of predicting human movement using spatial data of exercises. Seven data mining models are used to extract latent pattern from the dataset. The present study is successful in predicting various types of human physical movements with extremely high accuracy. Work are divided evenly among authors.
+  All code, R objects, and other supporting files can be found at [this Github repository](https://github.com/emailyc/STAT_5104_Project.git)
+  
+output:
+  html_document:
+    keep_md: no
+    toc: true # table of content true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango  # specifies the syntax highlighting style
+    code_folding: show
+  pdf_document:
+    number_sections: true
+    df_print: kable
+    highlight: tango
+    fig_caption: true
+  word_document: default
+bibliography: r-references.bibtex
+csl: apa.csl  
+nocite: '@*'
+--- 
+\newpage
+\tableofcontents
+
+
+\newpage
+```{r, echo=FALSE, results='hide'}
+remove(list=ls());
+gc();
+```
+
+```{r setup, include=TRUE, echo = FALSE, results = 'hide', message=FALSE, warning=FALSE}
+#Prepare environment 
+if (knitr::is_latex_output())
+{
+  knitr::opts_chunk$set(echo = FALSE, cache=TRUE, results = TRUE, message=FALSE, warning=FALSE);
+} else
+{
+  knitr::opts_chunk$set(echo = TRUE, cache=TRUE, results = TRUE, message=FALSE, warning=FALSE);
+}
+```
+
+```{r libraries}
+check.packages <- function(pkg)
+{
+    new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])];
+    if (length(new.pkg)) 
+    {
+      install.packages(new.pkg, dependencies = TRUE);
+      sapply(pkg, require, character.only = TRUE);
+    }
+}
+
+# packeges required by project
+packages<-c("caret",
+            "rpart",
+            "e1071",
+            "klaR",
+            "rattle",
+            "doParallel",
+            "parallel",
+            "randomForest",
+            "gbm",
+            "MLmetrics",
+            "dplyr",
+            "ggplot2",
+            "GGally",
+            "lattice",
+            "magrittr",
+            "plotly",
+            "DT");
+check.packages(packages);
+
+library(dplyr);
+library(caret);
+```
+
+```{r}
+set.seed(5104);
+```
+
+\newpage
+# Introduction
+The research topic, Human Activity Recognition (HAR), is becoming more and more popular among the computing research community. In the traditional HAR research, researchers mainly focused on predicting what activity a person was performing at a specific point of time. Meanwhile, latest researches have shifted the focus on how well the activities have been performed. In real-life, we can apply the ideas, for example, in sports training. 
+In this report, we explored the Weight Lifting Exercises Dataset and attempted to assess if the participants performed the specific weight lifting exercise, Unilateral Dumbbell Biceps Curl (hereafter refers to the exercise), correctly from the data collected via various sensors attached on different parts of the body, which includes arm, belt, forearm, and dumbbell.  The type of mistakes in the exercise can also be identified.
+Six male participants aged between 20-28 years were asked to wear a number of body sensors to perform one set of 10 repetitions of the exercise. Based on the sensor data collected, we can trace the outcome of the performance accordingly.  The performance outcome can be grouped into five classes, one corresponding to the specified execution of the exercise, while the other 4 classes corresponding to some common mistakes. Each sensor generated a set of readings in three dimensions [@velloso2013qualitative].
+
+
+# The Data
+
+The data for this project come from [this source](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv): https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv. 
+
+The dataset contains 160 variables, which include one target variable "Class" and 159 readings from the sensors. Each "Class" represents a specific performance outcome. This dataset is unique in a way that while there are many variables, each are fundamentally the same, i.e. each set of three columns represents a sensor attached on different parts of the body.  Each sensor generates data according to its rotation around a spatial axis, giving spatial data on three dimensions. Hence all 159 columns of data are highly similar to each other [@velloso2013qualitative]. 
+
+The target variable has the following levels: 
+
+* Class A: exactly according to the specification (i.e. performing the exercise correctly);
+* Class B: throwing the elbows to the front;
+* Class C: lifting the dumbbell only halfway;
+* Class D: lowering the dumbbell only halfway; and
+* Class E: throwing the hips to the front.
+
+
+## Data preparation
+
+For the following reasons:
+
+* Predictor with well-defined meaning
+* Similar scale
+* Similar range
+* All continuous
+
+scaling / standardising may not yield the best result since this may cause distortion. Data are not rescaled or normalised in this report.
+
+### Load data
+```{r get data}
+dataURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv";
+data <- read.csv(dataURL, header = TRUE);
+```
+
+### Data cleaning 
+The data are further processed by:  
+* Removing the first seven fields which are just descriptive data  
+* Removing near zero variance fields  
+* Removing columns with more than 10% missing values
+
+```{r data cleaning}
+#Remove the first seven columns
+data <- data[,-(1:7)];
+
+#Remove NearZeroVariance variables
+nzv <- nearZeroVar(data, saveMetrics=TRUE);
+data <- data[,nzv$nzv == FALSE];
+
+#Clean variables with mostly NA
+dataNA <- apply(data, 2, function(col){sum(is.na(col))/length(col)});
+data <- data[,which(dataNA < .1)];
+```
+`r ncol(data)` columns remains in the dataset post-cleaning. The following table lists the remaining variables 
+
+```{r str data, results='markup'}
+summaryTable <- data.frame(variable = names(data),
+                           classe = sapply(data, typeof),
+                           first_values = sapply(data, function(x) paste0(head(x),  collapse = ", ")),
+                           row.names = NULL)
+
+if (knitr::is_latex_output())
+{
+  summaryTable;
+} else
+{
+  DT::datatable(summaryTable);
+}
+
+```
+
+### Slicing into training and testing sets
+The training data set is sliced into 80% for training and 20% for testing.
+```{r data splitting}
+inTrain <- createDataPartition(y=data$classe, p=0.80, list=FALSE); #Data slicing
+train <- data[inTrain,];
+test <- data[-inTrain,];
+```
+
+### Overview of cleaned dataset
+```{r overview of data}
+dim(train);
+```
+
+
+## Principal Component Analysis
+
+Principal Component Analysis (PCA) is a dimension reduction technique. A reduced dataset allows faster processing and smaller storage. In the context of data mining, PCA reduces the number of variables to be used in a model by focusing only on the components accounting for the majority of the variance. Highly correlated variables are also removed as a result of PCA.
+
+```{r PCA}
+prComp <- caret::preProcess(train[,-length(train)], method = "pca", thresh = 0.99);
+trainPC <- predict(prComp, train[,1:ncol(train)-1]);
+trainPC$classe <- train$classe;
+testPC <- predict(prComp, test[,1:ncol(test)-1]);
+testPC$classe <- test$classe;
+```
+Here, PCA is able to reduce the dimension (number of predictors) of the datasets from `r ncol(data) - 1` to `r ncol(trainPC) - 1` while retaining 99% of the information. This reduces model complexity and improves scalability. 
+
+As a side note, PCA is usually performed on scaled  or normalised dataset to prevent the resulting principle sub-space from being dominated by variables with large scales. As mentioned above, because the variables in the dataset are of similar nature, scaling or normalised provides little added benefits. Hence such procedures are not used. 
+
+
+```{r, echo=FALSE, fig.show='hide'}
+gpairs_lower <- function(g)
+{
+    g$plots <- g$plots[-(1:g$nrow)];
+    g$yAxisLabels <- g$yAxisLabels[-1];
+    g$nrow <- g$nrow - 1;
+    
+    g$plots <- g$plots[-(seq(g$ncol, length(g$plots), by = g$ncol))];
+    g$xAxisLabels <- g$xAxisLabels[-g$ncol];
+    g$ncol <- g$ncol - 1;
+    
+    return(g);
+}
+
+g <- GGally::ggpairs(trainPC[, c(1:4)],
+                     upper  = list(continuous = "blank"),
+                     diag  = list(continuous = "blankDiag"),
+                     lower  = list(continuous = "points",
+                                   mapping = ggplot2::aes(colour = trainPC$classe)
+                                   )
+                     );
+gpairs_lower(g)            
+```
+
+# Methods
+
+## Learning Models
+Seven learning methods are adopted in this report. Namely: 
+
+1. Naive Bayes;
+1. K-Nearest Neighbor;
+1. Multinomial Logistic Regression;
+1. Decision Tree;
+1. Tree Bagging.
+1. Random Forest;
+1. Neuro Network;
+
+The methods can be classified as eager learner (Decision Tree, Tree Bagging, Random Forest, and Neuro Network) and lazy learner (K-Nearest Neighbor and Naive Bayes). The library `Caret` is used to generate training models .
+
+## Resampling: Cross Validation
+
+Cross Validation is performed on each training methods to infer model performance.
+
+### Choosing between LOOCV and $k$-Fold
+
+Leave-One-Out Cross-Validation (LOOCV) and $k$-Fold are common resampling methods for accessing model performance. While LOOCV estimates test error with lowest bias (averaging validation errors across n models), $k$-Fold CV is much less computationally intensive.  
+
+Yet there is another advantage to using $k$-Fold CV: $k$-Fold CV often gives more accurate estimates of the test error; estimates produced by LOOCV is often plagued by high variance compared to that produced by $k$-Fold CV. This is because test errors in LOOCV are produced by models trained on virtually identical datasets. The final averaged statistic is an average of statistics from n models which are highly positively correlated. On the other hand, $k$-Fold CV outputs $k$ (which is usually much less than n) statistics which are less correlated as there are less overlap among models. The average of strongly correlated quantities has higher variance than the average of weakly correlated quantities; hence the estimated statistics from LOOCV tends to have higher variance than that from $k$-Fold [@james2013introduction]. 
+
+The dataset in the report consists of relatively large number of observations (`r nrow(trainPC)`). Hence a 10 fold cross-validation is performed.
+
+### Performance Measures for Multi-Class Problems
+
+The following are some of many viable model performance metrics for choosing the best model out of the many models `caret::train` create using different parameters. For example, `caret::train` tries different $k$ in KNN. 
+
+* Accuracy and Kappa
+* Area Under ROC Curve
+* F1
+* Logarithmic Loss
+
+```{r model trainControl}
+tc <- caret::trainControl(method = "cv", #resampling method = cross validation
+                          number = 10,   #10-fold validation
+                          classProbs = TRUE,
+                          summaryFunction = multiClassSummary,
+                          verboseIter=FALSE,
+                          allowParallel=TRUE);
+
+metric <- "logLoss";
+```
+
+Log loss often works well with multi-class problems. By setting the parameter metric to `logLoss`, model selection will be based on lowest log loss. 
+
+```{r parallel processing}
+#Parallel Processing, leaves you one core for other stuff.
+#Plz try not to do CPU intensive tasks while modelling.
+cl <- parallel::makeCluster(parallel::detectCores()- 1);
+doParallel::registerDoParallel(cl);
+```
+
+## Lazy Learners
+
+Lazy learners simply store the training data without performing further munging, until a test dataset is presented [@lazyeagerdefinition]. During model training, Lazy Learners require significantly less computational operation as there is no new algorithm being developed; for the same reason, Lazy Learners are slow when used for prediction because new data are used to compute predictions instead of relying on a pre-calculated algorithm.
+
+Naive Bayes and K-Nearest-Neighbor (KNN) are used in this section. Both lazy learners are expected to perform quickly on large datasets like the one used in this report. KNN relies heavily on Euclidean distance (L2 norm) between observations and is more appropriate on scaled or normalised data. Hence, this model is expected to perform less well than other data mining models used in this report.  
+```{r lazy learners}
+if (file.exists("nb.rds"))
+{
+        nb <- readRDS(file = "nb.rds");
+        nbTime <- readRDS(file = "nbTime.rds");
+} else
+{
+        nbTime <- system.time(
+          nb <- caret::train(classe ~ .,        #naive bayes
+                             data = trainPC,
+                             method = "nb",
+                             metric = metric, 
+                             trControl= tc)
+          );       
+        saveRDS(nb, file = "nb.rds");
+        saveRDS(nbTime, file = "nbTime.rds");
+}
+
+if (file.exists("knn.rds"))
+{
+        knn <- readRDS(file = "knn.rds"); 
+        knnTime <- readRDS(file = "knnTime.rds"); 
+} else
+{
+        knnTime <- system.time(
+          knn <- caret::train(classe ~ .,       #knn
+                              data = trainPC,
+                              method = "knn",
+                              metric = metric,
+                              trControl= tc)
+          );     
+        saveRDS(knn, file = "knn.rds");
+        saveRDS(knnTime, file = "knnTime.rds");
+}
+```
+
+## Multinomial logistic regression
+
+Multinomial logistic regression posts no assumptions such as normality, linearity, or homoscedasticity. This makes it more flexible than other more powerful techniques such as discriminant analysis  [@starkweather2011multinomial]. 
+```{r multinomial logistic regression}
+
+if (file.exists("multinom.rds"))
+{
+        multinom <- readRDS(file = "multinom.rds");
+        multinomTime <- readRDS(file = "multinomTime.rds");
+} else
+{
+        multinomTime <- system.time(
+          multinom <- caret::train(classe ~ .,          #Multinomial Logistic Regression
+                                   data = trainPC,
+                                   method = "multinom",
+                                   metric = metric,
+                                   trControl= tc)
+          );
+        saveRDS(multinom, file = "multinom.rds");
+        saveRDS(multinomTime, file = "multinomTime.rds");
+}
+```
+
+## Tree based models
+
+Tree-based methods tend to perform well on unprocessed data (i.e. without normalizing, centering, scaling features).
+
+Decision Trees often produce predictions with low bias but high variance. The more complex the tree, the more apparent this becomes (overfitting). Methods have been proposed to overcome this issue. This includes Bootstrap Aggregation (Bagging), as well as Random Forest. 
+
+The idea behind tree bagging is to create many trees, each trained from bootstrapped data from the original dataset. Each tree is slightly different from each other because they are trained with mildly different datasets. Classification decision is then performed by popular vote across all trees. This method reduces variance by averaging decisions among many trees. There is a caveat though: trees turn out to be very similar to each other when there exists a (or few) extremely strong predictor, following by some moderately strong predictors.  Each tree will have similar node splitting because of these strong predictors, which renders each tree to have practicality the same decision rules. Unfortunately, as mentioned above, the variance of the averages of highly correlated quantities is also high. This means tree bagging provides little improvements in terms of variance reduction.
+
+Random Forest enhances tree bagging through a tweak: at each node split, the algorithm randomly picks a subset of size $m$ predictors out of all $p$, then choose the best predictor for this node split as normally seen in decision trees. This way, each tree is more likely to be different from each other. And hence their averages are less varying. The choice of $m$ is often the square root of $p$ but other method of choosing $m$ also exists [@james2013introduction].
+
+```{r tree_models}
+
+if (file.exists("ctree.rds"))
+{
+        ctree <- readRDS(file = "ctree.rds");
+        ctreeTime <- readRDS(file = "ctreeTime.rds");
+} else
+{
+        ctreeTime <- system.time(
+          ctree <- caret::train(classe ~ .,       #decision tree
+                                data = trainPC,
+                                method = "rpart",
+                                metric = metric,
+                                trControl= tc)
+          );
+        saveRDS(ctree, file = "ctree.rds");
+        saveRDS(ctreeTime, file = "ctreeTime.rds");
+}
+
+if (file.exists("treebag.rds"))
+{
+        treebag <- readRDS(file = "treebag.rds");
+        treebagTime <- readRDS(file = "treebagTime.rds");
+} else
+{
+        treebagGrid <- expand.grid(.mtry = ncol(trainPC) - 1);
+        treebagTime <- system.time(
+          treebag <- caret::train(classe ~ .,      #Tree bagging
+                                  data = trainPC,
+                                  method = "rf",
+                                  metric = metric,
+                                  tuneGrid = treebagGrid,
+                                  trControl= tc)
+          );
+        saveRDS(treebag, file = "treebag.rds");
+        saveRDS(treebagTime, file = "treebagTime.rds");
+}
+
+if (file.exists("rf.rds"))
+{
+        rf <- readRDS(file = "rf.rds");
+        rfTime <- readRDS(file = "rfTime.rds");
+} else
+{
+        rfGrid <- expand.grid(.mtry = sqrt(ncol(trainPC) - 1));
+        rfTime <- system.time(
+          rf <- caret::train(classe ~ .,        #Random Forest
+                             data = trainPC,
+                             method = "rf",
+                             metric = metric,
+                             tuneGrid = rfGrid,
+                             trControl= tc)
+          );
+        saveRDS(rf, file = "rf.rds");
+        saveRDS(rfTime, file = "rfTime.rds");
+}
+```
+Note that in the code above, both models `treebag` and `rf` employ the training method rf. This is because tree bagging is in fact a special case of Random Forest where $m$ = $p$. 
+
+## Neuro-Net
+
+R doesn't provide an easy way to model multilayer perceptron (Neuro Network). Hence a single-layer perceptron is modelled below. Neuro Networks tend to be scale invariant (just like tree based models): rescaling the input vector is equivalent to changing the weights and biases of the network, resulting in the exact same outputs as before.
+```{r neuro_net}
+if (file.exists("NN.rds"))
+{
+        NN <- readRDS(file = "NN.rds");
+        NNTime <- readRDS(file = "NNTime.rds");
+} else
+{
+        nnetGrid <-  expand.grid(
+                size = seq(from = 1, to = 10, by = 1),
+                decay = c(0.5, 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7));
+        NNTime <- system.time(
+          NN <- caret::train(classe ~ .,
+                             data = trainPC,
+                             method = "nnet",
+                             metric = metric,
+                             tuneGrid = nnetGrid,
+                             trControl= tc, verbose=FALSE));
+        saveRDS(NN, file = "NN.rds");
+        saveRDS(NNTime, file = "NNTime.rds");
+}
+```
+The parameter `size` specifies the number of units in the hidden layer. Sizes ranging from 1 to 10 are experimented for best results.
+The parameter `decay` specifies the regularisation of the number of nodes: model with high node counts are more heavily penalised
+
+```{r stopCluster}
+#parallel::stopCluster(cl);
+```
+
+## Compare Models
+```{r}
+results <- caret::resamples(list(NaiveBayes = nb,
+                          KNearestNeighbor = knn,
+                          MultinomialLogit = multinom,
+                          DecisionTree = ctree,
+                          TreeBagging = treebag,
+                          RandomForest = rf,
+                          NeuroNetwork = NN));
+
+results$metrics
+```
+There are a total of `r length(results$metrics)` metrics for comparing models.
+
+# Findings
+
+## Comparing models
+
+Averages of LogLoss, Accuracy, F1 and AUC are used to assess the performances of the models.
+
+```{r result graphs}
+summaryStat <- summary(results)$statistics;
+
+scales <- list(x=list(relation="free"), y=list(relation="free"));
+metrics <- c("Accuracy", "AUC", "logLoss", "Mean_F1");
+
+lattice::dotplot(results, scales=scales,  metric=metrics, main="Model Performances");
+
+times <- c(ctreeTime[[3]], knnTime[[3]],
+           multinomTime[[3]],
+           nbTime[[3]], rfTime[[3]], treebagTime[[3]],
+           NNTime[[3]]) %>% round(., 3);
+
+models <- c("Decision Tree", "KNN",
+            "Multi Nomial",
+            "Naive Bayes", "Random Forest", "Tree Bagging",
+            "Neuro-Net");
+
+
+elapsedTime <- data.frame(Models = models, Seconds = times, stringsAsFactors=F) %>% arrange(times);
+elapsedTime$Models <- factor(elapsedTime$Models, levels=unique(elapsedTime$Models));
+elapsedTime$plotLabels <- paste("Training time in seconds: ", round(elapsedTime$Seconds,3), sep="");
+
+
+
+timePlot <- ggplot2::ggplot(data=elapsedTime, aes(x=Models, y=Seconds)) +
+  ggplot2::geom_bar(stat="identity") +
+  ggplot2::ggtitle("Training Time") +
+  ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
+  ggplot2::xlab("Models") + 
+  ggplot2::ylab("Time (seconds)");
+
+if (knitr::is_latex_output())
+{
+  timePlot + ggplot2::geom_text(ggplot2::aes(label=times), vjust=-.5);
+} else
+{
+  plotly::ggplotly(p = timePlot);
+}
+```
+
+Among the seven models, Random Forest, Tree Bagging and KNN outperform the other four models. Surprisingly, KNN appears to outperform all other models holistically: lowest log Loss value at `r summaryStat$logLoss["KNearestNeighbor","Mean"]`, highest Mean F1, Accuracy, and AUC at `r summaryStat$Mean_F1["KNearestNeighbor","Mean"]`, `r summaryStat$Accuracy["KNearestNeighbor","Mean"]`, `r summaryStat$AUC["KNearestNeighbor","Mean"]` respectively. In addition, KNN has the second lowest learning time (which is less surprising given its lazy learning nature) at `r knnTime[[3]]` seconds (wall clock), beaten by Decision Tree only.
+
+The training data used in the report remain at their original scale. KNN is supposed to suffer from  neighbors being aligned along the direction of the axis with the smaller range. This somewhat reaffirms the notion of the dataset having variables with similar scales and ranges. 
+
+KNN performs well at various metrics, as well as having a low training time. Thus, KNN is chosen as the final model to be tested.
+
+As a last note, Decision Tree has high variance across different metrics. This confirms earlier analysis on [Tree based models] regarding its drawback of having high variance. 
+
+# Model Performance
+```{r confusion matrix, results='markup'}
+confusion <- confusionMatrix(predict(knn, testPC), testPC$classe);
+confusion
+```
+`KNN` is able to predict future data with `r confusion$overall[[1]]` accuracy and `r confusion$overall[[2]]` Kappa. 
+
+# Discussion
+Predictive accuracy and trivial computational requirement have led the authors to conclude the KNN algorithm as the final model. One might question why the more accurate models aren't used (Random Forest, Tree Bagging), given the fact that this report aims at tackling a prediction problem. First, a look at the model objects may answer this question
+
+```{r model size}
+object.size(knn);
+object.size(rf);
+```
+One is about 5 times the size of the other. If a model is to be run on a smaller device, which sports devices usually are, a bigger model may cause storage problem. 
+
+Another reason for choosing a simpler model is interpretability. Using KNN, one can safely construe each particular exercise have similar spatial readings (close Euclidean distance). On the other hand, one may find elucidating exercise grouping using the Random Forest paradigm difficult. 
+
+## Final Remarks
+
+This report pays pittance regard to exploratory data analysis: apart from delineating the background, there are no graphical nor analytically insight of how variables might correlate to each other. Given the success of the KNN algorithm on this dataset, which is heavily distance based, there is a good chance that graphical tools can yield good explanation for KNN's ascendancy. Given the high dimension (`r ncol(data)`) nature of the data, as well as writing space limit, the authors have opted not to use graphical exploratory data analysis. 
+
+This analysis has perhaps debased the Neuro-Network model somewhat unfairly. Looking at the code at [Neuro-Net], 10 values are specified for the parameter `size`, and 8 values are specified for `decay`. At least 10 * 8 models with varying sizes are built and compared. This is significantly more model built than other methods. Nonetheless, the performance of such sophisticated algorithm under-performs other simpler models, hence discarded. 
+
+Had other data mining techniques been discussed in class, such as Support Vector Classifier, and Discriminant Analysis, more models would be tried here. 
+
+\newpage
+# Session Info
+```{r session}
+devtools::session_info()
+```
+
+
+\newpage
+# References

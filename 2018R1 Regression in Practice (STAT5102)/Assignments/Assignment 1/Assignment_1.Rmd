@@ -1,0 +1,118 @@
+---
+title: <center><h1> 2018R1 Regression in Practice (STAT5102)  Assignment 1</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = FALSE,results = 'hide'}
+gc()
+rm(list = ls())
+```
+
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+options(width = 100)
+library("ggplot2")
+library("GGally")
+library("dplyr")
+```
+
+```{r}
+htwt <- read.csv("htwt.txt", header = TRUE, sep = " ")
+oldfaith <- read.csv("oldfaith.txt", header = TRUE, sep = " ")[-3]
+```
+<br />
+
+####3a. 
+```{r echo=F}
+ggplot(data = htwt, aes(x = Ht, y = Wt)) + geom_point(size = 4) + ggtitle("Scatterplot of htwt.txt")
+```
+<br />
+Based on the information given by this scatterplot, it is possible to model the data using simple linear regression for the following reasons:
+
+1. There seems to be a trend between weight and height.
+2. The tread seems to be linear.
+3. Both weight and height exhibit reasonable variation, hence we can more confidently pin down the relationship between the predictor and the target.
+4. The sample size of 10 is enough (barely) to perform a simple linear regression.
+<br />
+
+####3b. 
+```{r echo=T}
+Sxx = sum((htwt$Ht - mean(htwt$Ht))^2)
+Syy = sum((htwt$Wt - mean(htwt$Wt))^2)
+Sxy = sum((htwt$Ht - mean(htwt$Ht)) * (htwt$Wt - mean(htwt$Wt)))
+x <- c(mean(htwt$Ht), mean(htwt$Wt), Sxx, Syy, Sxy)
+names(x) <- c("Ht_mean", "Wt_mean", "Sxx", "Syy", "Sxy")
+x
+
+model <- lm(data = htwt, Wt ~ Ht)
+model$coefficients
+
+ggplot(data = htwt, aes(x = Ht, y = Wt)) + geom_point(size = 4) + geom_smooth(method = lm, se = FALSE) + ggtitle("Scatterplot of htwt.txt")
+```
+<br />
+
+####3c. 
+```{r}
+MSE = sum(model$residuals^2)/(nrow(htwt)-2) %>% round(., 4)
+b1_SE = summary(model)$coefficients[2, 2] %>% round(., 4)
+b0_SE = summary(model)$coefficients[1, 2] %>% round(., 4)
+
+x <- matrix(c(MSE, b0_SE, MSE, b1_SE), 2, 2, byrow = F, dimnames = list(c("MSE", "standard error"), c("intercept", "b1")))
+x
+```
+```{r echo=T}
+#cov(b0, b1)
+unname(-mean(htwt$Ht) * diag(vcov(model))[2])
+```
+```{r echo=T}
+summary(model)$coefficients
+```
+<br />
+
+####3d. 
+```{r echo=T}
+anova(lm(data = htwt, Wt ~ Ht))
+```
+* Since the F value is low and p-value greater than .05, there is a high probability that $\beta_{1}$ is zero and $b_{1}$ isn't zero is simply due to chance. 
+* The p-value of ANOVA and p-value of $b_{1}$ in t-test equats.
+
+####4a.  <br />
+
+```{r}
+oldfaith_model <- lm(data = oldfaith, Interval ~ Duration)
+summary(oldfaith_model)$coefficients
+```
+
+$$
+\begin{align*}
+\mathrm{\hat{Interval}} = `r coef(oldfaith_model)[1]` 
+    &+ `r coef(oldfaith_model)[2]`\;  \mathrm{Duration}    \\
+\end{align*}
+$$
+
+* The $b_{1}$ is `r coef(oldfaith_model)[2]`. This means for every second increase in the current eruption, the wait time will increase by `r coef(oldfaith_model)[2]` minute. 
+<br />
+
+####4b.  <br />
+```{r}
+predict(oldfaith_model, newdata=list(Duration=250), interval="confidence", level=.95)
+```
+<br />
+
+####4c.  <br />
+```{r}
+predict(oldfaith_model, newdata=list(Duration=250), interval="prediction", level=.95)
+```
+
+
+####5.  <br />
+* When there is no variation in the predictor variable, the denominator of the closed-form formula of $b_{1}$ is zero. Thereby $b_{1}$ is not defined. Regression tries to answer the question: How does y change, on average, when X changes by one unit? This question cannot be answered if X doesn't change.

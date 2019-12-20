@@ -1,0 +1,63 @@
+---
+title: <center><h1> 2018R2 Data Mining (STAT5104)  Assignment 1 Q1</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+    code_folding:
+  word_document: default
+--- 
+
+```{r include=FALSE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo = TRUE, results='hide', message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+set.seed(17920)
+```
+
+##mdist function
+```{r mdist}
+mdist<-function(x) { 
+   t<-as.matrix(x)        # transform x to a matrix 
+   m<-apply(t,2,mean)     # compute column mean 
+   s<-var(t)              # compute sample covariance matrix 
+   mahalanobis(t,m,s)     # using built-in mahalanobis function 
+} 
+```
+
+## Outlier detection
+
+###a) 
+```{r read data}
+d <- read.csv("Telephone.csv", header = TRUE)
+d0 <- filter(d, Change == 0) #select observations with Change == 0
+d1 <- filter(d, Change == 1) #select observations with Change == 1
+```
+
+### b)
+```{r select column}
+x0 <- select(d0, -c(2,3,18))  #remove column 2, 3, 18
+x1 <- select(d1, -c(2,3,18))  #remove column 2, 3, 18
+md0 <- mdist(x0)              #calculate distance
+md1 <- mdist(x1)              #calculate distance
+```
+
+### c)
+```{r chi-square}
+cutoff <- qchisq(0.99,df = ncol(d) - 3) #calculate Chi-Square cut-off
+dc0 <- filter(d0, md0 < cutoff)         #select observations where distance is below cutoff
+dc1 <- filter(d1, md1 < cutoff)         #select observations where distance is below cutoff
+```
+
+There are `r (nrow(d0) - nrow(dc0))` outliners in `d0`; there are `r (nrow(d1) - nrow(dc1))` outliners in `d1`
+
+\newpage
+###d)
+```{r}
+dc <- rbind(dc0, dc1)                   #row bind observations
+write.table(dc, "tele.csv", sep = ",")  #write to csv files
+```

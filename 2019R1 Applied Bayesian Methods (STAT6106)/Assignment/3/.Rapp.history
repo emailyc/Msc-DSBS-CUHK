@@ -1,0 +1,115 @@
+set.seed(0)#
+g <- function(x){abs(sin(x))*exp(-x)}#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rlnorm(N)#
+  Y <- g(X)/dlnorm(X)#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}
+mean(estimate)#
+sd(estimate)
+set.seed(0)#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rexp(N)#
+  Y <- abs(sin(X))#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}#
+mean(estimate)#
+sd(estimate)
+rexp(1)
+rexp(-1)
+rexp(-.1)
+rexp(0)
+rexp(1)
+plor(density(rexp(10e5)))
+plot(density(rexp(10e5)))
+integrate(dexp)
+integrate(dexp, lower=0, upper=Inf)
+exp(-1)
+set.seed(0)#
+g <- function(x){abs(sin(x))*exp(-x)}#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rlnorm(N)#
+  Y <- g(X)/dlnorm(X)#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}
+mean(estimate)#
+sd(estimate)
+set.seed(0)#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rexp(N)#
+  Y <- abs(sin(X))#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}#
+mean(estimate)#
+sd(estimate)\
+set.seed(0)#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rexp(N)#
+  Y <- abs(sin(X))#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}#
+mean(estimate)#
+sd(estimate)
+q1 <- function(x)(abs(cos(x))/x)*exp(-(log(x)-3)^2)
+g = q1
+set.seed(0)#
+g <- function(x){abs(sin(x))*exp(-x)}#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rlnorm(N)#
+  Y <- g(X)/dlnorm(X)#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}
+mean(estimate)#
+sd(estimate)
+integrate(g, 0, Inf)
+set.seed(0)#
+N <- 100000  #the sample size of each estimate#
+estimate <- c()#
+data <- c()#
+for(i in 1:10){#
+  X <- rexp(N)#
+  Y <- abs(cos(X))/X#
+  estimate[i] <- mean(Y)#
+  data <- cbind(data,Y)#
+}#
+mean(estimate)#
+sd(estimate)
+pi * mean(sin(runif(1000)))
+pi * mean(sin(runif(1000, min=0, max=pi)))
+pi * mean(sin(runif(100000, min=0, max=pi)))
+hihi = replicate(pi * mean(sin(runif(100000, min=0, max=pi))))
+hihi = replicate(pi * mean(sin(runif(100000, min=0, max=pi))), n=10)
+mean(hihi)
+sd(hihi)
+mean(sin(runif(100000, min=0, max=pi)))
+f = function(x)exp(-(x^2))
+mean(f(runif(100000, min=0, max=4)))
+hihi = replicate(4 * mean(f(runif(100000, min=0, max=4))), n=10)
+mean(hihi)
+integratef, 0, 4
+integrate(f, 0, 4)
+sd(hihi)

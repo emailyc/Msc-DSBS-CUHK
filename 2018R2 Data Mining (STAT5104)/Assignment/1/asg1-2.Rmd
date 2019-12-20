@@ -1,0 +1,96 @@
+---
+title: <center><h1> 2018R2 Data Mining (STAT5104)  Assignment 1 Q2</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+    code_folding:
+  word_document: default
+--- 
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+```
+
+```{r echo = TRUE, results='hide', message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(rattle)
+set.seed(12345)
+```
+
+###a)
+```{r read data}
+dc <- read.csv("tele.csv", header = TRUE, sep = ",")            #read data
+inTrain <- createDataPartition(dc$Change, p = .9) %>% unlist(.) #create index for train / test partition
+d0 <- dc[inTrain,]                                              #select observations for training 
+d1 <- dc[-inTrain,]                                             #select observations for testing
+```
+
+###b)
+```{r ctree}
+control <- rpart.control(maxdepth = 3)
+ctree <- rpart(data = d0, formula = Change ~ ., control = control, method = 'class')
+```
+
+\newpage
+###c)
+```{r print}
+rpart.plot(ctree)             #print plot
+print(ctree)
+asRules(ctree, compact=FALSE) #print rules
+
+oneSum <- sum(d0$Change)      #calculate total number of observaation where Change == 1
+                              #in the training set
+zeroSum <- nrow(d0) - oneSum  #calculate total number of observaation where Change == 0
+                              #in the training set
+```
+
+Rule Number 4: Day_Mins< 264.45 and CustServ_Calls< 3.5 then Change = 0<br />
+Support = 2563 / 3288 = `r 2563 / 3288`<br />
+Confidence = 1 - (198 / 2563) = `r 1 - (198 / 2563)`<br />
+Capture = (2563 - 198) / 2542 = `r (2563 - 198)/zeroSum`<br />
+
+Rule Number 10: Day_Mins< 264.45 and CustServ_Calls>= 3.5 and Day_Mins>=160.2 then Change = 0<br />
+Support = 130 / 3288 = `r 130 / 3288`<br />
+Confidence = 1 - (32 / 130) = `r 1 - (32 / 130)`<br />
+Capture = (130 - 32) / 2542 = `r (130 - 32)/zeroSum`<br />
+
+Rule Number 11: Day_Mins< 264.45 and CustServ_Calls>= 3.5 and Day_Mins< 160.2 then Change = 1<br />
+Support = 88 / 3288 = `r 88 / 3288`<br />
+Confidence = 1 - (10 / 88) = `r 1 - (10 / 88)`<br />
+Capture = (88 - 10) / 418 = `r (130 - 32)/oneSum`
+
+Rule Number 6: Day_Mins>=264.45 and Vmail_plan=yes then Change = 0<br />
+Support = 44 / 3288 = `r 44 / 3288`<br />
+Confidence = 1 - (6 / 44) = `r 1 - (6 / 44)`<br />
+Capture = (44 - 6) / 2542 = `r (44 - 6)/zeroSum`
+
+Rule Number 14: Day_Mins>=264.45 and Vmail_plan=yes and then Eve_Mins<187.75 Change = 0<br />
+Support = 47 / 3288 = `r 47 / 3288`<br />
+Confidence = 1 - (21 / 47) = `r 1 - (21 / 47)`<br />
+Capture = (47 - 21) / 2542 = `r (47 - 21)/zeroSum`
+
+Rule Number 15: Day_Mins>=264.45 and Vmail_plan=yes and then Eve_Mins>=187.75 Change = 1<br />
+Support = 88 / 3288 = `r 88 / 3288`<br />
+Confidence = 1 - (5 / 88) = `r 1 - (5 / 88)`<br />
+Capture = (88 - 5) / 2542 = `r (88 - 5)/oneSum`
+
+###d)
+```{r}
+test <- predict(ctree)                              #predict using training data 
+cl_test <- max.col(test) - 1                        #rename columns from  1, 2 to 0, 1
+test_table <- table(cl_test, d0$Change)             #put data into classification table 
+test_table
+
+validation <- predict(ctree, newdata = d1)          #predict using testing data 
+cl_validation <- max.col(validation) - 1            #rename columns from  1, 2 to 0, 1
+validation_table <- table(cl_validation, d1$Change) #put data into classification table 
+validation_table
+```
+d0 error rate: (`r test_table[2]` + `r test_table[3]`) / `r sum(test_table)`  = `r (test_table[2] + test_table[3]) / sum(test_table)`
+
+d1 error rate: (`r validation_table[2]` + `r validation_table[3]`) / `r sum(validation_table)`  = `r (validation_table[2] + validation_table[3]) / sum(validation_table)`
