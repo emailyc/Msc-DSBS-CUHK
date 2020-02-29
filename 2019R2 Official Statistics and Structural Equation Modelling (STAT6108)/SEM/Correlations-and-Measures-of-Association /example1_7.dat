@@ -1,0 +1,10 @@
+productivity	image		count
+1_Low		1_Low		10
+1_Low		2_Moderate	5	
+1_Low		3_High		2
+2_Moderate	1_Low		8
+2_Moderate	2_Moderate	9
+2_Moderate	3_High		7
+3_High		1_Low		2
+3_High		2_Moderate	6
+3_High		3_High		8

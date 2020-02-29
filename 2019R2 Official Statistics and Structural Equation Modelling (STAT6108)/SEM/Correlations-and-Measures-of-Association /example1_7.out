@@ -1,0 +1,25 @@
+[[1]]
+            
+             1_Low 2_Moderate 3_High
+  1_Low          1          1      1
+  2_Moderate     1          1      1
+  3_High         1          1      1
+
+[[2]]
+            image
+productivity 1_Low 2_Moderate 3_High
+  1_Low         10          5      2
+  2_Moderate     8          9      7
+  3_High         2          6      8
+
+[[3]]
+         Low Moderate High
+Low       10        5    2
+Moderate   8        9    7
+High       2        6    8
+
+
+ Goodman and Kruskal gamma coefficient 
+gamma        : 0.525 
+std. error   : 0.137 
+CI           : 0.257 0.794 

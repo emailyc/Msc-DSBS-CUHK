@@ -1,0 +1,26 @@
+[[1]]
+   commitment performance
+1           1           4
+2           1           7
+3           3           9
+4           3          12
+5           4          11
+6           4          12
+7           5          17
+8           6          13
+9           6          18
+10          7          17
+
+
+ compute Pearson correlation and its test 
+            commitment performance
+commitment         1.0         0.9
+performance        0.9         1.0
+
+n= 10 
+
+
+P
+            commitment performance
+commitment             3e-04      
+performance 3e-04                 

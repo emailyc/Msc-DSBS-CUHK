@@ -1,0 +1,26 @@
+
+ Print table 
+
+       Coke Pepsi Coke Light
+Male     60    20         30
+Female   10    10         70
+
+ Row Totals 
+
+  Male Female 
+   110     90 
+
+ Column Totals 
+
+      Coke      Pepsi Coke Light 
+        70         30        100 
+
+ Cramer's V coefficient 
+
+                    X^2 df   P(> X^2)
+Likelihood Ratio 57.476  2 3.3062e-13
+Pearson          53.583  2 2.3147e-12
+
+Phi-Coefficient   : NA 
+Contingency Coeff.: 0.46 
+Cramer's V        : 0.518 
