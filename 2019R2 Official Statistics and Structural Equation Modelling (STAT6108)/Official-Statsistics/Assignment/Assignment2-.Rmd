@@ -1,0 +1,41 @@
+---
+title: <center> <h1>"STAT6108 Assignment 2"</h1> </center>
+author: "Yiu Chung Wong 1155017920"
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+---
+
+## 2
+
+### a
+```{r}
+composite_CPI_DEC_2019 <- 111.4
+composite_CPI_DEC_2018 <- 108.3
+
+inflation_rate <- ((composite_CPI_DEC_2019 / composite_CPI_DEC_2018) - 1) * 100
+```
+
+As of 11/Mar/2020 the Composite CPI for December 2019 is `r composite_CPI_DEC_2019`; the “inflation rate“ for that month is `r inflation_rate`%.
+
+### b
+```{r}
+GDP_chained_2017_dollar_3rd_2019 <- 673762
+real_growth_rate <- -2.8
+```
+
+As of 11/Mar/2020 the GDP in chained (2017) dollars for 3rd quarter 2019 is `r GDP_chained_2017_dollar_3rd_2019` million; the “real growth rate“ for that quarter is `r real_growth_rate`%.
+
+## 3
+
+* household surveys provide data from the supply side; one can only give crude indication of his “industry” and “occupation”
+* surveys of establishments provide data from the demand side; finer classifications of industry and occupation can be obtained. e.g. wage rates
+
+## 4
+
+* Language cabability in communicate with interviewee. The recruit should be able to speak and understand common languages spoken by the populace.
+* Able to deliver the ideas in a correct, and succinct mannor. The interview should require minimal effort from the interviewee to understand the survey. 
+* Crisis management. Surveys are conducted in varying environments and unforseen circumstances will come up. The recruit shall at least be able to manage themselves in terms of safety if such occation do arise 
+* Be able to show respect and sympathy towards people of a different background or pocess extremely uncommon characteristics.
