@@ -1,0 +1,353 @@
+
+ Example 3: Profit Growth
+
+
+ Output for Model 1
+
+$lambda
+      time2 time3 time4 time1
+time2     0     0     0     0
+time3     0     0     0     0
+time4     0     0     0     0
+time1     0     0     0     0
+
+$theta
+      time2 time3 time4 time1
+time2 0                      
+time3 0     0                
+time4 0     0     0          
+time1 0     0     0     0    
+
+$psi
+      time2 time3 time4 time1
+time2 5                      
+time3 0     6                
+time4 0     0     7          
+time1 0     0     0     4    
+
+$beta
+      time2 time3 time4 time1
+time2     0     0     0     1
+time3     2     0     0     0
+time4     0     3     0     0
+time1     0     0     0     0
+
+lavaan 0.6-5 ended normally after 16 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                          7
+                                                      
+  Number of observations                           200
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                68.771
+  Degrees of freedom                                 3
+  P-value (Chi-square)                           0.000
+
+Model Test Baseline Model:
+
+  Test statistic                               822.319
+  Degrees of freedom                                 6
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    0.919
+  Tucker-Lewis Index (TLI)                       0.839
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -2401.011
+  Loglikelihood unrestricted model (H1)      -2366.626
+                                                      
+  Akaike (AIC)                                4816.022
+  Bayesian (BIC)                              4839.110
+  Sample-size adjusted Bayesian (BIC)         4816.933
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.331
+  90 Percent confidence interval - lower         0.266
+  90 Percent confidence interval - upper         0.401
+  P-value RMSEA <= 0.05                          0.000
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.073
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  time2 ~                                                               
+    time1             0.925    0.048   19.094    0.000    0.925    0.804
+  time3 ~                                                               
+    time2             0.906    0.039   22.935    0.000    0.906    0.851
+  time4 ~                                                               
+    time3             1.167    0.046   25.392    0.000    1.167    0.874
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    time1            40.000    4.000   10.000    0.000   40.000    1.000
+   .time2            18.775    1.877   10.000    0.000   18.775    0.354
+   .time3            16.528    1.653   10.000    0.000   16.528    0.275
+   .time4            25.333    2.533   10.000    0.000   25.333    0.237
+
+R-Square:
+                   Estimate
+    time2             0.646
+    time3             0.725
+    time4             0.763
+
+
+ Output for Model 2
+
+$lambda
+      time2 time3 time4 time1
+time2     0     0     0     0
+time3     0     0     0     0
+time4     0     0     0     0
+time1     0     0     0     0
+
+$theta
+      time2 time3 time4 time1
+time2 0                      
+time3 0     0                
+time4 0     0     0          
+time1 0     0     0     0    
+
+$psi
+      time2 time3 time4 time1
+time2 7                      
+time3 0     8                
+time4 0     0     9          
+time1 0     0     0     6    
+
+$beta
+      time2 time3 time4 time1
+time2     0     0     0     1
+time3     3     0     0     2
+time4     4     5     0     0
+time1     0     0     0     0
+
+lavaan 0.6-5 ended normally after 20 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                          9
+                                                      
+  Number of observations                           200
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                 0.687
+  Degrees of freedom                                 1
+  P-value (Chi-square)                           0.407
+
+Model Test Baseline Model:
+
+  Test statistic                               822.319
+  Degrees of freedom                                 6
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    1.000
+  Tucker-Lewis Index (TLI)                       1.002
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -2366.969
+  Loglikelihood unrestricted model (H1)      -2366.626
+                                                      
+  Akaike (AIC)                                4751.939
+  Bayesian (BIC)                              4781.623
+  Sample-size adjusted Bayesian (BIC)         4753.110
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.000
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.175
+  P-value RMSEA <= 0.05                          0.514
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.005
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  time2 ~                                                               
+    time1             0.925    0.048   19.094    0.000    0.925    0.804
+  time3 ~                                                               
+    time1             0.458    0.069    6.623    0.000    0.458    0.374
+    time2             0.586    0.060    9.751    0.000    0.586    0.551
+  time4 ~                                                               
+    time2             0.479    0.087    5.527    0.000    0.479    0.337
+    time3             0.783    0.082    9.604    0.000    0.783    0.586
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    time1            40.000    4.000   10.000    0.000   40.000    1.000
+   .time2            18.775    1.877   10.000    0.000   18.775    0.354
+   .time3            13.555    1.356   10.000    0.000   13.555    0.226
+   .time4            21.977    2.198   10.000    0.000   21.977    0.205
+
+R-Square:
+                   Estimate
+    time2             0.646
+    time3             0.774
+    time4             0.795
+
+Chi-Squared Difference Test
+
+     Df    AIC    BIC   Chisq Chisq diff Df diff Pr(>Chisq)    
+fit2  1 4751.9 4781.6  0.6874                                  
+fit1  3 4816.0 4839.1 68.7706     68.083       2  1.644e-15 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ Output for Model 3
+
+
+Note: model contains equality constraints:
+
+  lhs op rhs
+1   4 ==   5
+2   4 ==   6
+3   4 ==   7
+
+$lambda
+      Proft1 Proft2 Proft3 Proft4
+time1      0      0      0      0
+time2      0      0      0      0
+time3      0      0      0      0
+time4      0      0      0      0
+
+$theta
+      time1 time2 time3 time4
+time1 4                      
+time2 0     5                
+time3 0     0     6          
+time4 0     0     0     7    
+
+$psi
+        Proft1 Proft2 Proft3 Proft4
+Profit1  8                         
+Profit2  0      9                  
+Profit3  0      0     10           
+Profit4  0      0      0     11    
+
+$beta
+        Proft1 Proft2 Proft3 Proft4
+Profit1      0      0      0      0
+Profit2      1      0      0      0
+Profit3      0      2      0      0
+Profit4      0      0      3      0
+
+lavaan 0.6-5 ended normally after 54 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         11
+  Number of equality constraints                     3
+  Row rank of the constraints matrix                 3
+                                                      
+  Number of observations                           200
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                 4.397
+  Degrees of freedom                                 2
+  P-value (Chi-square)                           0.111
+
+Model Test Baseline Model:
+
+  Test statistic                               822.319
+  Degrees of freedom                                 6
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    0.997
+  Tucker-Lewis Index (TLI)                       0.991
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -2368.824
+  Loglikelihood unrestricted model (H1)      -2366.626
+                                                      
+  Akaike (AIC)                                4753.648
+  Bayesian (BIC)                              4780.034
+  Sample-size adjusted Bayesian (BIC)         4754.689
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.077
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.178
+  P-value RMSEA <= 0.05                          0.234
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.008
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  Profit1 =~                                                            
+    time1             1.000                               5.767    0.912
+  Profit2 =~                                                            
+    time2             1.000                               6.782    0.934
+  Profit3 =~                                                            
+    time3             1.000                               7.317    0.942
+  Profit4 =~                                                            
+    time4             1.000                              10.013    0.968
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  Profit2 ~                                                             
+    Profit1           1.120    0.065   17.247    0.000    0.952    0.952
+  Profit3 ~                                                             
+    Profit2           1.050    0.046   22.710    0.000    0.973    0.973
+  Profit4 ~                                                             
+    Profit3           1.303    0.054   24.205    0.000    0.952    0.952
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .time1   (vare)    6.737    0.881    7.644    0.000    6.737    0.168
+   .time2   (vare)    6.737    0.881    7.644    0.000    6.737    0.128
+   .time3   (vare)    6.737    0.881    7.644    0.000    6.737    0.112
+   .time4   (vare)    6.737    0.881    7.644    0.000    6.737    0.063
+    Profit1          33.263    4.096    8.121    0.000    1.000    1.000
+   .Profit2           4.294    2.048    2.097    0.036    0.093    0.093
+   .Profit3           2.863    1.433    1.998    0.046    0.053    0.053
+   .Profit4           9.377    2.625    3.572    0.000    0.094    0.094
+
+R-Square:
+                   Estimate
+    time1             0.832
+    time2             0.872
+    time3             0.888
+    time4             0.937
+    Profit2           0.907
+    Profit3           0.947
+    Profit4           0.906
+

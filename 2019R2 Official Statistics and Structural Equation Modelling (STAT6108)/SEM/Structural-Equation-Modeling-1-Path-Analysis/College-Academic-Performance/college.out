@@ -1,0 +1,355 @@
+
+ Example 2: College Academic Performance (Raykov, 2006) 
+
+
+ Output for Model 1 
+
+
+ Sample covariance matrix 
+
+[[1]]
+      GPA_R GPA_E    SAT     IQ Motiv
+GPA_R 0.594 0.483  3.993  0.426 0.500
+GPA_E 0.483 0.754  3.626  1.757 0.722
+SAT   3.993 3.626 47.457  4.100 6.394
+IQ    0.426 1.757  4.100 10.267 0.525
+Motiv 0.500 0.722  6.394  0.525 2.675
+
+
+ residual matrix 
+
+$type
+[1] "raw"
+
+$cov
+      GPA_R  GPA_E  SAT    IQ     Motiv 
+GPA_R  0.000                            
+GPA_E  0.177  0.000                     
+SAT    0.000  0.000  0.000              
+IQ     0.080  0.000  0.000  0.000       
+Motiv -0.038  0.000  0.000  0.000  0.000
+
+
+ standardized residual matrix 
+
+$type
+[1] "cor.bollen"
+
+$cov
+      GPA_R  GPA_E  SAT    IQ     Motiv 
+GPA_R  0.000                            
+GPA_E  0.266  0.000                     
+SAT    0.000  0.000  0.000              
+IQ     0.033  0.000  0.000  0.000       
+Motiv -0.030  0.000  0.000  0.000  0.000
+
+
+ free parameters in Model 1 
+
+$lambda
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R     0     0   0  0     0
+GPA_E     0     0   0  0     0
+SAT       0     0   0  0     0
+IQ        0     0   0  0     0
+Motiv     0     0   0  0     0
+
+$theta
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R 0                       
+GPA_E 0     0                 
+SAT   0     0     0           
+IQ    0     0     0   0       
+Motiv 0     0     0   0  0    
+
+$psi
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R  5                      
+GPA_E  0     6                
+SAT    0     0     7          
+IQ     0     0    10   8      
+Motiv  0     0    11  12  9   
+
+$beta
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R     0     0   1  0     0
+GPA_E     0     0   2  3     4
+SAT       0     0   0  0     0
+IQ        0     0   0  0     0
+Motiv     0     0   0  0     0
+
+lavaan 0.6-5 ended normally after 52 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         12
+                                                      
+  Number of observations                           150
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                               100.104
+  Degrees of freedom                                 3
+  P-value (Chi-square)                           0.000
+
+Model Test Baseline Model:
+
+  Test statistic                               463.244
+  Degrees of freedom                                10
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    0.786
+  Tucker-Lewis Index (TLI)                       0.286
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -1357.836
+  Loglikelihood unrestricted model (H1)      -1307.784
+                                                      
+  Akaike (AIC)                                2739.672
+  Bayesian (BIC)                              2775.799
+  Sample-size adjusted Bayesian (BIC)         2737.822
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.465
+  90 Percent confidence interval - lower         0.389
+  90 Percent confidence interval - upper         0.545
+  P-value RMSEA <= 0.05                          0.000
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.070
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  GPA_R ~                                                               
+    SAT               0.084    0.006   13.975    0.000    0.084    0.752
+  GPA_E ~                                                               
+    SAT               0.046    0.007    6.523    0.000    0.046    0.366
+    IQ                0.146    0.013   11.599    0.000    0.146    0.539
+    Motiv             0.131    0.029    4.449    0.000    0.131    0.247
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SAT ~~                                                                
+    IQ                4.073    1.821    2.237    0.025    4.073    0.186
+    Motiv             6.351    1.051    6.045    0.000    6.351    0.567
+  IQ ~~                                                                 
+    Motiv             0.521    0.427    1.221    0.222    0.521    0.100
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .GPA_R             0.256    0.030    8.660    0.000    0.256    0.434
+   .GPA_E             0.234    0.027    8.660    0.000    0.234    0.312
+    SAT              47.141    5.443    8.660    0.000   47.141    1.000
+    IQ               10.199    1.178    8.660    0.000   10.199    1.000
+    Motiv             2.657    0.307    8.660    0.000    2.657    1.000
+
+R-Square:
+                   Estimate
+    GPA_R             0.566
+    GPA_E             0.688
+
+
+ modification indices 
+
+[[1]]
+     lhs op   rhs     mi    epc sepc.lv sepc.all sepc.nox
+23 GPA_E  ~ GPA_R 72.199  0.663   0.663    0.588    0.588
+13 GPA_R ~~ GPA_E 72.199  0.170   0.170    0.694    0.694
+20 GPA_R  ~ GPA_E 38.579  0.373   0.373    0.420    0.420
+22 GPA_R  ~ Motiv  0.463 -0.021  -0.021   -0.044   -0.044
+32 Motiv  ~ GPA_R  0.457 -0.146  -0.146   -0.069   -0.069
+16 GPA_R ~~ Motiv  0.457 -0.038  -0.038   -0.045   -0.045
+21 GPA_R  ~    IQ  0.385  0.008   0.008    0.034    0.034
+15 GPA_R ~~    IQ  0.380  0.080   0.080    0.049    0.049
+28    IQ  ~ GPA_R  0.380  0.312   0.312    0.075    0.075
+24   SAT  ~ GPA_R  0.238  0.755   0.755    0.084    0.084
+14 GPA_R ~~   SAT  0.238  0.194   0.194    0.056    0.056
+
+
+ Output for Model 2 
+
+
+ residual matrix 
+
+$type
+[1] "raw"
+
+$cov
+      GPA_R  GPA_E  SAT    IQ     Motiv 
+GPA_R  0.000                            
+GPA_E  0.006  0.008                     
+SAT    0.000  0.000  0.000              
+IQ     0.080  0.054  0.000  0.000       
+Motiv -0.038 -0.025  0.000  0.000  0.000
+
+
+ standardized residual matrix 
+
+$type
+[1] "cor.bollen"
+
+$cov
+      GPA_R  GPA_E  SAT    IQ     Motiv 
+GPA_R  0.000                            
+GPA_E  0.005  0.000                     
+SAT    0.000 -0.003  0.000              
+IQ     0.033  0.016  0.000  0.000       
+Motiv -0.030 -0.021  0.000  0.000  0.000
+
+
+ free parameters in Model 2 
+
+$lambda
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R     0     0   0  0     0
+GPA_E     0     0   0  0     0
+SAT       0     0   0  0     0
+IQ        0     0   0  0     0
+Motiv     0     0   0  0     0
+
+$theta
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R 0                       
+GPA_E 0     0                 
+SAT   0     0     0           
+IQ    0     0     0   0       
+Motiv 0     0     0   0  0    
+
+$psi
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R 11                      
+GPA_E 13    12                
+SAT    0     0     5          
+IQ     0     0     8   6      
+Motiv  0     0     9  10  7   
+
+$beta
+      GPA_R GPA_E SAT IQ Motiv
+GPA_R     0     0   1  0     0
+GPA_E     0     0   2  3     4
+SAT       0     0   0  0     0
+IQ        0     0   0  0     0
+Motiv     0     0   0  0     0
+
+lavaan 0.6-5 ended normally after 62 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         13
+                                                      
+  Number of observations                           150
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                 0.845
+  Degrees of freedom                                 2
+  P-value (Chi-square)                           0.656
+
+Model Test Baseline Model:
+
+  Test statistic                               463.244
+  Degrees of freedom                                10
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    1.000
+  Tucker-Lewis Index (TLI)                       1.013
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -1308.206
+  Loglikelihood unrestricted model (H1)      -1307.784
+                                                      
+  Akaike (AIC)                                2642.412
+  Bayesian (BIC)                              2681.550
+  Sample-size adjusted Bayesian (BIC)         2640.408
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.000
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.126
+  P-value RMSEA <= 0.05                          0.745
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.014
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  GPA_R ~                                                               
+    SAT               0.084    0.006   13.975    0.000    0.084    0.752
+  GPA_E ~                                                               
+    SAT               0.045    0.006    6.910    0.000    0.045    0.357
+    IQ                0.141    0.009   15.550    0.000    0.141    0.522
+    Motiv             0.145    0.021    6.851    0.000    0.145    0.274
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SAT ~~                                                                
+    IQ                4.073    1.821    2.237    0.025    4.073    0.186
+    Motiv             6.351    1.051    6.045    0.000    6.351    0.567
+  IQ ~~                                                                 
+    Motiv             0.522    0.427    1.221    0.222    0.522    0.100
+ .GPA_R ~~                                                              
+   .GPA_E             0.171    0.024    7.001    0.000    0.171    0.697
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    SAT              47.141    5.443    8.660    0.000   47.141    1.000
+    IQ               10.199    1.178    8.660    0.000   10.199    1.000
+    Motiv             2.657    0.307    8.660    0.000    2.657    1.000
+   .GPA_R             0.256    0.030    8.660    0.000    0.256    0.434
+   .GPA_E             0.235    0.027    8.660    0.000    0.235    0.317
+
+R-Square:
+                   Estimate
+    GPA_R             0.566
+    GPA_E             0.683
+
+
+ modification indices 
+
+[[1]]
+     lhs op   rhs    mi    epc sepc.lv sepc.all sepc.nox
+22 GPA_R  ~ Motiv 0.463 -0.021  -0.021   -0.044   -0.044
+16 GPA_R ~~ Motiv 0.457 -0.038  -0.038   -0.045   -0.045
+33 Motiv  ~ GPA_E 0.457 -0.220  -0.220   -0.116   -0.116
+32 Motiv  ~ GPA_R 0.457 -0.146  -0.146   -0.069   -0.069
+21 GPA_R  ~    IQ 0.385  0.008   0.008    0.034    0.034
+15 GPA_R ~~    IQ 0.380  0.080   0.080    0.049    0.049
+28    IQ  ~ GPA_R 0.380  0.312   0.312    0.075    0.075
+29    IQ  ~ GPA_E 0.380  0.468   0.468    0.126    0.126
+25   SAT  ~ GPA_E 0.238  1.133   1.133    0.142    0.142
+14 GPA_R ~~   SAT 0.238  0.194   0.194    0.056    0.056
+24   SAT  ~ GPA_R 0.238  0.755   0.755    0.084    0.084
+20 GPA_R  ~ GPA_E 0.087  0.025   0.025    0.028    0.028
+
+
+ Comparing Model 1 and Model 2 
+
+Chi-Squared Difference Test
+
+     Df    AIC    BIC    Chisq Chisq diff Df diff Pr(>Chisq)    
+fit2  2 2642.4 2681.6   0.8445                                  
+fit1  3 2739.7 2775.8 100.1044      99.26       1  < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
