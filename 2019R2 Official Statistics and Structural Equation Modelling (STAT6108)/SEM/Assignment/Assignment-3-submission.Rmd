@@ -11,7 +11,7 @@ output:
 <br />
 
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 pcaCharts <- function(x) {
     x.var <- x$sdev ^ 2
     x.pvar <- x.var/sum(x.var)
@@ -19,41 +19,38 @@ pcaCharts <- function(x) {
     print(x.pvar)
     
     par(mfrow=c(2,2))
-    plot(x.pvar,xlab="Principal component", ylab="Proportion of variance explained", ylim=c(0,1), type='b')
-    plot(cumsum(x.pvar),xlab="Principal component", ylab="Cumulative Proportion of variance explained", ylim=c(0,1), type='b')
+    plot(x.pvar,xlab="Principal component",
+         ylab="Proportion of variance explained", ylim=c(0,1), type='b')
+    plot(cumsum(x.pvar),xlab="Principal component",
+         ylab="Cumulative Proportion of variance explained", ylim=c(0,1), type='b')
     screeplot(x)
     screeplot(x,type="l")
     par(mfrow=c(1,1))
 }
 
-# mat : is a matrix of data
-# ... : further arguments to pass to the native R cor.test function
-cor.mtest <- function(mat, ...) {
-    mat <- as.matrix(mat)
-    n <- ncol(mat)
-    p.mat<- matrix(NA, n, n)
-    diag(p.mat) <- 0
+
+cor.mtest <- function(data, ...) {
+    data <- as.matrix(data)
+    n <- ncol(data)
+    p.data<- matrix(NA, n, n)
+    diag(p.data) <- 0
     for (i in 1:(n - 1)) {
         for (j in (i + 1):n) {
-            tmp <- cor.test(mat[, i], mat[, j], ...)
-            p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
+            tmp <- cor.test(data[, i], data[, j], ...)
+            p.data[i, j] <- p.data[j, i] <- tmp$p.value
         }
     }
-  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
-  p.mat
+  colnames(p.data) <- rownames(p.data) <- colnames(data)
+  p.data
 }
 ```
 
-# Principal Component Analysis (PCA) on uscrime Dataset
-
 ```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
 library("knitr")
-opts_chunk$set(echo = TRUE, cache=TRUE, message=FALSE, warning = FALSE)
+opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE, warning = FALSE)
 options(width = 100)
-library("ggplot2")
-library("GGally")
-library("dplyr")
 ```
+\newpage
 
 ```{r}
 # import data
@@ -66,7 +63,7 @@ teachers <- read.csv('hw3(2020).dat', header = FALSE, sep = '')
 
 ```{r}
 # matrix of the p-value of the correlation
-p.mat <- cor.mtest(teachers)
+p.data <- cor.mtest(teachers)
 
 col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
 corrplot::corrplot(cor(teachers), method="color", col=col(200),
@@ -74,14 +71,14 @@ corrplot::corrplot(cor(teachers), method="color", col=col(200),
                   addCoef.col = "black", # Add coefficient of correlation
                   tl.col="black", tl.srt=45, #Text label color and rotation
                   # Combine with significance
-                  p.mat = p.mat, sig.level = 0.01, insig = "blank",
+                  p.data = p.data, sig.level = 0.01, insig = "blank",
                   # hide correlation coefficient on the principal diagonal
                   diag=FALSE
                   )
 ```
 
 * The colour indicates the strength of correlation: the deeper the blue, the more positive the correlation between two items. 
-* Correlations that are not coloured are not statistically sigificant.
+* Correlations that are not coloured are not statistically significant.
 * Factor analysis assumes at least some items be correlated. From this graph we see that this assumption is valid.
 * The items seem to assemble in two different groups. This suggest the possibility of two different latent factors behind the items.
 <br />
@@ -103,7 +100,7 @@ kmo <- psych::KMO(teachers)
 kmo
 ```
 
-* Overall MSA is `r kmo$MSA`, whcih is okay
+* Overall MSA is `r kmo$MSA`, which is okay
 
 
 ### Subject/variable ratio
@@ -120,7 +117,7 @@ ratio <- n/p
 * Factor analysis assumes interval or ratio variables.
 * If ordinal variable is to be used, there should be at least 5 categories. 
 
-Eventhough the data show adaquit dependency, the number of category in items is just too low. This results in the strong non-normality in data. The subject to variable ratio is also not satisfacroty. Hence factor analysis on the provided data not recommended.
+Even though the data show adequate dependency, the number of category in items is just too low. This results in the strong non-normality in data. The subject to variable ratio is also not satisfactory. Hence factor analysis on the provided data not recommended.
 <br />
 \newpage
 
@@ -140,18 +137,23 @@ summary(teachers_pca)
 pcaCharts(teachers_pca)
 ```
 
-* The scree plot presents the portion of variabce each principle component explains. 
-* There is no obvious "elbow" indicating sigificant differences of variance explained. 
+* The scree plot presents the portion of variance each principle component explains. 
+* There is no obvious "elbow" indicating significant differences in variance explained by principle components. 
 
 ### Parallel Analysis
 ```{r}
 psych::fa.parallel(x = teachers, fa = "pc", nfactors = p)
 ```
 
-* Parallal analysis suggests the first two principle components exhibits eigenvalues higher than random data.
-* This echos the two-group seperation presented by the correlation plot
+* Parallel analysis suggests the first two principle components exhibits eigenvalues higher than random data.
+* This echos the two-group separation presented by the correlation plot
+<br />
 
-### Principal Component Factor Analysis without rotation
+\newpage
+
+### Principal Axis Factoring without rotation
+
+Here we perform principal axis factoring with 2 latent factors
 
 ```{r}
 pcfa <- psych::fa(r = teachers, nfactors = 2, rotate = "none", fm = "pa")
@@ -162,52 +164,34 @@ pcfa_tbl <- cbind(pcfa_load, pcfa_com, pcfa_psi)
 pcfa_tbl
 pcfa$Vaccounted
 ```
+
+* Without rotation, some items such as $V1$, $V2$, $V4$, $V9$ exhibits strong cross loading.
+* Communlarities for some item is as low as `r min(pcfa_com)`
+* Both SS loadings are greater than 1. Factors are kept if this value is greater than 1 according to common practice.
+* Perhaps another factor is needed.
 <br />
 
-# Maximum Likelihood Factor Analysis without rotation
+Here we perform principal axis factoring with 3 latent factors
 ```{r}
-mlm <- psych::fa(teachers, nfactors = 2, rotate = "none", fm="ml")
-mlm_load <- mlm$loadings[1:p,]
-mlm_com <- mlm$communalities
-mlm_psi <- mlm$uniquenesses 
-mlm_tbl <- cbind(mlm_load, mlm_com, mlm_psi)
-mlm_tbl
-mlm$Vaccounted
-```  
+pcfa <- psych::fa(r = teachers, nfactors = 3, rotate = "none", fm = "pa")
+pcfa_load <- pcfa$loadings[1:p,]
+pcfa_com <- pcfa$communality
+pcfa_psi <- pcfa$uniquenesses
+pcfa_tbl <- cbind(pcfa_load, pcfa_com, pcfa_psi)
+pcfa_tbl
+pcfa$Vaccounted
+```
+* There is no holistic improvement for the cross loading issue; some item exhibits even stronger cross loading among factors, such as $V4$. 
+* Communlarities for item $V2$, $V3$, $V4$, $V9$, $V10$ went down.
+* SS loading for the third factor is below 1. This indicts a weak relation between item and factor.
+* 2 latent factors maybe more suitable than 3.
+
 <br />
+
+
 \newpage
 
-Factor loadings can be interpreted like standardized regression coefficients, one could also say that the variable `r names(which.max(mlm_load[,1]))`` has a correlation of `r max(mlm_load[,1])` with Factor 1.
-
-The precise value of each loading are not our main concern; we ar?re looking for groups of high values that hopefully make sense and lead to a descriptive factor. Without rotation, all 7 variables load on the first two axes and is currently impossible to see any patterns.
-
-`Robbery` and `Auto_theft` have relatively high $\Psi$ value, this is bad because a high $\Psi$ indicates that particular variable is unique and does not load into any factor well. 
-
-If we subtract the $\Psi$ value from 1, we get the column commonality. Commonality is the proportion of variance of the $i$th variable contributed by the m common factors. Looking at the commonality for the variable `r names(which.max(mlm_com))`, which has a value of `r which.max(mlm_com)`. This value can be interpreted as: `r scales::percent(which.max(mlm_com))` of the `r names(which.max(mlm_com))` variance was contributed by the two common factors. Since some of the $\Psi$ values are high, the two factors may not be explaining the overall variance so well. 
-
-Sum of squared loadings tells us how much of all observed variance was explained by that factor. Here, the first factor is able to explain `r mlm$Vaccounted["SS loadings", 1]` units of variance. Some say a factor is worth keeping if the SS loading is greater than 1. This is the case for both factors factor.
-
-The two factors explains roughly `r scales::percent(mlm$Vaccounted["Cumulative Var",2])` of the total variance. 
-
-Since our factor loadings are difficult to interpret, perhaps we can get better results if we perform rotation on the loading.
-
-# Maximum Likelihood Factor Analysis with varimax rotation
-```{r}
-mlmv <- psych::fa(teachers, nfactors = 2, rotate = "varimax", fm="ml")
-mlmv_load <- mlmv$loadings[1:p,]
-mlmv_com <- mlmv$communalities
-mlmv_psi <- mlmv$uniquenesses 
-mlmv_tbl <- cbind(mlmv_load, mlmv_com, mlmv_psi)
-mlmv_tbl
-mlmv$Vaccounted
-```
-<br />
-
-After Varimax rotation, the factors are also a little more clear to interpret. `Murder`and `Assault`, are heavily loaded onto ML1. So it's clear that this is the Violence factor. The rest load heavily onto ML2, which maybe summarised as the 'Theft' factor. The variable `Rape` exhibits cross load; it is loaded onto both factors roughly 50/50. Perhaps Theft and Rape often occur at the same time, which does not sound surprising.
-
-Both SS loadings remain greater than 1. Also, the SS loadings are more evenly divided between both factors than before rotation. The difference between the variance explained among the two factors also narrowed, but the sum remains the same. Therefore rotation is able to better separate the latent factors using our variables, but does not improve the relationship between variables and factors. This is also evident by looking at the $\Psi$ values, which are exactly the same as before rotation. 
-
-# Principal Component Factor Analysis with varimax rotation
+### Principal Component Factor Analysis with varimax rotation
 ```{r}
 pcfav <- psych::fa(r = teachers, nfactors = 2, rotate = "varimax", fm="pa")
 pcfav_load <- pcfav$loadings[1:p,]
@@ -218,12 +202,25 @@ pcfav_tbl
 pcfav$Vaccounted
 ```
 
-Principal Component Factor Analysis gives even clearer separation than Maximum Likelihood Factor Analysis. Variables in our 'Theft' factor 'Violence factor have more even loadings than before. 
+* After rotation, SS loadings are more evenly divided between the factors. This can be interpreted as: items no longer as dependent on one particular factor.
+* The difference between the variance explained among the two factors also narrowed.
 
-The distance difference between the two methods can be seen in the $\Psi$ values. Principal Component Factor Analysis gives lower $\Psi$ values which sums up to `r sum(pcfa_psi)`; whereas $\Psi$ values from Maximum Likelihood Factor Analysis sums up to `r sum(sum(mlmv_psi))`.  By using Principal Component Factor Analysis, latent factors explains more variation of each of our variables. Both SS loadings and Proportion Variance are higher using Principal Component Factor Analysis. 
+* Item $1$, $3$, $6$, $9$ appear to factor into one latent variable; item $2$, $4$, $8$, $10$ factor into another.
+* Item $5$ and $7$ does not factor into either latent variables. As is evident by their low value in communlarities and cross loading.
 
-The fact that Principal Component Factor Analysis finds latent factors which explains more variation is because PCA is inherently a method for finding directions/rotations of maximum variance from data sets. 
+* Items $1$, $3$, $6$, $9$ are questions that sought to measure whether teachers relate with others in times of difficulties. This maybe labeled "Emotional support".
+* Items $2$, $4$, $8$, $10$ are about the steps and approach in tackling difficulties in work. This maybe labeled as "Problem solving"
+* Items $5$ and $7$ involves handling one's emotion but not in relation to other people. This explains the inability to load onto the first factor. Perhaps many participant do not regard medicating one's emotion as problem solving, hence the poor loading onto the second factor. 
 <br />
+
 \newpage
 
 ## d)
+
+* The factor solution is not a simple structure, meaning there exist cross loading and/or general factor. 
+* Even though Varimax rotation provides a solution that better separates items into two factors, cross loading remains.
+* Many items have uniqueness well above 0.6, even as high as `r max(pcfav_psi)` . For these items, there are much variance not captured by the proposed factors.
+* The model explains `r round(pcfav$Vaccounted[3, 2], 3) * 100`% of the total variance at most; more than half of the variance is not answered.
+
+The factor solution is poor.
+
