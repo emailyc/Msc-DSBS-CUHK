@@ -1,0 +1,226 @@
+---
+title: <center><h1>2019R2 STAT6108 Assignment 3</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+
+```{r, echo=TRUE}
+pcaCharts <- function(x) {
+    x.var <- x$sdev ^ 2
+    x.pvar <- x.var/sum(x.var)
+    print("proportions of variance:")
+    print(x.pvar)
+    
+    par(mfrow=c(2,2))
+    plot(x.pvar,xlab="Principal component",
+         ylab="Proportion of variance explained", ylim=c(0,1), type='b')
+    plot(cumsum(x.pvar),xlab="Principal component",
+         ylab="Cumulative Proportion of variance explained", ylim=c(0,1), type='b')
+    screeplot(x)
+    screeplot(x,type="l")
+    par(mfrow=c(1,1))
+}
+
+
+cor.mtest <- function(data, ...) {
+    data <- as.matrix(data)
+    n <- ncol(data)
+    p.data<- matrix(NA, n, n)
+    diag(p.data) <- 0
+    for (i in 1:(n - 1)) {
+        for (j in (i + 1):n) {
+            tmp <- cor.test(data[, i], data[, j], ...)
+            p.data[i, j] <- p.data[j, i] <- tmp$p.value
+        }
+    }
+  colnames(p.data) <- rownames(p.data) <- colnames(data)
+  p.data
+}
+```
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE, warning = FALSE)
+options(width = 100)
+```
+\newpage
+
+```{r}
+# import data
+teachers <- read.csv('hw3(2020).dat', header = FALSE, sep = '')
+```
+
+## a) 
+
+### Correlation matrix
+
+```{r}
+# matrix of the p-value of the correlation
+p.data <- cor.mtest(teachers)
+
+col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+corrplot::corrplot(cor(teachers), method="color", col=col(200),
+                  type="upper", order="hclust", 
+                  addCoef.col = "black", # Add coefficient of correlation
+                  tl.col="black", tl.srt=45, #Text label color and rotation
+                  # Combine with significance
+                  p.data = p.data, sig.level = 0.01, insig = "blank",
+                  # hide correlation coefficient on the principal diagonal
+                  diag=FALSE
+                  )
+```
+
+* The colour indicates the strength of correlation: the deeper the blue, the more positive the correlation between two items. 
+* Correlations that are not coloured are not statistically significant.
+* Factor analysis assumes at least some items be correlated. From this graph we see that this assumption is valid.
+* The items seem to assemble in two different groups. This suggest the possibility of two different latent factors behind the items.
+<br />
+
+### Bartlett's test of sphericity
+
+```{r}
+bartlett <- psych::cortest.bartlett(teachers)
+bartlett
+```
+
+* $H_0$: All variables are independent
+* p-value is `r bartlett$p.value`; $H_0$ is to be rejected
+* Not all variables are independent
+
+### KMO
+```{r}
+kmo <- psych::KMO(teachers)
+kmo
+```
+
+* Overall MSA is `r kmo$MSA`, which is okay
+
+
+### Subject/variable ratio
+```{r}
+n <- nrow(teachers)
+p <- ncol(teachers)
+ratio <- n/p
+```
+* The subject/variable ratio is `r ratio`. This number is low considering the suggested ratio should be around 10
+
+### Scale of data
+
+* The data is from a 10-item, 4-point Likert scale questionnaire. 
+* Factor analysis assumes interval or ratio variables.
+* If ordinal variable is to be used, there should be at least 5 categories. 
+
+Even though the data show adequate dependency, the number of category in items is just too low. This results in the strong non-normality in data. The subject to variable ratio is also not satisfactory. Hence factor analysis on the provided data not recommended.
+<br />
+\newpage
+
+## b)
+
+### Principal Components Analysis
+```{r}
+ #Principle Component using non-centered, non-scaled datas
+teachers_pca <- prcomp(teachers)
+names(teachers_pca)
+teachers_pca
+```
+```{r}
+summary(teachers_pca)
+```
+```{r}
+pcaCharts(teachers_pca)
+```
+
+* The scree plot presents the portion of variance each principle component explains. 
+* There is no obvious "elbow" indicating significant differences in variance explained by principle components. 
+
+### Parallel Analysis
+```{r}
+psych::fa.parallel(x = teachers, fa = "pc", nfactors = p)
+```
+
+* Parallel analysis suggests the first two principle components exhibits eigenvalues higher than random data.
+* This echos the two-group separation presented by the correlation plot
+<br />
+
+\newpage
+
+### Principal Axis Factoring without rotation
+
+Here we perform principal axis factoring with 2 latent factors
+
+```{r}
+pcfa <- psych::fa(r = teachers, nfactors = 2, rotate = "none", fm = "pa")
+pcfa_load <- pcfa$loadings[1:p,]
+pcfa_com <- pcfa$communality
+pcfa_psi <- pcfa$uniquenesses
+pcfa_tbl <- cbind(pcfa_load, pcfa_com, pcfa_psi)
+pcfa_tbl
+pcfa$Vaccounted
+```
+
+* Without rotation, some items such as $V1$, $V2$, $V4$, $V9$ exhibits strong cross loading.
+* Communlarities for some item is as low as `r min(pcfa_com)`
+* Both SS loadings are greater than 1. Factors are kept if this value is greater than 1 according to common practice.
+* Perhaps another factor is needed.
+<br />
+
+Here we perform principal axis factoring with 3 latent factors
+```{r}
+pcfa <- psych::fa(r = teachers, nfactors = 3, rotate = "none", fm = "pa")
+pcfa_load <- pcfa$loadings[1:p,]
+pcfa_com <- pcfa$communality
+pcfa_psi <- pcfa$uniquenesses
+pcfa_tbl <- cbind(pcfa_load, pcfa_com, pcfa_psi)
+pcfa_tbl
+pcfa$Vaccounted
+```
+* There is no holistic improvement for the cross loading issue; some item exhibits even stronger cross loading among factors, such as $V4$. 
+* Communlarities for item $V2$, $V3$, $V4$, $V9$, $V10$ went down.
+* SS loading for the third factor is below 1. This indicts a weak relation between item and factor.
+* 2 latent factors maybe more suitable than 3.
+
+<br />
+
+
+\newpage
+
+### Principal Component Factor Analysis with varimax rotation
+```{r}
+pcfav <- psych::fa(r = teachers, nfactors = 2, rotate = "varimax", fm="pa")
+pcfav_load <- pcfav$loadings[1:p,]
+pcfav_com <- pcfav$communality
+pcfav_psi <- pcfav$uniquenesses 
+pcfav_tbl <- cbind(pcfav_load, pcfav_com, pcfav_psi)
+pcfav_tbl
+pcfav$Vaccounted
+```
+
+* After rotation, SS loadings are more evenly divided between the factors. This can be interpreted as: items no longer as dependent on one particular factor.
+* The difference between the variance explained among the two factors also narrowed.
+
+* Item $1$, $3$, $6$, $9$ appear to factor into one latent variable; item $2$, $4$, $8$, $10$ factor into another.
+* Item $5$ and $7$ does not factor into either latent variables. As is evident by their low value in communlarities and cross loading.
+
+* Items $1$, $3$, $6$, $9$ are questions that sought to measure whether teachers relate with others in times of difficulties. This maybe labeled "Emotional support".
+* Items $2$, $4$, $8$, $10$ are about the steps and approach in tackling difficulties in work. This maybe labeled as "Problem solving"
+* Items $5$ and $7$ involves handling one's emotion but not in relation to other people. This explains the inability to load onto the first factor. Perhaps many participant do not regard medicating one's emotion as problem solving, hence the poor loading onto the second factor. 
+<br />
+
+\newpage
+
+## d)
+
+* The factor solution is not a simple structure, meaning there exist cross loading and/or general factor. 
+* Even though Varimax rotation provides a solution that better separates items into two factors, cross loading remains.
+* Many items have uniqueness well above 0.6, even as high as `r max(pcfav_psi)` . For these items, there are much variance not captured by the proposed factors.
+* The model explains `r round(pcfav$Vaccounted[3, 2], 3) * 100`% of the total variance at most; more than half of the variance is not answered.
+
+The factor solution is poor.
+

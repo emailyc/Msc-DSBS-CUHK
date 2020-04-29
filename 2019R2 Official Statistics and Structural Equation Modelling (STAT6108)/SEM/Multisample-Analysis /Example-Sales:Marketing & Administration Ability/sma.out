@@ -1,0 +1,716 @@
+
+ Example: Sales/Marketing and Administration Ability
+
+
+ Output for Model 1 (Configural Invariance)
+
+lavaan 0.6-5 ended normally after 30 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         18
+                                                      
+  Number of observations per group:                   
+    Group1                                         265
+    Group2                                         300
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                 0.950
+  Degrees of freedom                                 2
+  P-value (Chi-square)                           0.622
+  Test statistic for each group:
+    Group1                                       0.763
+    Group2                                       0.188
+
+Model Test Baseline Model:
+
+  Test statistic                              1739.457
+  Degrees of freedom                                12
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    1.000
+  Tucker-Lewis Index (TLI)                       1.004
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6993.431
+  Loglikelihood unrestricted model (H1)      -6992.956
+                                                      
+  Akaike (AIC)                               14022.862
+  Bayesian (BIC)                             14100.925
+  Sample-size adjusted Bayesian (BIC)        14043.783
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.000
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.095
+  P-value RMSEA <= 0.05                          0.783
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.002
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+
+Group 1 [Group1]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1            7.465    0.387   19.289    0.000    7.465    0.942
+    sales2            9.342    0.526   17.745    0.000    9.342    0.892
+  ADM =~                                                                
+    admin1            7.033    0.387   18.151    0.000    7.033    0.910
+    admin2            5.099    0.284   17.953    0.000    5.099    0.903
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM               0.781    0.031   25.260    0.000    0.781    0.781
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1            7.038    2.098    3.355    0.001    7.038    0.112
+   .sales2           22.314    3.693    6.043    0.000   22.314    0.204
+   .admin1           10.304    2.086    4.941    0.000   10.304    0.172
+   .admin2            5.878    1.114    5.277    0.000    5.878    0.184
+
+
+Group 2 [Group2]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1            7.238    0.390   18.571    0.000    7.238    0.886
+    sales2            9.915    0.472   21.002    0.000    9.915    0.960
+  ADM =~                                                                
+    admin1            7.489    0.369   20.306    0.000    7.489    0.945
+    admin2            5.190    0.285   18.228    0.000    5.190    0.879
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM               0.738    0.032   22.839    0.000    0.738    0.738
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1           14.390    2.206    6.524    0.000   14.390    0.215
+   .sales2            8.346    3.568    2.339    0.019    8.346    0.078
+   .admin1            6.705    2.197    3.051    0.002    6.705    0.107
+   .admin2            7.945    1.211    6.562    0.000    7.945    0.228
+
+
+ Output for Model 2 (Weak Factorial Invariance)
+
+lavaan 0.6-5 ended normally after 38 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         20
+  Number of equality constraints                     4
+  Row rank of the constraints matrix                 4
+                                                      
+  Number of observations per group:                   
+    Group1                                         265
+    Group2                                         300
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                 2.921
+  Degrees of freedom                                 4
+  P-value (Chi-square)                           0.571
+  Test statistic for each group:
+    Group1                                       1.806
+    Group2                                       1.114
+
+Model Test Baseline Model:
+
+  Test statistic                              1739.457
+  Degrees of freedom                                12
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    1.000
+  Tucker-Lewis Index (TLI)                       1.002
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6994.416
+  Loglikelihood unrestricted model (H1)      -6992.956
+                                                      
+  Akaike (AIC)                               14020.832
+  Bayesian (BIC)                             14090.221
+  Sample-size adjusted Bayesian (BIC)        14039.429
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.000
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.078
+  P-value RMSEA <= 0.05                          0.816
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.015
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+
+Group 1 [Group1]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.306    0.366   19.938    0.000    7.306    0.931
+    sales2   (eq2)    9.589    0.492   19.477    0.000    9.589    0.905
+  ADM =~                                                                
+    admin1   (eq3)    7.113    0.366   19.449    0.000    7.113    0.916
+    admin2   (eq4)    5.035    0.263   19.117    0.000    5.035    0.897
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM               0.783    0.031   25.436    0.000    0.783    0.783
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1            8.258    1.840    4.488    0.000    8.258    0.134
+   .sales2           20.420    3.416    5.977    0.000   20.420    0.182
+   .admin1            9.731    1.924    5.057    0.000    9.731    0.161
+   .admin2            6.180    1.019    6.065    0.000    6.180    0.196
+
+
+Group 2 [Group2]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.306    0.366   19.938    0.000    7.423    0.898
+    sales2   (eq2)    9.589    0.492   19.477    0.000    9.744    0.949
+  ADM =~                                                                
+    admin1   (eq3)    7.113    0.366   19.449    0.000    7.424    0.940
+    admin2   (eq4)    5.035    0.263   19.117    0.000    5.255    0.885
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM               0.787    0.104    7.572    0.000    0.742    0.742
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.032    0.135    7.666    0.000    1.000    1.000
+    ADM               1.089    0.144    7.572    0.000    1.000    1.000
+   .sales1           13.274    2.026    6.553    0.000   13.274    0.194
+   .sales2           10.439    3.069    3.401    0.001   10.439    0.099
+   .admin1            7.306    1.940    3.767    0.000    7.306    0.117
+   .admin2            7.655    1.116    6.859    0.000    7.655    0.217
+
+
+ Output for Model 3 (Model 2 + equal factor variances)
+
+lavaan 0.6-5 ended normally after 27 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         18
+  Number of equality constraints                     4
+  Row rank of the constraints matrix                 4
+                                                      
+  Number of observations per group:                   
+    Group1                                         265
+    Group2                                         300
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                 3.346
+  Degrees of freedom                                 6
+  P-value (Chi-square)                           0.764
+  Test statistic for each group:
+    Group1                                       2.035
+    Group2                                       1.310
+
+Model Test Baseline Model:
+
+  Test statistic                              1739.457
+  Degrees of freedom                                12
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    1.000
+  Tucker-Lewis Index (TLI)                       1.003
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6994.629
+  Loglikelihood unrestricted model (H1)      -6992.956
+                                                      
+  Akaike (AIC)                               14017.257
+  Bayesian (BIC)                             14077.973
+  Sample-size adjusted Bayesian (BIC)        14033.530
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.000
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.053
+  P-value RMSEA <= 0.05                          0.940
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.027
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+
+Group 1 [Group1]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.374    0.274   26.890    0.000    7.374    0.932
+    sales2   (eq2)    9.678    0.352   27.501    0.000    9.678    0.906
+  ADM =~                                                                
+    admin1   (eq3)    7.280    0.267   27.231    0.000    7.280    0.920
+    admin2   (eq4)    5.151    0.201   25.641    0.000    5.151    0.901
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM               0.788    0.029   27.610    0.000    0.788    0.788
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1            8.269    1.837    4.500    0.000    8.269    0.132
+   .sales2           20.417    3.409    5.990    0.000   20.417    0.179
+   .admin1            9.673    1.938    4.992    0.000    9.673    0.154
+   .admin2            6.165    1.028    5.999    0.000    6.165    0.189
+
+
+Group 2 [Group2]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.374    0.274   26.890    0.000    7.374    0.897
+    sales2   (eq2)    9.678    0.352   27.501    0.000    9.678    0.949
+  ADM =~                                                                
+    admin1   (eq3)    7.280    0.267   27.231    0.000    7.280    0.937
+    admin2   (eq4)    5.151    0.201   25.641    0.000    5.151    0.881
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM               0.738    0.031   23.899    0.000    0.738    0.738
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1           13.278    2.028    6.547    0.000   13.278    0.196
+   .sales2           10.422    3.071    3.394    0.001   10.422    0.100
+   .admin1            7.415    1.914    3.874    0.000    7.415    0.123
+   .admin2            7.638    1.105    6.915    0.000    7.638    0.223
+
+
+ Output for Model 4 (Model 3 + equal factor correlation)
+
+lavaan 0.6-5 ended normally after 28 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         18
+  Number of equality constraints                     5
+  Row rank of the constraints matrix                 5
+                                                      
+  Number of observations per group:                   
+    Group1                                         265
+    Group2                                         300
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                 4.933
+  Degrees of freedom                                 7
+  P-value (Chi-square)                           0.668
+  Test statistic for each group:
+    Group1                                       2.849
+    Group2                                       2.084
+
+Model Test Baseline Model:
+
+  Test statistic                              1739.457
+  Degrees of freedom                                12
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    1.000
+  Tucker-Lewis Index (TLI)                       1.002
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6995.422
+  Loglikelihood unrestricted model (H1)      -6992.956
+                                                      
+  Akaike (AIC)                               14016.844
+  Bayesian (BIC)                             14073.223
+  Sample-size adjusted Bayesian (BIC)        14031.954
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.000
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.058
+  P-value RMSEA <= 0.05                          0.916
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.023
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+
+Group 1 [Group1]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.375    0.275   26.866    0.000    7.375    0.933
+    sales2   (eq2)    9.662    0.351   27.502    0.000    9.662    0.906
+  ADM =~                                                                
+    admin1   (eq3)    7.276    0.267   27.212    0.000    7.276    0.921
+    admin2   (eq4)    5.153    0.201   25.609    0.000    5.153    0.901
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM      (eq5)    0.760    0.022   34.245    0.000    0.760    0.760
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1            8.074    1.888    4.276    0.000    8.074    0.129
+   .sales2           20.407    3.508    5.817    0.000   20.407    0.179
+   .admin1            9.483    1.994    4.757    0.000    9.483    0.152
+   .admin2            6.141    1.059    5.797    0.000    6.141    0.188
+
+
+Group 2 [Group2]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.375    0.275   26.866    0.000    7.375    0.897
+    sales2   (eq2)    9.662    0.351   27.502    0.000    9.662    0.946
+  ADM =~                                                                
+    admin1   (eq3)    7.276    0.267   27.212    0.000    7.276    0.934
+    admin2   (eq4)    5.153    0.201   25.609    0.000    5.153    0.882
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM      (eq5)    0.760    0.022   34.245    0.000    0.760    0.760
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1           13.179    1.974    6.676    0.000   13.179    0.195
+   .sales2           10.858    2.953    3.677    0.000   10.858    0.104
+   .admin1            7.692    1.850    4.158    0.000    7.692    0.127
+   .admin2            7.607    1.079    7.047    0.000    7.607    0.223
+
+
+ Output for Model 5 (Model 4 + equal error variances)
+
+lavaan 0.6-5 ended normally after 21 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         18
+  Number of equality constraints                     9
+  Row rank of the constraints matrix                 9
+                                                      
+  Number of observations per group:                   
+    Group1                                         265
+    Group2                                         300
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                12.668
+  Degrees of freedom                                11
+  P-value (Chi-square)                           0.316
+  Test statistic for each group:
+    Group1                                       7.342
+    Group2                                       5.326
+
+Model Test Baseline Model:
+
+  Test statistic                              1739.457
+  Degrees of freedom                                12
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    0.999
+  Tucker-Lewis Index (TLI)                       0.999
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6999.290
+  Loglikelihood unrestricted model (H1)      -6992.956
+                                                      
+  Akaike (AIC)                               14016.579
+  Bayesian (BIC)                             14055.611
+  Sample-size adjusted Bayesian (BIC)        14027.040
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.023
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.069
+  P-value RMSEA <= 0.05                          0.792
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.024
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+
+Group 1 [Group1]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.341    0.276   26.645    0.000    7.341    0.911
+    sales2   (eq2)    9.646    0.352   27.400    0.000    9.646    0.928
+  ADM =~                                                                
+    admin1   (eq3)    7.280    0.268   27.208    0.000    7.280    0.929
+    admin2   (eq4)    5.145    0.202   25.490    0.000    5.145    0.889
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM      (eq5)    0.758    0.022   33.724    0.000    0.758    0.758
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1   (eq6)   11.004    1.520    7.237    0.000   11.004    0.170
+   .sales2   (eq7)   14.978    2.531    5.917    0.000   14.978    0.139
+   .admin1   (eq8)    8.374    1.530    5.473    0.000    8.374    0.136
+   .admin2   (eq9)    6.998    0.834    8.391    0.000    6.998    0.209
+
+
+Group 2 [Group2]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M =~                                                                
+    sales1   (eq1)    7.341    0.276   26.645    0.000    7.341    0.911
+    sales2   (eq2)    9.646    0.352   27.400    0.000    9.646    0.928
+  ADM =~                                                                
+    admin1   (eq3)    7.280    0.268   27.208    0.000    7.280    0.929
+    admin2   (eq4)    5.145    0.202   25.490    0.000    5.145    0.889
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  S_M ~~                                                                
+    ADM      (eq5)    0.758    0.022   33.724    0.000    0.758    0.758
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    S_M               1.000                               1.000    1.000
+    ADM               1.000                               1.000    1.000
+   .sales1   (eq6)   11.004    1.520    7.237    0.000   11.004    0.170
+   .sales2   (eq7)   14.978    2.531    5.917    0.000   14.978    0.139
+   .admin1   (eq8)    8.374    1.530    5.473    0.000    8.374    0.136
+   .admin2   (eq9)    6.998    0.834    8.391    0.000    6.998    0.209
+
+
+ Model Comparisons
+
+Chi-Squared Difference Test
+
+     Df   AIC   BIC   Chisq Chisq diff Df diff Pr(>Chisq)
+fit1  2 14023 14101  0.9504                              
+fit2  4 14021 14090  2.9205     1.9701       2     0.3734
+fit3  6 14017 14078  3.3459     0.4253       2     0.8084
+fit4  7 14017 14073  4.9327     1.5869       1     0.2078
+fit5 11 14017 14056 12.6678     7.7351       4     0.1018
+
+ Output for Model 6 (equality of unstructured covariance matrices)
+
+lavaan 0.6-5 ended normally after 100 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of free parameters                         20
+  Number of equality constraints                    10
+  Row rank of the constraints matrix                10
+                                                      
+  Number of observations per group:                   
+    Group1                                         265
+    Group2                                         300
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                                11.750
+  Degrees of freedom                                10
+  P-value (Chi-square)                           0.302
+  Test statistic for each group:
+    Group1                                       6.579
+    Group2                                       5.171
+
+Model Test Baseline Model:
+
+  Test statistic                              1739.457
+  Degrees of freedom                                12
+  P-value                                        0.000
+
+User Model versus Baseline Model:
+
+  Comparative Fit Index (CFI)                    0.999
+  Tucker-Lewis Index (TLI)                       0.999
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6998.831
+  Loglikelihood unrestricted model (H1)      -6992.956
+                                                      
+  Akaike (AIC)                               14017.662
+  Bayesian (BIC)                             14061.030
+  Sample-size adjusted Bayesian (BIC)        14029.285
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.025
+  90 Percent confidence interval - lower         0.000
+  90 Percent confidence interval - upper         0.072
+  P-value RMSEA <= 0.05                          0.764
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.024
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard errors                             Standard
+
+
+Group 1 [Group1]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  F1 =~                                                                 
+    sales1            1.000                               8.056    1.000
+  F2 =~                                                                 
+    sales2            1.000                              10.393    1.000
+  F3 =~                                                                 
+    admin1            1.000                               7.834    1.000
+  F4 =~                                                                 
+    admin2            1.000                               5.786    1.000
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  F1 ~~                                                                 
+    F2       (eq5)   70.811    4.613   15.350    0.000    0.846    0.846
+    F3       (eq6)   40.326    3.151   12.799    0.000    0.639    0.639
+  F2 ~~                                                                 
+    F3       (eq7)   53.404    4.097   13.036    0.000    0.656    0.656
+  F1 ~~                                                                 
+    F4       (eq8)   28.835    2.306   12.506    0.000    0.619    0.619
+  F2 ~~                                                                 
+    F4       (eq9)   37.398    2.979   12.553    0.000    0.622    0.622
+  F3 ~~                                                                 
+    F4      (eq10)   37.460    2.474   15.142    0.000    0.826    0.826
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    F1       (eq1)   64.894    3.861   16.808    0.000    1.000    1.000
+    F2       (eq2)  108.023    6.427   16.808    0.000    1.000    1.000
+    F3       (eq3)   61.375    3.652   16.808    0.000    1.000    1.000
+    F4       (eq4)   33.474    1.992   16.808    0.000    1.000    1.000
+   .sales1            0.000                               0.000    0.000
+   .sales2            0.000                               0.000    0.000
+   .admin1            0.000                               0.000    0.000
+   .admin2            0.000                               0.000    0.000
+
+
+Group 2 [Group2]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  F1 =~                                                                 
+    sales1            1.000                               8.056    1.000
+  F2 =~                                                                 
+    sales2            1.000                              10.393    1.000
+  F3 =~                                                                 
+    admin1            1.000                               7.834    1.000
+  F4 =~                                                                 
+    admin2            1.000                               5.786    1.000
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  F1 ~~                                                                 
+    F2       (eq5)   70.811    4.613   15.350    0.000    0.846    0.846
+    F3       (eq6)   40.326    3.151   12.799    0.000    0.639    0.639
+  F2 ~~                                                                 
+    F3       (eq7)   53.404    4.097   13.036    0.000    0.656    0.656
+  F1 ~~                                                                 
+    F4       (eq8)   28.835    2.306   12.506    0.000    0.619    0.619
+  F2 ~~                                                                 
+    F4       (eq9)   37.398    2.979   12.553    0.000    0.622    0.622
+  F3 ~~                                                                 
+    F4      (eq10)   37.460    2.474   15.142    0.000    0.826    0.826
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    F1       (eq1)   64.894    3.861   16.808    0.000    1.000    1.000
+    F2       (eq2)  108.023    6.427   16.808    0.000    1.000    1.000
+    F3       (eq3)   61.375    3.652   16.808    0.000    1.000    1.000
+    F4       (eq4)   33.474    1.992   16.808    0.000    1.000    1.000
+   .sales1            0.000                               0.000    0.000
+   .sales2            0.000                               0.000    0.000
+   .admin1            0.000                               0.000    0.000
+   .admin2            0.000                               0.000    0.000
+

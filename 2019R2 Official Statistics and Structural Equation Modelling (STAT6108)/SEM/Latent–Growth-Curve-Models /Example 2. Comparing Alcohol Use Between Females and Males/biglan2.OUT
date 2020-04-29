@@ -1,0 +1,277 @@
+
+ Example 2: Comparing Alcohol Use Between Females and Males
+
+
+ Output for Model 1 (Using Wald test to compare the groups)
+
+lavaan 0.6-3 ended normally after 50 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         18
+  Number of equality constraints                     4
+
+  Number of observations per group         
+  Females                                          196
+  Males                                             95
+
+  Estimator                                         ML
+  Model Fit Test Statistic                       2.553
+  Degrees of freedom                                 4
+  P-value (Chi-square)                           0.635
+
+Chi-square for each group:
+
+  Females                                        0.712
+  Males                                          1.841
+
+Model test baseline model:
+
+  Minimum Function Test Statistic              212.491
+  Degrees of freedom                                 6
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    1.000
+  Tucker-Lewis Index (TLI)                       1.011
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -1468.702
+  Loglikelihood unrestricted model (H1)      -1467.425
+
+  Number of free parameters                         14
+  Akaike (AIC)                                2965.404
+  Bayesian (BIC)                              3016.830
+  Sample-size adjusted Bayesian (BIC)         2972.433
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.000
+  90 Percent Confidence Interval          0.000  0.102
+  P-value RMSEA <= 0.05                          0.770
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.023
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+
+Group 1 [Females]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int =~                                                                
+    time1             1.000                               0.885    0.663
+    time2             1.000                               0.885    0.596
+    time3             1.000                               0.885    0.572
+  growth =~                                                             
+    time1             0.000                               0.000    0.000
+    time2             1.000                               0.482    0.324
+    time3    (la1)    1.270    0.286    4.437    0.000    0.611    0.395
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int ~~                                                                
+    growth  (ps31)    0.095    0.149    0.640    0.522    0.224    0.224
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .time1             0.000                               0.000    0.000
+   .time2             0.000                               0.000    0.000
+   .time3             0.000                               0.000    0.000
+    int     (al11)    1.440    0.095   15.163    0.000    1.627    1.627
+    growth  (al21)    0.299    0.096    3.103    0.002    0.620    0.620
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    int     (ps11)    0.783    0.202    3.870    0.000    1.000    1.000
+    growth  (ps21)    0.232    0.192    1.207    0.227    1.000    1.000
+   .time1   (tht1)    0.996    0.101    9.899    0.000    0.996    0.560
+   .time2   (tht1)    0.996    0.101    9.899    0.000    0.996    0.452
+   .time3   (tht1)    0.996    0.101    9.899    0.000    0.996    0.416
+
+
+Group 2 [Males]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int =~                                                                
+    time1             1.000                               1.057    0.766
+    time2             1.000                               1.057    0.727
+    time3             1.000                               1.057    0.631
+  growth =~                                                             
+    time1             0.000                               0.000    0.000
+    time2             1.000                               0.663    0.456
+    time3    (la2)    1.717    0.308    5.567    0.000    1.139    0.680
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int ~~                                                                
+    growth  (ps32)   -0.115    0.170   -0.680    0.497   -0.165   -0.165
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .time1             0.000                               0.000    0.000
+   .time2             0.000                               0.000    0.000
+   .time3             0.000                               0.000    0.000
+    int     (al12)    1.523    0.140   10.897    0.000    1.440    1.440
+    growth  (al22)    0.416    0.123    3.382    0.001    0.626    0.626
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    int     (ps12)    1.118    0.282    3.960    0.000    1.000    1.000
+    growth  (ps22)    0.440    0.218    2.016    0.044    1.000    1.000
+   .time1   (tht2)    0.788    0.114    6.892    0.000    0.788    0.413
+   .time2   (tht2)    0.788    0.114    6.892    0.000    0.788    0.373
+   .time3   (tht2)    0.788    0.114    6.892    0.000    0.788    0.281
+
+Defined Parameters:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    la_d             -0.447    0.421   -1.063    0.288   -0.528   -0.285
+    ps1_d            -0.335    0.347   -0.964    0.335    0.000    0.000
+    ps2_d            -0.208    0.291   -0.716    0.474    0.000    0.000
+    ps3_d             0.211    0.226    0.933    0.351    0.388    0.388
+    al1_d            -0.083    0.169   -0.492    0.623    0.187    0.187
+    al2_d            -0.117    0.156   -0.750    0.453   -0.006   -0.006
+
+
+ Output for Model 2 (Using LRT test to compare the groups)
+
+lavaan 0.6-3 ended normally after 32 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         18
+  Number of equality constraints                    10
+
+  Number of observations per group         
+  Females                                          196
+  Males                                             95
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      10.518
+  Degrees of freedom                                10
+  P-value (Chi-square)                           0.396
+
+Chi-square for each group:
+
+  Females                                        3.811
+  Males                                          6.707
+
+Model test baseline model:
+
+  Minimum Function Test Statistic              212.491
+  Degrees of freedom                                 6
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.997
+  Tucker-Lewis Index (TLI)                       0.998
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -1472.684
+  Loglikelihood unrestricted model (H1)      -1467.425
+
+  Number of free parameters                          8
+  Akaike (AIC)                                2961.368
+  Bayesian (BIC)                              2990.755
+  Sample-size adjusted Bayesian (BIC)         2965.385
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.019
+  90 Percent Confidence Interval          0.000  0.093
+  P-value RMSEA <= 0.05                          0.667
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.065
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+
+Group 1 [Females]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int =~                                                                
+    time1             1.000                               0.959    0.704
+    time2             1.000                               0.959    0.651
+    time3             1.000                               0.959    0.596
+  growth =~                                                             
+    time1             0.000                               0.000    0.000
+    time2             1.000                               0.563    0.382
+    time3   (.p6.)    1.522    0.226    6.734    0.000    0.857    0.532
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int ~~                                                                
+    growth  (.12.)   -0.000    0.105   -0.002    0.998   -0.000   -0.000
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .time1             0.000                               0.000    0.000
+   .time2             0.000                               0.000    0.000
+   .time3             0.000                               0.000    0.000
+    int     (.16.)    1.470    0.079   18.668    0.000    1.533    1.533
+    growth  (.17.)    0.324    0.074    4.374    0.000    0.575    0.575
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .time1   (tht1)    0.937    0.088   10.623    0.000    0.937    0.505
+   .time2   (tht1)    0.937    0.088   10.623    0.000    0.937    0.431
+   .time3   (tht1)    0.937    0.088   10.623    0.000    0.937    0.362
+    int     (.10.)    0.920    0.163    5.642    0.000    1.000    1.000
+    growth  (.11.)    0.317    0.137    2.307    0.021    1.000    1.000
+
+
+Group 2 [Males]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int =~                                                                
+    time1             1.000                               0.959    0.712
+    time2             1.000                               0.959    0.657
+    time3             1.000                               0.959    0.601
+  growth =~                                                             
+    time1             0.000                               0.000    0.000
+    time2             1.000                               0.563    0.386
+    time3   (.p6.)    1.522    0.226    6.734    0.000    0.857    0.537
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  int ~~                                                                
+    growth  (.12.)   -0.000    0.105   -0.002    0.998   -0.000   -0.000
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .time1             0.000                               0.000    0.000
+   .time2             0.000                               0.000    0.000
+   .time3             0.000                               0.000    0.000
+    int     (.16.)    1.470    0.079   18.668    0.000    1.533    1.533
+    growth  (.17.)    0.324    0.074    4.374    0.000    0.575    0.575
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .time1   (tht2)    0.894    0.113    7.942    0.000    0.894    0.493
+   .time2   (tht2)    0.894    0.113    7.942    0.000    0.894    0.420
+   .time3   (tht2)    0.894    0.113    7.942    0.000    0.894    0.351
+    int     (.10.)    0.920    0.163    5.642    0.000    1.000    1.000
+    growth  (.11.)    0.317    0.137    2.307    0.021    1.000    1.000
+
+Chi Square Difference Test
+
+     Df    AIC    BIC   Chisq Chisq diff Df diff Pr(>Chisq)
+fit1  4 2965.4 3016.8  2.5531                              
+fit2 10 2961.4 2990.8 10.5177     7.9646       6     0.2407

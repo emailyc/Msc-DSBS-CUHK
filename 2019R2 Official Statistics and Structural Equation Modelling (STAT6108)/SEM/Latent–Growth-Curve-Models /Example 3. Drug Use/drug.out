@@ -1,0 +1,328 @@
+
+ Example 3: Drug Use
+
+
+ Output for Model 1 (Curve-of-factors LGM)
+
+lavaan 0.6-3 ended normally after 87 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         57
+  Number of equality constraints                     6
+
+  Number of observations                           357
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      76.481
+  Degrees of freedom                                39
+  P-value (Chi-square)                           0.000
+
+Model test baseline model:
+
+  Minimum Function Test Statistic             3173.220
+  Degrees of freedom                                66
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.988
+  Tucker-Lewis Index (TLI)                       0.980
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6425.102
+  Loglikelihood unrestricted model (H1)      -6386.861
+
+  Number of free parameters                         51
+  Akaike (AIC)                               12952.204
+  Bayesian (BIC)                             13149.969
+  Sample-size adjusted Bayesian (BIC)        12988.173
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.052
+  90 Percent Confidence Interval          0.034  0.069
+  P-value RMSEA <= 0.05                          0.406
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.051
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  Time1 =~                                                              
+    V1       (la1)    0.977    0.080   12.258    0.000    0.928    0.729
+    V5                1.000                               0.950    0.557
+    V9       (la2)    1.108    0.095   11.670    0.000    1.053    0.844
+  Time2 =~                                                              
+    V2       (la1)    0.977    0.080   12.258    0.000    0.915    0.697
+    V6                1.000                               0.937    0.494
+    V10      (la2)    1.108    0.095   11.670    0.000    1.038    0.758
+  Time3 =~                                                              
+    V3       (la1)    0.977    0.080   12.258    0.000    1.014    0.726
+    V7                1.000                               1.038    0.495
+    V11      (la2)    1.108    0.095   11.670    0.000    1.150    0.807
+  Time4 =~                                                              
+    V4       (la1)    0.977    0.080   12.258    0.000    1.033    0.735
+    V8                1.000                               1.058    0.474
+    V12      (la2)    1.108    0.095   11.670    0.000    1.172    0.789
+  Int =~                                                                
+    Time1             1.000                               0.940    0.940
+    Time2             1.000                               0.954    0.954
+    Time3             1.000                               0.860    0.860
+    Time4             1.000                               0.844    0.844
+  Growth =~                                                             
+    Time1             0.000                               0.000    0.000
+    Time2             1.000                               0.230    0.230
+    Time3    (la3)    2.430    0.328    7.399    0.000    0.505    0.505
+    Time4    (la4)    3.568    0.530    6.739    0.000    0.728    0.728
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+ .V1 ~~                                                                 
+   .V2                0.475    0.077    6.135    0.000    0.475    0.579
+   .V3                0.400    0.075    5.327    0.000    0.400    0.478
+   .V4                0.426    0.075    5.708    0.000    0.426    0.512
+ .V2 ~~                                                                 
+   .V3                0.514    0.085    6.063    0.000    0.514    0.570
+   .V4                0.412    0.084    4.922    0.000    0.412    0.459
+ .V3 ~~                                                                 
+   .V4                0.492    0.094    5.213    0.000    0.492    0.537
+ .V5 ~~                                                                 
+   .V6                1.452    0.161    9.011    0.000    1.452    0.621
+   .V7                1.263    0.167    7.572    0.000    1.263    0.489
+   .V8                1.154    0.174    6.629    0.000    1.154    0.415
+ .V6 ~~                                                                 
+   .V7                2.247    0.215   10.474    0.000    2.247    0.747
+   .V8                2.133    0.222    9.621    0.000    2.133    0.658
+ .V7 ~~                                                                 
+   .V8                2.844    0.260   10.934    0.000    2.844    0.795
+ .V9 ~~                                                                 
+   .V10               0.191    0.083    2.316    0.021    0.191    0.319
+   .V11               0.118    0.078    1.526    0.127    0.118    0.210
+   .V12               0.117    0.078    1.507    0.132    0.117    0.192
+ .V10 ~~                                                                
+   .V11               0.371    0.095    3.928    0.000    0.371    0.494
+   .V12               0.391    0.098    3.978    0.000    0.391    0.479
+ .V11 ~~                                                                
+   .V12               0.358    0.108    3.306    0.001    0.358    0.467
+  Int ~~                                                                
+    Growth           -0.041    0.022   -1.840    0.066   -0.213   -0.213
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    Time1             0.000                               0.000    0.000
+    Time2             0.000                               0.000    0.000
+    Time3             0.000                               0.000    0.000
+    Time4             0.000                               0.000    0.000
+    Int               1.358    0.130   10.424    0.000    1.520    1.520
+    Growth            0.296    0.055    5.389    0.000    1.370    1.370
+   .V1                0.000                               0.000    0.000
+   .V2                0.000                               0.000    0.000
+   .V3                0.000                               0.000    0.000
+   .V4                0.000                               0.000    0.000
+   .V5               -0.499    0.142   -3.520    0.000   -0.499   -0.292
+   .V6               -0.430    0.168   -2.555    0.011   -0.430   -0.227
+   .V7               -0.629    0.202   -3.123    0.002   -0.629   -0.300
+   .V8               -0.656    0.228   -2.874    0.004   -0.656   -0.294
+   .V9               -0.954    0.135   -7.075    0.000   -0.954   -0.764
+   .V10              -0.936    0.163   -5.749    0.000   -0.936   -0.683
+   .V11              -1.265    0.196   -6.452    0.000   -1.265   -0.888
+   .V12              -1.550    0.225   -6.897    0.000   -1.550   -1.044
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .V1                0.761    0.089    8.581    0.000    0.761    0.469
+   .V2                0.884    0.099    8.893    0.000    0.884    0.514
+   .V3                0.921    0.111    8.314    0.000    0.921    0.472
+   .V4                0.911    0.115    7.923    0.000    0.911    0.460
+   .V5                2.008    0.169   11.904    0.000    2.008    0.690
+   .V6                2.723    0.223   12.200    0.000    2.723    0.756
+   .V7                3.320    0.270   12.299    0.000    3.320    0.755
+   .V8                3.857    0.311   12.388    0.000    3.857    0.775
+   .V9                0.449    0.093    4.819    0.000    0.449    0.288
+   .V10               0.800    0.114    6.988    0.000    0.800    0.426
+   .V11               0.707    0.123    5.732    0.000    0.707    0.348
+   .V12               0.832    0.135    6.143    0.000    0.832    0.377
+    Time1             0.105    0.048    2.208    0.027    0.116    0.116
+    Time2             0.115    0.034    3.421    0.001    0.131    0.131
+    Time3             0.205    0.044    4.608    0.000    0.190    0.190
+    Time4             0.022    0.058    0.377    0.706    0.019    0.019
+    Int               0.798    0.135    5.906    0.000    1.000    1.000
+    Growth            0.047    0.018    2.583    0.010    1.000    1.000
+
+Defined Parameters:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    linear1           0.430    0.328    1.310    0.190   -1.495   -1.495
+    linear2           0.568    0.530    1.074    0.283   -2.272   -2.272
+
+
+ Output for Model 2 (Testing Linear Growth using LRT)
+
+lavaan 0.6-3 ended normally after 77 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         55
+  Number of equality constraints                     6
+
+  Number of observations                           357
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      79.062
+  Degrees of freedom                                41
+  P-value (Chi-square)                           0.000
+
+Model test baseline model:
+
+  Minimum Function Test Statistic             3173.220
+  Degrees of freedom                                66
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.988
+  Tucker-Lewis Index (TLI)                       0.980
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -6426.393
+  Loglikelihood unrestricted model (H1)      -6386.861
+
+  Number of free parameters                         49
+  Akaike (AIC)                               12950.785
+  Bayesian (BIC)                             13140.794
+  Sample-size adjusted Bayesian (BIC)        12985.343
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.051
+  90 Percent Confidence Interval          0.034  0.068
+  P-value RMSEA <= 0.05                          0.438
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.050
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  Time1 =~                                                              
+    V1        (la)    0.973    0.080   12.229    0.000    0.916    0.723
+    V5                1.000                               0.942    0.553
+    V9        (lb)    1.110    0.095   11.630    0.000    1.045    0.842
+  Time2 =~                                                              
+    V2        (la)    0.973    0.080   12.229    0.000    0.920    0.699
+    V6                1.000                               0.946    0.498
+    V10       (lb)    1.110    0.095   11.630    0.000    1.049    0.762
+  Time3 =~                                                              
+    V3        (la)    0.973    0.080   12.229    0.000    1.010    0.724
+    V7                1.000                               1.038    0.495
+    V11       (lb)    1.110    0.095   11.630    0.000    1.152    0.809
+  Time4 =~                                                              
+    V4        (la)    0.973    0.080   12.229    0.000    1.031    0.735
+    V8                1.000                               1.060    0.475
+    V12       (lb)    1.110    0.095   11.630    0.000    1.177    0.791
+  Int =~                                                                
+    Time1             1.000                               0.954    0.954
+    Time2             1.000                               0.951    0.951
+    Time3             1.000                               0.866    0.866
+    Time4             1.000                               0.848    0.848
+  Growth =~                                                             
+    Time1             0.000                               0.000    0.000
+    Time2             1.000                               0.283    0.283
+    Time3             2.000                               0.515    0.515
+    Time4             3.000                               0.757    0.757
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+ .V1 ~~                                                                 
+   .V2                0.475    0.077    6.139    0.000    0.475    0.576
+   .V3                0.401    0.075    5.344    0.000    0.401    0.476
+   .V4                0.426    0.074    5.744    0.000    0.426    0.512
+ .V2 ~~                                                                 
+   .V3                0.513    0.085    6.031    0.000    0.513    0.568
+   .V4                0.406    0.084    4.827    0.000    0.406    0.453
+ .V3 ~~                                                                 
+   .V4                0.492    0.094    5.227    0.000    0.492    0.538
+ .V5 ~~                                                                 
+   .V6                1.453    0.161    9.020    0.000    1.453    0.622
+   .V7                1.265    0.167    7.577    0.000    1.265    0.490
+   .V8                1.159    0.174    6.655    0.000    1.159    0.416
+ .V6 ~~                                                                 
+   .V7                2.243    0.214   10.467    0.000    2.243    0.747
+   .V8                2.126    0.222    9.599    0.000    2.126    0.657
+ .V7 ~~                                                                 
+   .V8                2.842    0.260   10.931    0.000    2.842    0.794
+ .V9 ~~                                                                 
+   .V10               0.191    0.083    2.308    0.021    0.191    0.321
+   .V11               0.115    0.078    1.483    0.138    0.115    0.206
+   .V12               0.120    0.078    1.546    0.122    0.120    0.197
+ .V10 ~~                                                                
+   .V11               0.366    0.095    3.841    0.000    0.366    0.491
+   .V12               0.383    0.099    3.853    0.000    0.383    0.472
+ .V11 ~~                                                                
+   .V12               0.355    0.109    3.262    0.001    0.355    0.466
+  Int ~~                                                                
+    Growth           -0.057    0.024   -2.321    0.020   -0.236   -0.236
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    Time1             0.000                               0.000    0.000
+    Time2             0.000                               0.000    0.000
+    Time3             0.000                               0.000    0.000
+    Time4             0.000                               0.000    0.000
+    Int               1.351    0.129   10.445    0.000    1.504    1.504
+    Growth            0.355    0.037    9.713    0.000    1.327    1.327
+   .V1                0.000                               0.000    0.000
+   .V2                0.000                               0.000    0.000
+   .V3                0.000                               0.000    0.000
+   .V4                0.000                               0.000    0.000
+   .V5               -0.495    0.141   -3.503    0.000   -0.495   -0.291
+   .V6               -0.472    0.170   -2.775    0.006   -0.472   -0.248
+   .V7               -0.624    0.199   -3.130    0.002   -0.624   -0.297
+   .V8               -0.660    0.229   -2.888    0.004   -0.660   -0.296
+   .V9               -0.952    0.135   -7.063    0.000   -0.952   -0.767
+   .V10              -0.986    0.165   -5.962    0.000   -0.986   -0.716
+   .V11              -1.263    0.194   -6.504    0.000   -1.263   -0.887
+   .V12              -1.558    0.226   -6.900    0.000   -1.558   -1.047
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .V1                0.766    0.088    8.677    0.000    0.766    0.477
+   .V2                0.886    0.100    8.865    0.000    0.886    0.511
+   .V3                0.923    0.111    8.347    0.000    0.923    0.475
+   .V4                0.907    0.115    7.895    0.000    0.907    0.460
+   .V5                2.011    0.169   11.913    0.000    2.011    0.694
+   .V6                2.715    0.223   12.182    0.000    2.715    0.752
+   .V7                3.321    0.270   12.298    0.000    3.321    0.755
+   .V8                3.853    0.311   12.383    0.000    3.853    0.774
+   .V9                0.447    0.093    4.809    0.000    0.447    0.290
+   .V10               0.793    0.115    6.868    0.000    0.793    0.419
+   .V11               0.702    0.124    5.663    0.000    0.702    0.346
+   .V12               0.830    0.136    6.084    0.000    0.830    0.375
+    Time1             0.079    0.045    1.749    0.080    0.089    0.089
+    Time2             0.128    0.034    3.814    0.000    0.143    0.143
+    Time3             0.211    0.043    4.848    0.000    0.196    0.196
+    Time4             0.014    0.049    0.276    0.783    0.012    0.012
+    Int               0.808    0.137    5.918    0.000    1.000    1.000
+    Growth            0.072    0.015    4.688    0.000    1.000    1.000
+
+
+ Model Comparisons
+
+Chi Square Difference Test
+
+     Df   AIC   BIC  Chisq Chisq diff Df diff Pr(>Chisq)
+fit1 39 12952 13150 76.481                              
+fit2 41 12951 13141 79.062     2.5812       2     0.2751

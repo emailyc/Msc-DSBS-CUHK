@@ -1,0 +1,197 @@
+---
+title: <center><h1>2019R2 STAT6108 Assignment 5</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE, warning = FALSE)
+options(width = 100)
+library("lavaan")
+library("semTools")
+library("dplyr")
+
+knitr::knit_hooks$set(inline = function(x) {
+  x <- sprintf("%1.3f", x)
+  paste(x, collapse = ", ")
+})
+```
+
+```{r}
+# import data
+male_cov <- getCov(scan('hw5_male(2020).cov'))
+female_cov <- getCov(scan('hw5_female(2020).cov'))
+```
+
+### Model Setup
+
+```{r}
+n_male <- 204
+n_female <- 201
+
+sample.cov <- list(male = male_cov, female = female_cov)
+sample.nobs <-  list(n_male, n_female)
+
+model <- "
+# measurment model
+Motivation =~ V1 + V2;
+JobCommitment =~ V3 + V4;
+JobSatisfaction =~ V5 + V6 + V7;
+
+# structural model
+JobCommitment ~  Motivation;
+JobSatisfaction ~ JobCommitment +  Motivation;
+"
+```
+<br />
+\newpage 
+
+## a) 
+
+###  multiple group model fitting
+
+```{r, results='hide'}
+base_syntax <- measEq.syntax(configural.model = model,
+                             sample.cov = sample.cov,
+                             sample.nobs = sample.nobs,
+                             auto.var = TRUE,
+                             ID.fac = "auto.fix.first")
+
+# user-defined parameters
+indirect_male <- "indirect_male := beta.2_1.g1 * beta.3_2.g1"
+indirect_female <- "indirect_female := beta.2_1.g2 * beta.3_2.g2"
+
+# add user-defined parameters to the @constraints slot
+base_syntax@constraints <- c(base_syntax@constraints, indirect_male, indirect_female)
+
+# train model
+base_model <- lavaan(model = as.character(base_syntax),
+                     sample.cov = sample.cov,
+                     sample.nobs = sample.nobs)
+
+# goodness-of-fit measures and parameter estimates
+fits_base <- fitMeasures(base_model,
+                        fit.measures = c("chisq", "pvalue", "tli", "cfi", "rmsea", "srmr"))
+para_base <- parameterEstimates(base_model)
+```
+
+* $H_0$: $\Sigma = \Sigma(\theta)$ 
+* $\chi^2$ test statistics: `r fits_base["chisq"]`; p-value: `r fits_base["pvalue"]`.
+* $H_0$ is rejected at $\alpha = .05$.
+
+* Male test statistic: `r lavInspect(base_model, "test")$standard$stat.group[1]`
+* Female test statistic: `r lavInspect(base_model, "test")$standard$stat.group[2]`
+
+Female test statistic slightly bigger. This indicates the proposed structure does not fit the female sample as well on as the male sample.
+
+**We evaluate the indicies according to Hooper, Coughlan, & Mullen (2008).**
+
+* NNFI: `r fits_base["tli"]` > $0.95$
+* CFI: `r fits_base["cfi"]` > $0.95$
+* RMSEA: `r fits_base["rmsea"]` < $0.07$
+* SRMR: `r fits_base["srmr"]` < $0.08$
+
+Goodness-of-fit indices pass threashold across all four major measures
+
+## b)
+
+* Wald test p-value for male direct effect $B_{31}^{(F)}$: `r filter(para_base, label == "beta.3_1.g1") %>% select(.,  pvalue)`
+* Wald test p-value for female direct effect $B_{31}^{(M)}$: `r filter(para_base, label == "beta.3_1.g2") %>% select(.,  pvalue)`
+* Neither are sigificant at $\alpha = .05$
+
+## c) 
+
+* Wald test p-value for male indirect effect $B_{21}^{(M)} {\cdot} B_{32}^{(M)}$: `r filter(para_base, label == "indirect_male") %>% select(.,  pvalue)`
+* Wald test p-value for female indirect effect $B_{21}^{(F)} {\cdot} B_{32}^{(F)}$: `r filter(para_base, label == "indirect_female") %>% select(.,  pvalue)`
+* Both are sigificant at $\alpha = .05$.
+
+For both groups, since only indirect effects are statistically sigificant, the proposed structure is fully mediated.
+\newpage 
+
+## d)
+```{r}
+invariance_syntax <- measEq.syntax(configural.model = base_model,
+                                   sample.cov = sample.cov,
+                                   sample.nobs = sample.nobs,
+                                   ID.fac = "auto.fix.first",
+                                   group.equal = "loadings") # fix factor loadings
+
+# user-defined parameters
+variance_diff <- "variance_diff := psi.1_1.g1 - psi.1_1.g2"
+direct_diff <- "direct_diff := beta.3_1.g1 - beta.3_1.g2"
+indirect_diff <- "indirect_diff := indirect_male - indirect_female"
+
+# add user-defined parameters to the @constraints slot
+invariance_syntax@constraints <- c(base_syntax@constraints,
+                                   variance_diff,
+                                   direct_diff,
+                                   indirect_diff)
+
+# train model
+invariance_model <- lavaan(model = as.character(invariance_syntax),
+                     sample.cov = sample.cov,
+                     sample.nobs = sample.nobs)
+
+# goodness-of-fit measures and parameter estimates
+fits_invar <- fitMeasures(invariance_model,
+                        fit.measures = c("chisq", "pvalue", "tli", "cfi", "rmsea", "srmr"))
+para_invar <- parameterEstimates(invariance_model)
+```
+
+#### Liklihood ratio test
+```{r}
+li_test <- compareFit(base_model, invariance_model)
+li_test
+```
+```{r, echo=FALSE, results='hide'}
+li_test <- as.data.frame(li_test@nested)
+```
+
+
+
+**The $\chi^2$ value is the likelihood-ratio test statistic**
+
+* $H_0$: $\Lambda^{(M)} = \Lambda^{(F)}$ 
+* p-value for likelihood ratio test is: `r li_test[["Pr(>Chisq)"]][which(row.names(li_test) == "invariance_model")]`
+* At $\alpha = .05$, $H_0$ not rejected; weak invariance holds.
+
+**Goodness-of-fit of weak invariance model**
+
+* $H_0$: $\Sigma = \Sigma(\theta)$ 
+* $\chi^2$ test statistics: `r fits_invar["chisq"]`; p-value: `r fits_invar["pvalue"]`. $H_0$ is not rejected at $\alpha = .05$.
+* NNFI: `r fits_invar["tli"]` > $0.95$
+* CFI: `r fits_invar["cfi"]` > $0.95$
+* RMSEA: `r fits_invar["rmsea"]` < $0.07$
+* SRMR: `r fits_invar["srmr"]` < $0.08$
+
+The weak invariance model has goodness-of-fit indices pass threashold across all four major measures. $\chi^2$ test of differences is not sigificant. 
+The proposed structure fits the data well and better than the configural model.
+
+## e)
+* $H_0$: $\psi_{11}^{(F)} \leq \psi_{11}^{(M)}$
+* Point estimate of male variance is greater than that of female by: `r filter(para_invar, label == "variance_diff") %>% select(.,  est)`
+* One sided Wald test p-value for point estimate of difference in motivation variance: `r 0.5 * (filter(para_invar, label == "variance_diff") %>% select(.,  pvalue) )`
+* At $\alpha = .05$, $H_0$ rejected.
+* There is sigificant evidence indicating male employees are more heterogeneous in terms of their motivation than their female counterparts.
+
+## f)
+* $H_0$: $B_{31}^{(M)} = B_{31}^{(F)}$
+* Wald test p-value for point estimate of difference in direct effect: `r filter(para_invar, label == "direct_diff") %>% select(.,  pvalue)`
+* At $\alpha = .05$, $H_0$ not rejected. 
+* There is no sigificant evidence indicating direct effect of motivation on job satisfaction is not the same in the two groups.
+
+## g)
+* $H_0$: $B_{21}^{(M)} {\cdot} B_{32}^{(M)} = B_{21}^{(F)} {\cdot} B_{32}^{(F)}$ 
+* Wald test p-value for point estimate of difference in direct: `r filter(para_invar, label == "indirect_diff") %>% select(.,  pvalue)`
+* At $\alpha = .05$, $H_0$ not rejected. 
+* There is no sigificant evidence indicating mediation effect is moderated by gender.
+
+
+

@@ -1,0 +1,651 @@
+
+ Example 1. Effect of SES on SWB: A comparison between USA and China
+
+
+ Output for Model 1 (Configural Invariance)
+
+$USA
+$USA$lambda
+        SES SWB
+parent    0   0
+edu       1   0
+occup     2   0
+income    3   0
+general   0   0
+work      0   4
+
+$USA$theta
+        parent edu occup income generl work
+parent   5                                 
+edu      0      6                          
+occup    0      0   7                      
+income   0      0   0     8                
+general  0      0   0     0      9         
+work     0      0   0     0      0     10  
+
+$USA$psi
+    SES SWB
+SES 12     
+SWB  0  13 
+
+$USA$beta
+    SES SWB
+SES   0   0
+SWB  11   0
+
+$USA$nu
+        intrcp
+parent      14
+edu         15
+occup       16
+income      17
+general     18
+work        19
+
+$USA$alpha
+    intrcp
+SES      0
+SWB      0
+
+
+$China
+$China$lambda
+        SES SWB
+parent    0   0
+edu      20   0
+occup    21   0
+income   22   0
+general   0   0
+work      0  23
+
+$China$theta
+        parent edu occup income generl work
+parent  24                                 
+edu      0     25                          
+occup    0      0  26                      
+income   0      0   0    27                
+general  0      0   0     0     28         
+work     0      0   0     0      0     29  
+
+$China$psi
+    SES SWB
+SES 31     
+SWB  0  32 
+
+$China$beta
+    SES SWB
+SES   0   0
+SWB  30   0
+
+$China$nu
+        intrcp
+parent      33
+edu         34
+occup       35
+income      36
+general     37
+work        38
+
+$China$alpha
+    intrcp
+SES      0
+SWB      0
+
+
+lavaan 0.6-3 ended normally after 110 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         38
+
+  Number of observations per group         
+  USA                                              200
+  China                                            220
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      57.468
+  Degrees of freedom                                16
+  P-value (Chi-square)                           0.000
+
+Chi-square for each group:
+
+  USA                                           19.900
+  China                                         37.568
+
+Model test baseline model:
+
+  Minimum Function Test Statistic              534.875
+  Degrees of freedom                                30
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.918
+  Tucker-Lewis Index (TLI)                       0.846
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -5027.831
+  Loglikelihood unrestricted model (H1)      -4999.097
+
+  Number of free parameters                         38
+  Akaike (AIC)                               10131.661
+  Bayesian (BIC)                             10285.191
+  Sample-size adjusted Bayesian (BIC)        10164.605
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.111
+  90 Percent Confidence Interval          0.081  0.143
+  P-value RMSEA <= 0.05                          0.001
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.049
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+
+Group 1 [USA]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    parent            1.000                               0.852    0.628
+    edu               0.974    0.167    5.837    0.000    0.830    0.694
+    occup             0.694    0.136    5.084    0.000    0.591    0.498
+    income            1.625    0.358    4.545    0.000    1.385    0.429
+  SWB =~                                                                
+    general           1.000                               2.773    0.713
+    work              0.879    0.173    5.082    0.000    2.436    0.898
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SWB ~                                                                 
+    SES               1.557    0.417    3.738    0.000    0.479    0.479
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            3.840    0.096   40.031    0.000    3.840    2.831
+   .edu               3.290    0.085   38.870    0.000    3.290    2.749
+   .occup             2.600    0.084   30.976    0.000    2.600    2.190
+   .income            6.440    0.229   28.180    0.000    6.440    1.993
+   .general          20.420    0.275   74.233    0.000   20.420    5.249
+   .work             10.070    0.192   52.488    0.000   10.070    3.711
+    SES               0.000                               0.000    0.000
+   .SWB               0.000                               0.000    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            1.114    0.159    7.025    0.000    1.114    0.605
+   .edu               0.743    0.127    5.860    0.000    0.743    0.519
+   .occup             1.059    0.124    8.556    0.000    1.059    0.752
+   .income            8.527    0.944    9.028    0.000    8.527    0.816
+   .general           7.447    1.598    4.660    0.000    7.447    0.492
+   .work              1.425    1.101    1.294    0.196    1.425    0.194
+    SES               0.726    0.185    3.928    0.000    1.000    1.000
+   .SWB               5.925    1.430    4.142    0.000    0.771    0.771
+
+
+Group 2 [China]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    parent            1.000                               0.909    0.685
+    edu               0.785    0.148    5.306    0.000    0.714    0.559
+    occup             0.517    0.112    4.607    0.000    0.470    0.436
+    income            1.319    0.279    4.733    0.000    1.199    0.454
+  SWB =~                                                                
+    general           1.000                               3.117    0.831
+    work              0.681    0.122    5.602    0.000    2.124    0.794
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SWB ~                                                                 
+    SES               1.637    0.383    4.276    0.000    0.477    0.477
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            3.520    0.089   39.345    0.000    3.520    2.653
+   .edu               3.080    0.086   35.772    0.000    3.080    2.412
+   .occup             2.090    0.073   28.769    0.000    2.090    1.940
+   .income            5.360    0.178   30.069    0.000    5.360    2.027
+   .general          19.670    0.253   77.771    0.000   19.670    5.243
+   .work              9.560    0.180   53.030    0.000    9.560    3.575
+    SES               0.000                               0.000    0.000
+   .SWB               0.000                               0.000    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            0.935    0.162    5.762    0.000    0.935    0.531
+   .edu               1.121    0.141    7.975    0.000    1.121    0.688
+   .occup             0.940    0.102    9.243    0.000    0.940    0.810
+   .income            5.552    0.610    9.109    0.000    5.552    0.794
+   .general           4.359    1.688    2.582    0.010    4.359    0.310
+   .work              2.638    0.800    3.296    0.001    2.638    0.369
+    SES               0.826    0.197    4.204    0.000    1.000    1.000
+   .SWB               7.501    1.747    4.294    0.000    0.772    0.772
+
+
+ Output for Model 2 (Strong Factorial Invariance)
+
+
+Note: model contains equality constraints:
+
+   lhs op rhs
+1   27 ==   0
+2   28 ==   0
+3    1 ==  22
+4    2 ==  23
+5    3 ==  24
+6    4 ==  25
+7   16 ==  37
+8   17 ==  38
+9   18 ==  39
+10  19 ==  40
+11  20 ==  41
+12  21 ==  42
+
+$USA
+$USA$lambda
+        SES SWB
+parent    0   0
+edu       1   0
+occup     2   0
+income    3   0
+general   0   0
+work      0   4
+
+$USA$theta
+        parent edu occup income generl work
+parent   8                                 
+edu      0      9                          
+occup    0      0  10                      
+income   0      0   0    11                
+general  0      0   0     0     12         
+work     0      0   0     0      0     13  
+
+$USA$psi
+    SES SWB
+SES 14     
+SWB  0  15 
+
+$USA$beta
+    SES SWB
+SES   0   0
+SWB   5   0
+
+$USA$nu
+        intrcp
+parent      16
+edu         17
+occup       18
+income      19
+general     20
+work        21
+
+$USA$alpha
+    intrcp
+SES      6
+SWB      7
+
+
+$China
+$China$lambda
+        SES SWB
+parent    0   0
+edu      22   0
+occup    23   0
+income   24   0
+general   0   0
+work      0  25
+
+$China$theta
+        parent edu occup income generl work
+parent  29                                 
+edu      0     30                          
+occup    0      0  31                      
+income   0      0   0    32                
+general  0      0   0     0     33         
+work     0      0   0     0      0     34  
+
+$China$psi
+    SES SWB
+SES 35     
+SWB  0  36 
+
+$China$beta
+    SES SWB
+SES   0   0
+SWB  26   0
+
+$China$nu
+        intrcp
+parent      37
+edu         38
+occup       39
+income      40
+general     41
+work        42
+
+$China$alpha
+    intrcp
+SES     27
+SWB     28
+
+
+lavaan 0.6-3 ended normally after 98 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         42
+  Number of equality constraints                    12
+
+  Number of observations per group         
+  USA                                              200
+  China                                            220
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      70.912
+  Degrees of freedom                                24
+  P-value (Chi-square)                           0.000
+
+Chi-square for each group:
+
+  USA                                           26.546
+  China                                         44.365
+
+Model test baseline model:
+
+  Minimum Function Test Statistic              534.875
+  Degrees of freedom                                30
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.907
+  Tucker-Lewis Index (TLI)                       0.884
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -5034.552
+  Loglikelihood unrestricted model (H1)      -4999.097
+
+  Number of free parameters                         30
+  Akaike (AIC)                               10129.105
+  Bayesian (BIC)                             10250.312
+  Sample-size adjusted Bayesian (BIC)        10155.113
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.096
+  90 Percent Confidence Interval          0.071  0.123
+  P-value RMSEA <= 0.05                          0.002
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.057
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+
+Group 1 [USA]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    parent            1.000                               0.861    0.631
+    edu     (.p2.)    0.861    0.108    7.950    0.000    0.742    0.631
+    occup   (.p3.)    0.743    0.098    7.602    0.000    0.640    0.532
+    income  (.p4.)    1.783    0.245    7.263    0.000    1.536    0.471
+  SWB =~                                                                
+    general           1.000                               2.954    0.754
+    work    (.p6.)    0.779    0.097    8.000    0.000    2.300    0.851
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SWB ~                                                                 
+    SES      (ga1)    1.686    0.375    4.498    0.000    0.492    0.492
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    SES    (al_x1)    0.428    0.104    4.107    0.000    0.497    0.497
+   .SWB    (al_y1)   -0.033    0.336   -0.097    0.923   -0.011   -0.011
+   .parent  (.18.)    3.469    0.080   43.553    0.000    3.469    2.540
+   .edu     (.19.)    2.990    0.074   40.363    0.000    2.990    2.543
+   .occup   (.20.)    2.173    0.065   33.310    0.000    2.173    1.805
+   .income  (.21.)    5.475    0.161   34.036    0.000    5.475    1.678
+   .generl  (.22.)   19.696    0.239   82.424    0.000   19.696    5.029
+   .work    (.23.)    9.547    0.177   54.018    0.000    9.547    3.534
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            1.123    0.153    7.353    0.000    1.123    0.602
+   .edu               0.832    0.114    7.321    0.000    0.832    0.602
+   .occup             1.040    0.123    8.468    0.000    1.040    0.717
+   .income            8.291    0.929    8.924    0.000    8.291    0.779
+   .general           6.617    1.322    5.006    0.000    6.617    0.431
+   .work              2.007    0.723    2.778    0.005    2.007    0.275
+    SES               0.742    0.155    4.794    0.000    1.000    1.000
+   .SWB               6.615    1.310    5.048    0.000    0.758    0.758
+
+
+Group 2 [China]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    parent            1.000                               0.771    0.591
+    edu     (.p2.)    0.861    0.108    7.950    0.000    0.664    0.518
+    occup   (.p3.)    0.743    0.098    7.602    0.000    0.573    0.523
+    income  (.p4.)    1.783    0.245    7.263    0.000    1.374    0.516
+  SWB =~                                                                
+    general           1.000                               2.912    0.779
+    work    (.p6.)    0.779    0.097    8.000    0.000    2.268    0.845
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SWB ~                                                                 
+    SES      (ga2)    1.820    0.409    4.445    0.000    0.482    0.482
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    SES    (al_x2)    0.000                               0.000    0.000
+   .SWB    (al_y2)    0.000                               0.000    0.000
+   .parent  (.18.)    3.469    0.080   43.553    0.000    3.469    2.660
+   .edu     (.19.)    2.990    0.074   40.363    0.000    2.990    2.331
+   .occup   (.20.)    2.173    0.065   33.310    0.000    2.173    1.984
+   .income  (.21.)    5.475    0.161   34.036    0.000    5.475    2.057
+   .generl  (.22.)   19.696    0.239   82.424    0.000   19.696    5.273
+   .work    (.23.)    9.547    0.177   54.018    0.000    9.547    3.559
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            1.106    0.139    7.933    0.000    1.106    0.651
+   .edu               1.204    0.137    8.802    0.000    1.204    0.732
+   .occup             0.871    0.100    8.714    0.000    0.871    0.726
+   .income            5.197    0.594    8.748    0.000    5.197    0.733
+   .general           5.477    1.213    4.515    0.000    5.477    0.392
+   .work              2.053    0.692    2.965    0.003    2.053    0.285
+    SES               0.594    0.126    4.705    0.000    1.000    1.000
+   .SWB               6.510    1.251    5.203    0.000    0.768    0.768
+
+Defined Parameters:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    gamma_d           0.133    0.487    0.274    0.784   -0.010   -0.010
+    mean_SWB_USA      0.689    0.325    2.117    0.034    0.233    0.233
+
+Constraints:
+                                               |Slack|
+    al_x2 - 0                                    0.000
+    al_y2 - 0                                    0.000
+
+
+ Output for Model 3 (using LR test to compare the effect of SES on SWB)
+
+lavaan 0.6-3 ended normally after 93 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         42
+  Number of equality constraints                    13
+
+  Number of observations per group         
+  USA                                              200
+  China                                            220
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      70.986
+  Degrees of freedom                                25
+  P-value (Chi-square)                           0.000
+
+Chi-square for each group:
+
+  USA                                           26.587
+  China                                         44.399
+
+Model test baseline model:
+
+  Minimum Function Test Statistic              534.875
+  Degrees of freedom                                30
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.909
+  Tucker-Lewis Index (TLI)                       0.891
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -5034.590
+  Loglikelihood unrestricted model (H1)      -4999.097
+
+  Number of free parameters                         29
+  Akaike (AIC)                               10127.179
+  Bayesian (BIC)                             10244.347
+  Sample-size adjusted Bayesian (BIC)        10152.321
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.094
+  90 Percent Confidence Interval          0.068  0.120
+  P-value RMSEA <= 0.05                          0.003
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.057
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+
+Group 1 [USA]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    parent            1.000                               0.858    0.629
+    edu     (.p2.)    0.862    0.108    7.955    0.000    0.739    0.629
+    occup   (.p3.)    0.742    0.098    7.597    0.000    0.637    0.529
+    income  (.p4.)    1.781    0.245    7.265    0.000    1.529    0.469
+  SWB =~                                                                
+    general           1.000                               2.966    0.755
+    work    (.p6.)    0.780    0.098    7.981    0.000    2.314    0.854
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SWB ~                                                                 
+    SES       (ga)    1.744    0.307    5.686    0.000    0.505    0.505
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    SES    (al_x1)    0.428    0.104    4.106    0.000    0.498    0.498
+   .SWB    (al_y1)   -0.058    0.323   -0.180    0.857   -0.020   -0.020
+   .parent  (.18.)    3.469    0.080   43.473    0.000    3.469    2.543
+   .edu     (.19.)    2.990    0.074   40.292    0.000    2.990    2.545
+   .occup   (.20.)    2.173    0.065   33.270    0.000    2.173    1.807
+   .income  (.21.)    5.475    0.161   34.000    0.000    5.475    1.679
+   .generl  (.22.)   19.697    0.238   82.713    0.000   19.697    5.014
+   .work    (.23.)    9.547    0.176   54.188    0.000    9.547    3.521
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            1.125    0.152    7.394    0.000    1.125    0.604
+   .edu               0.834    0.113    7.360    0.000    0.834    0.604
+   .occup             1.041    0.123    8.494    0.000    1.041    0.720
+   .income            8.302    0.929    8.941    0.000    8.302    0.780
+   .general           6.637    1.323    5.018    0.000    6.637    0.430
+   .work              1.995    0.725    2.752    0.006    1.995    0.271
+    SES               0.737    0.152    4.839    0.000    1.000    1.000
+   .SWB               6.555    1.295    5.061    0.000    0.745    0.745
+
+
+Group 2 [China]:
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    parent            1.000                               0.775    0.594
+    edu     (.p2.)    0.862    0.108    7.955    0.000    0.668    0.520
+    occup   (.p3.)    0.742    0.098    7.597    0.000    0.575    0.525
+    income  (.p4.)    1.781    0.245    7.265    0.000    1.381    0.518
+  SWB =~                                                                
+    general           1.000                               2.895    0.777
+    work    (.p6.)    0.780    0.098    7.981    0.000    2.259    0.845
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SWB ~                                                                 
+    SES       (ga)    1.744    0.307    5.686    0.000    0.467    0.467
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    SES    (al_x2)    0.000       NA                      0.000    0.000
+   .SWB    (al_y2)    0.000                               0.000    0.000
+   .parent  (.18.)    3.469    0.080   43.473    0.000    3.469    2.658
+   .edu     (.19.)    2.990    0.074   40.292    0.000    2.990    2.330
+   .occup   (.20.)    2.173    0.065   33.270    0.000    2.173    1.982
+   .income  (.21.)    5.475    0.161   34.000    0.000    5.475    2.056
+   .generl  (.22.)   19.697    0.238   82.713    0.000   19.697    5.287
+   .work    (.23.)    9.547    0.176   54.188    0.000    9.547    3.571
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .parent            1.103    0.139    7.921    0.000    1.103    0.647
+   .edu               1.201    0.137    8.792    0.000    1.201    0.729
+   .occup             0.871    0.100    8.709    0.000    0.871    0.725
+   .income            5.187    0.594    8.734    0.000    5.187    0.731
+   .general           5.495    1.214    4.528    0.000    5.495    0.396
+   .work              2.042    0.695    2.940    0.003    2.042    0.286
+    SES               0.601    0.125    4.793    0.000    1.000    1.000
+   .SWB               6.556    1.234    5.315    0.000    0.782    0.782
+
+Defined Parameters:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    mean_SWB_USA      0.688    0.325    2.115    0.034    0.232    0.232
+
+Constraints:
+                                               |Slack|
+    al_x2 - 0                                    0.000
+    al_y2 - 0                                    0.000
+
+
+ Model Comparisons
+
+Chi Square Difference Test
+
+     Df   AIC   BIC  Chisq Chisq diff Df diff Pr(>Chisq)  
+fit1 16 10132 10285 57.468                                
+fit2 24 10129 10250 70.912    13.4435       8    0.09747 .
+fit3 25 10127 10244 70.986     0.0746       1    0.78471  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1

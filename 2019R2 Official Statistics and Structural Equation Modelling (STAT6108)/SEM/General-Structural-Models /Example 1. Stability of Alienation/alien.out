@@ -1,0 +1,313 @@
+
+ Example 1: Stability of Alienation
+
+
+ Output for Model 1
+
+$lambda
+         SES ALIEN6 ALIEN7
+educ       0      0      0
+sei        1      0      0
+anomia67   0      0      0
+powerl67   0      2      0
+anomia71   0      0      0
+powerl71   0      0      3
+
+$theta
+         educ sei anom67 pwrl67 anom71 pwrl71
+educ      7                                  
+sei       0    8                             
+anomia67  0    0   9                         
+powerl67  0    0   0     10                  
+anomia71  0    0   0      0     11           
+powerl71  0    0   0      0      0     12    
+
+$psi
+        SES ALIEN6 ALIEN7
+SES     13               
+ALIEN67  0  14           
+ALIEN71  0   0     15    
+
+$beta
+        SES ALIEN6 ALIEN7
+SES       0      0      0
+ALIEN67   4      0      0
+ALIEN71   6      5      0
+
+lavaan 0.6-3 ended normally after 58 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         15
+
+  Number of observations                           932
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      88.293
+  Degrees of freedom                                 6
+  P-value (Chi-square)                           0.000
+
+Model test baseline model:
+
+  Minimum Function Test Statistic             2159.906
+  Degrees of freedom                                15
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.962
+  Tucker-Lewis Index (TLI)                       0.904
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)             -13098.966
+  Loglikelihood unrestricted model (H1)     -13054.819
+
+  Number of free parameters                         15
+  Akaike (AIC)                               26227.931
+  Bayesian (BIC)                             26300.491
+  Sample-size adjusted Bayesian (BIC)        26252.852
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.121
+  90 Percent Confidence Interval          0.100  0.144
+  P-value RMSEA <= 0.05                          0.000
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.025
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    educ              1.000                               2.492    0.804
+    sei               0.572    0.044   13.010    0.000    1.425    0.672
+  ALIEN67 =~                                                            
+    anomia67          1.000                               2.809    0.816
+    powerl67          0.881    0.041   21.307    0.000    2.473    0.808
+  ALIEN71 =~                                                            
+    anomia71          1.000                               2.998    0.847
+    powerl71          0.834    0.039   21.385    0.000    2.500    0.791
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  ALIEN67 ~                                                             
+    SES        (a)   -0.646    0.057  -11.250    0.000   -0.574   -0.574
+  ALIEN71 ~                                                             
+    ALIEN67    (b)    0.682    0.053   12.771    0.000    0.639    0.639
+    SES        (c)   -0.229    0.058   -3.976    0.000   -0.190   -0.190
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .educ              3.398    0.455    7.462    0.000    3.398    0.354
+   .sei               2.472    0.181   13.687    0.000    2.472    0.549
+   .anomia67          3.946    0.346   11.420    0.000    3.946    0.333
+   .powerl67          3.246    0.273   11.906    0.000    3.246    0.347
+   .anomia71          3.546    0.372    9.545    0.000    3.546    0.283
+   .powerl71          3.735    0.289   12.910    0.000    3.735    0.374
+    SES               6.212    0.597   10.413    0.000    1.000    1.000
+   .ALIEN67           5.292    0.474   11.176    0.000    0.671    0.671
+   .ALIEN71           3.738    0.389    9.606    0.000    0.416    0.416
+
+R-Square:
+                   Estimate
+    educ              0.646
+    sei               0.451
+    anomia67          0.667
+    powerl67          0.653
+    anomia71          0.717
+    powerl71          0.626
+    ALIEN67           0.329
+    ALIEN71           0.584
+
+Defined Parameters:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    direct           -0.229    0.058   -3.976    0.000   -0.190   -0.190
+    indirect         -0.441    0.048   -9.215    0.000   -0.367   -0.367
+    total            -0.670    0.060  -11.195    0.000   -0.557   -0.557
+
+
+ Modification indices
+
+[[1]]
+        lhs op      rhs     mi    epc sepc.lv sepc.all sepc.nox
+44 anomia67 ~~ anomia71 57.693  1.863   1.863    0.498    0.498
+46 powerl67 ~~ anomia71 54.108 -1.597  -1.597   -0.471   -0.471
+45 anomia67 ~~ powerl71 45.229 -1.429  -1.429   -0.372   -0.372
+47 powerl67 ~~ powerl71 41.895  1.219   1.219    0.350    0.350
+41      sei ~~ anomia71 18.443 -0.647  -0.647   -0.219   -0.219
+37     educ ~~ anomia71 16.531  0.917   0.917    0.264    0.264
+36     educ ~~ powerl67 12.065 -0.685  -0.685   -0.206   -0.206
+42      sei ~~ powerl71  6.804  0.353   0.353    0.116    0.116
+38     educ ~~ powerl71  6.744 -0.516  -0.516   -0.145   -0.145
+27  ALIEN67 =~      sei  5.182  0.222   0.624    0.294    0.294
+26  ALIEN67 =~     educ  5.182 -0.389  -1.092   -0.352   -0.352
+30  ALIEN71 =~     educ  5.182  0.296   0.888    0.287    0.287
+31  ALIEN71 =~      sei  5.182 -0.169  -0.508   -0.239   -0.239
+40      sei ~~ powerl67  4.840  0.293   0.293    0.103    0.103
+32  ALIEN71 =~ anomia67  3.497  0.310   0.931    0.271    0.271
+33  ALIEN71 =~ powerl67  3.497 -0.273  -0.820   -0.268   -0.268
+22      SES =~ anomia67  3.497  0.137   0.341    0.099    0.099
+23      SES =~ powerl67  3.497 -0.120  -0.300   -0.098   -0.098
+35     educ ~~ anomia67  3.276  0.402   0.402    0.110    0.110
+28  ALIEN67 =~ anomia71  0.215  0.104   0.293    0.083    0.083
+29  ALIEN67 =~ powerl71  0.215 -0.087  -0.245   -0.077   -0.077
+25      SES =~ powerl71  0.215 -0.029  -0.073   -0.023   -0.023
+24      SES =~ anomia71  0.215  0.035   0.087    0.025    0.025
+39      sei ~~ anomia67  0.064 -0.038  -0.038   -0.012   -0.012
+
+
+ Output for Model 2
+
+$lambda
+         SES ALIEN6 ALIEN7
+educ       0      0      0
+sei        1      0      0
+anomia67   0      0      0
+powerl67   0      2      0
+anomia71   0      0      0
+powerl71   0      0      3
+
+$theta
+         educ sei anom67 pwrl67 anom71 pwrl71
+educ      9                                  
+sei       0   10                             
+anomia67  0    0  11                         
+powerl67  0    0   0     12                  
+anomia71  0    0   7      0     13           
+powerl71  0    0   0      8      0     14    
+
+$psi
+        SES ALIEN6 ALIEN7
+SES     15               
+ALIEN67  0  16           
+ALIEN71  0   0     17    
+
+$beta
+        SES ALIEN6 ALIEN7
+SES       0      0      0
+ALIEN67   4      0      0
+ALIEN71   6      5      0
+
+lavaan 0.6-3 ended normally after 70 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         17
+
+  Number of observations                           932
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      23.742
+  Degrees of freedom                                 4
+  P-value (Chi-square)                           0.000
+
+Model test baseline model:
+
+  Minimum Function Test Statistic             2159.906
+  Degrees of freedom                                15
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.991
+  Tucker-Lewis Index (TLI)                       0.965
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)             -13066.690
+  Loglikelihood unrestricted model (H1)     -13054.819
+
+  Number of free parameters                         17
+  Akaike (AIC)                               26167.380
+  Bayesian (BIC)                             26249.615
+  Sample-size adjusted Bayesian (BIC)        26195.624
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.073
+  90 Percent Confidence Interval          0.046  0.102
+  P-value RMSEA <= 0.05                          0.076
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.016
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  SES =~                                                                
+    educ              1.000                               2.522    0.814
+    sei               0.559    0.043   12.948    0.000    1.408    0.664
+  ALIEN67 =~                                                            
+    anomia67          1.000                               2.704    0.786
+    powerl67          0.951    0.059   15.981    0.000    2.571    0.840
+  ALIEN71 =~                                                            
+    anomia71          1.000                               2.925    0.827
+    powerl71          0.875    0.055   15.926    0.000    2.559    0.810
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+  ALIEN67 ~                                                             
+    SES        (a)   -0.614    0.058  -10.630    0.000   -0.572   -0.572
+  ALIEN71 ~                                                             
+    ALIEN67    (b)    0.586    0.052   11.330    0.000    0.542    0.542
+    SES        (c)   -0.286    0.057   -5.015    0.000   -0.246   -0.246
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+ .anomia67 ~~                                                           
+   .anomia71          1.412    0.312    4.524    0.000    1.412    0.333
+ .powerl67 ~~                                                           
+   .powerl71          0.535    0.251    2.132    0.033    0.535    0.174
+
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+   .educ              3.250    0.463    7.013    0.000    3.250    0.338
+   .sei               2.519    0.180   14.014    0.000    2.519    0.559
+   .anomia67          4.533    0.460    9.856    0.000    4.533    0.383
+   .powerl67          2.750    0.394    6.983    0.000    2.750    0.294
+   .anomia71          3.961    0.516    7.677    0.000    3.961    0.316
+   .powerl71          3.442    0.408    8.444    0.000    3.442    0.344
+    SES               6.360    0.606   10.489    0.000    1.000    1.000
+   .ALIEN67           4.916    0.479   10.259    0.000    0.672    0.672
+   .ALIEN71           4.221    0.419   10.086    0.000    0.493    0.493
+
+R-Square:
+                   Estimate
+    educ              0.662
+    sei               0.441
+    anomia67          0.617
+    powerl67          0.706
+    anomia71          0.684
+    powerl71          0.656
+    ALIEN67           0.328
+    ALIEN71           0.507
+
+Defined Parameters:
+                   Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    direct           -0.286    0.057   -5.015    0.000   -0.246   -0.246
+    indirect         -0.360    0.042   -8.587    0.000   -0.310   -0.310
+    total            -0.645    0.060  -10.753    0.000   -0.556   -0.556
+    effect_d         -0.074    0.080   -0.927    0.354   -0.064   -0.064
+
+
+ Comparing Model 1 and Model 2
+
+Chi Square Difference Test
+
+     Df   AIC   BIC  Chisq Chisq diff Df diff Pr(>Chisq)    
+fit2  4 26167 26250 23.742                                  
+fit1  6 26228 26301 88.293     64.551       2  9.615e-15 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1

@@ -1,0 +1,273 @@
+---
+title: <center><h1>2019R2 STAT6108 Assignment 4</h1></center><br />
+author: <center>Yiu Chung WONG 1155017920</center>
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+  word_document: default
+--- 
+<br />
+<br />
+
+
+```{r, echo=FALSE}
+pcaCharts <- function(x) {
+    x.var <- x$sdev ^ 2
+    x.pvar <- x.var/sum(x.var)
+    print("proportions of variance:")
+    print(x.pvar)
+    
+    par(mfrow=c(2,2))
+    plot(x.pvar,xlab="Principal component",
+         ylab="Proportion of variance explained", ylim=c(0,1), type='b')
+    plot(cumsum(x.pvar),xlab="Principal component",
+         ylab="Cumulative Proportion of variance explained", ylim=c(0,1), type='b')
+    screeplot(x)
+    screeplot(x,type="l")
+    par(mfrow=c(1,1))
+}
+
+
+cor.mtest <- function(data, ...) {
+    data <- as.matrix(data)
+    n <- ncol(data)
+    p.data<- matrix(NA, n, n)
+    diag(p.data) <- 0
+    for (i in 1:(n - 1)) {
+        for (j in (i + 1):n) {
+            tmp <- cor.test(data[, i], data[, j], ...)
+            p.data[i, j] <- p.data[j, i] <- tmp$p.value
+        }
+    }
+  colnames(p.data) <- rownames(p.data) <- colnames(data)
+  p.data
+}
+```
+
+```{r, echo = F, results = 'hide', message=FALSE, warning=FALSE}
+library("knitr")
+opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE, warning = FALSE)
+options(width = 100)
+library("psych")
+library("lavaan")
+
+knitr::knit_hooks$set(inline = function(x) {
+  x <- sprintf("%1.3f", x)
+  paste(x, collapse = ", ")
+})
+```
+
+```{r}
+# import data
+teachers <- read.csv('hw4(2020).dat', header = FALSE, sep = '')
+```
+
+### Model Setup
+
+```{r}
+model <- 'HelpsSeekingBehavior =~ V1 + V3 + V6 + V9;
+ProblemFocusedCoping =~ V2 + V4 + V8 + V10;
+EmotionFocusedCoping =~ V5 + V7;
+HelpsSeekingBehavior ~~ ProblemFocusedCoping;
+HelpsSeekingBehavior ~~ EmotionFocusedCoping;
+ProblemFocusedCoping ~~ EmotionFocusedCoping'
+```
+<br />
+
+## a) 
+
+###  Path diagram assuming unit loading identification
+
+```{r}
+fit <- cfa(model, data = teachers)
+semPlot::semPaths(object=fit, intercepts=FALSE, what="path", whatLabels="cons")
+```
+
+* Edge labeled 0 indicates the parameter is fixed, non-zero indicates free parameters.
+* The factor loading of the first indicator is set to 1.0 for every latent variable to circumvent factor indeterminacy.
+* The model satisfy the t-rule because the [degrees of freedom](#b) is a positive integer.
+* Latent factors are correlated, and degree of freedom is greater than zero. Hence the model is over-identified. 
+
+#### Two-indicator rule
+
+- There are three factors
+- Factor correlations are free
+- At least 2 indicators per factor
+- Each indicator loads on one factor
+- Errors are uncorrelated
+
+The model is identifiable.
+
+\newpage
+
+## b){#b}
+
+```{r}
+n_variable <- 10
+n_factor <- 3
+
+p_star <- (n_variable * (n_variable+1))/2
+q <- n_variable + (n_variable - n_factor) + (n_factor * (n_factor+1))/2
+
+df <- p_star - q
+```
+* There are `r q` free parameters in the the proposed model.
+* The degrees of freedom is `r df`.
+<br />
+
+## c)
+
+### ULI
+```{r, results='hide'}
+uli <- lavaan(model, data=teachers, auto.var=TRUE, auto.fix.first=TRUE, std.lv=FALSE)
+uliSummary <- summary(uli, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+```
+
+### UVI
+```{r, results='hide'}
+uvi <- lavaan(model, data=teachers, auto.var=TRUE, auto.fix.first=FALSE, std.lv=TRUE)
+uviSummary <- summary(uvi, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+```
+
+
+### Prepare for comparison
+
+```{r}
+# row numbers of fixed parameters in parameter table
+uliFixedParameters <- c(1,5,9)
+uviFixedParameters <- c(24,25,26)
+
+# round numbers to 3 decimal places
+uliSummary$PE[,-c(1:3)] <- round(uliSummary$PE[,-c(1:3)],3)
+uviSummary$PE[,-c(1:3)] <- round(uviSummary$PE[,-c(1:3)],3)
+```
+
+### Parameter estimations that are common in both methods
+
+```{r}
+# compare all paremeters except fixed parameters
+combined <- rbind(uliSummary$PE, uviSummary$PE)
+intersaction <- combined[duplicated(combined), , drop = FALSE]
+intersaction[,-which(names(intersaction) == "std.nox")]
+```
+
+* Error variance and $R^2$ are the same across two identification methods
+* All error variance are significant
+<br />
+
+### Parameter estimations that are different
+
+```{r}
+nRowTable <- dim(uviSummary$PE)[1]
+tail <- tail(duplicated(combined), nRowTable)
+uliSummary$PE[!tail,-which(colnames(uliSummary$PE) == "std.nox")]
+```
+
+```{r}
+uviSummary$PE[!tail,-which(names(uviSummary$PE) == "std.nox")]
+```
+* Since the scales are different, the estimates (and their respected standard error) produced by the two identification methods do not match.
+* Parameters that are significant in uli are also significant in uvi; the result of Wald test for significance are the same.
+* Standardised latent variables and complete standardised solutions are equal.
+<br />
+
+### Compare goodness-of-fit
+
+```{r}
+identical(round(uliSummary$FIT, 3), round(uviSummary$FIT, 3))
+```
+* Both identification methods yields identical Chi-square goodness-of-fit test, residuals, and other goodness-of-fit indices.
+
+<br />
+\newpage
+
+## d)
+
+### Goodness-of-fit evaluation
+
+We evaluate the indicies according to Hooper, Coughlan, & Mullen (2008).
+```{r}
+uliSummary$FIT
+```
+
+* $H_0$: $\Sigma = \Sigma(\theta)$ 
+* Chi-square  test statistics: `r uliSummary$FIT["chisq"]`; p-value: `r uliSummary$FIT["pvalue"]`. $H_0$ is rejected at $\alpha = .95$.
+* NNFI: `r uliSummary$FIT["tli"]` < $0.95$
+* CFI: `r uliSummary$FIT["cfi"]` < $0.95$
+* RMSEA: `r uliSummary$FIT["rmsea"]` > $0.07$
+* SRMR: `r uliSummary$FIT["srmr"]` > $0.08$
+
+Neither the goodness-of-fit test or the fit indices pass the acceptable threshold levels. The proposed model is of poor fit.
+<br />
+
+## e)
+
+### Modification indices
+```{r}
+mi1 <- modindices(uli, sort. = TRUE)
+head(mi1, 2)[,-which(names(mi1) == "sepc.nox")]
+```
+
+* Modification indices suggests there exist error covariance between $V_1$ and $V_6$.
+* This modification is justifiable as these indicators belong to the same latent factor according to the proposed model. Hence they are likely to subject to the same type of variance.
+
+<br />
+
+### New model
+```{r, results='hide'}
+newModel1 <- 'HelpsSeekingBehavior =~ V1 + V3 + V6 + V9;
+ProblemFocusedCoping =~ V2 + V4 + V8 + V10;
+EmotionFocusedCoping =~ V5 + V7;
+
+HelpsSeekingBehavior ~~ ProblemFocusedCoping;
+HelpsSeekingBehavior ~~ EmotionFocusedCoping;
+ProblemFocusedCoping ~~ EmotionFocusedCoping;
+
+V1~~V6'
+
+uliNew1 <- lavaan(newModel1, data=teachers, auto.var=TRUE, auto.fix.first=TRUE, std.lv=FALSE)
+uliNew1Summary <- summary(uliNew1, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+```
+
+### New model parameter fitting
+```{r}
+uliNew1Summary$PE[,-which(colnames(uliNew1Summary$PE) == "std.nox")]
+```
+* Result for Wald tests of significance for the parameters are the same as the old model.
+* The parameter for the error covariance between $V_1$ and $V_6$ is also significant. 
+
+### Likelihood ratio test
+
+```{r}
+lavTestLRT(uli, uliNew1)
+```
+
+* Likelihood ratio test reveals significant difference between models with and without error co-variance between $V_1$ and $V_6$.
+* Hence the new model is a better model. 
+
+### Goodness-of-fit of the new model
+
+* $H_0$: $\Sigma = \Sigma(\theta)$ 
+* Chi-square  test statistics: `r uliNew1Summary$FIT["chisq"]`; p-value: `r uliNew1Summary$FIT["pvalue"]`. $H_0$ is rejected at $\alpha = .95$.
+* NNFI: `r uliNew1Summary$FIT["tli"]` < $0.95$
+* CFI: `r uliNew1Summary$FIT["cfi"]` < $0.95$
+* RMSEA: `r uliNew1Summary$FIT["rmsea"]` > $0.07$
+* SRMR: `r uliNew1Summary$FIT["srmr"]` > $0.08$
+
+
+The new model has better commonly used goodness-of-fit indices (closer to recommended cutoff) across all measures. However, non of which passes the recommended cutoff. Chi-square goodness-of-fit test has a lower test statistic but still rejects $H_0$. 
+
+
+### Further modification indices
+```{r}
+mi2 <- modindices(uliNew1, sort. = TRUE)
+head(mi2, 3)[,-which(colnames(mi2) == "sepc.nox")]
+```
+
+The top expected reduction in chi-square statistic is `r mi2$mi[1]`. The current chi-square statistic is `r uliNew1Summary$FIT["chisq"]`. Hence, even if another parameter is added into the model, the chi-square statistic is expected to be around: `r uliNew1Summary$FIT["chisq"]` - `r mi2$mi[1]` = `r uliNew1Summary$FIT["chisq"] -  mi2$mi[1]`, which is still far from the required `r qchisq(.95, 30)` critical value evaluated by qchisq(p=.95, df=`r uliNew1Summary$FIT["df"] - 1`). 
+
+One could endlessly add new parameter according to the modification indices until a non-significant Chi-square test statistic is reached. This is highly data driven and defeats much the purpose of the analysis. 
+
+In summary, the proposed model may not be a good fit.
+
